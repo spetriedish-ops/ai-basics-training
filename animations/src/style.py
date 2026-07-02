@@ -126,58 +126,92 @@ def hand_label(text: str, size: float = 34, color: str = INK,
                 font_size=size, color=color)
 
 
-def _wobble(vm: VMobject, amp: float, rng) -> VMobject:
-    """Densify curves, then displace points with smooth sinusoidal noise.
+def _wobble(vm: VMobject, amp: float, rng, skip_ids=frozenset()) -> VMobject:
+    """Displace points with a smooth POSITION-BASED noise field.
 
-    Smooth (rather than i.i.d.) noise keeps the path from self-intersecting,
-    so fills stay solid while outlines get a hand-drawn waver.
+    Manim shapes chain bezier curves that share duplicated anchor points;
+    index-based noise moves the duplicates apart, shattering the path into
+    open slivers whose fill is invisible. A spatial field guarantees points
+    at the same location move identically, so paths stay welded and fills
+    stay solid. Two scales: a low-frequency sway + high-frequency jitter.
     """
+    waves = []
+    for k_lo, k_hi in ((2.5, 5.0), (14.0, 22.0)):
+        k = rng.uniform(k_lo, k_hi)
+        ang = rng.uniform(0, 2 * np.pi)
+        kx, ky = k * np.cos(ang), k * np.sin(ang)
+        waves.append((kx, ky, rng.uniform(0, 2 * np.pi),
+                      rng.uniform(0, 2 * np.pi),
+                      0.65 if k < 10 else 0.35))
+
+    def field(pts):
+        out = np.zeros_like(pts)
+        for kx, ky, p1, p2, wgt in waves:
+            phase = kx * pts[:, 0] + ky * pts[:, 1]
+            out[:, 0] += wgt * np.sin(phase + p1)
+            out[:, 1] += wgt * np.sin(phase + p2)
+        return amp * out
+
     for sm in vm.family_members_with_points():
-        n = len(sm.points)
-        if n == 0:
+        if len(sm.points) == 0 or id(sm) in skip_ids:
             continue
         try:
             arc = sm.get_arc_length()
             sm.insert_n_curves(max(2, int(arc / 0.22)))
-            n = len(sm.points)
         except Exception:
             pass
-        t = np.linspace(0.0, 2.0 * np.pi, n)
-        dx = np.zeros(n)
-        dy = np.zeros(n)
-        for freq in rng.integers(2, 7, size=3):
-            dx += rng.uniform(0.4, 1.0) * np.sin(freq * t + rng.uniform(0, 6.28))
-            dy += rng.uniform(0.4, 1.0) * np.sin(freq * t + rng.uniform(0, 6.28))
-        noise = np.zeros((n, 3))
-        noise[:, 0] = amp * dx
-        noise[:, 1] = amp * dy
-        sm.points = sm.points + noise
+        sm.points = sm.points + field(sm.points)
     return vm
 
 
 def crayonify(vm: VMobject, amp: float = 0.028, seed: int = 0,
-              fill_slop: float = 1.8) -> VGroup:
+              fill_slop: float = 1.4) -> VGroup:
     """
     Turn a clean vector shape into a crayon drawing:
       - fill layer: wobblier, slightly translucent (colors outside the lines)
       - outline layer: wobbled ink line with slightly uneven width
-    Deterministic per (SCRIBBLE_SEED, seed) so multi-pass boiling lines up.
+    Text submobjects pass through UNTOUCHED — wobbling glyph paths destroys
+    letterforms (they are thinner than the wobble amplitude); the handwriting
+    fonts already carry the scrawl. Deterministic per (SCRIBBLE_SEED, seed)
+    so multi-pass boiling lines up.
     """
     rng = np.random.default_rng(SCRIBBLE_SEED * 7919 + seed)
 
+    text_family = set()
+    for m in vm.get_family():
+        if isinstance(m, Text):
+            text_family.update(id(g) for g in m.get_family())
+
     fill = vm.copy()
+    fill.text_ids = _text_ids(fill)
     for sm in fill.family_members_with_points():
+        if id(sm) in fill.text_ids:
+            continue
         sm.set_stroke(width=0)
         if sm.get_fill_opacity() > 0:
             sm.set_fill(opacity=min(0.85, float(sm.get_fill_opacity())))
 
     outline = vm.copy()
+    outline.text_ids = _text_ids(outline)
     for sm in outline.family_members_with_points():
+        if id(sm) in outline.text_ids:
+            sm.set_fill(opacity=0.0)  # text lives on the fill layer only
+            sm.set_stroke(width=0)
+            continue
         sm.set_fill(opacity=0.0)
         w = sm.get_stroke_width()
         if w:  # zero-stroke shapes (meter fill, dust) stay outline-free
             sm.set_stroke(width=max(3.5, w * rng.uniform(0.8, 1.15)))
 
-    _wobble(fill, amp * fill_slop, rng)
-    _wobble(outline, amp, rng)
+    _wobble(fill, amp * fill_slop, rng, skip_ids=fill.text_ids)
+    _wobble(outline, amp, rng, skip_ids=outline.text_ids)
     return VGroup(fill, outline)
+
+
+def _text_ids(vm: VMobject) -> set:
+    """ids of every submobject belonging to a Text mobject in the family."""
+    ids = set()
+    for m in vm.get_family():
+        if isinstance(m, Text):
+            ids.update(id(g) for g in m.get_family())
+    return ids
