@@ -84,11 +84,14 @@ STYLE.md             The visual language spec (read before adding a scene)
 
 ## Status
 
-| # | Concept | Scene | Status |
-|---|---------|-------|--------|
-| P0 | Context window & tokens | `context_window.py` | ✅ scribble redesign — awaiting style sign-off |
-| P1 | MCP vs CLI vs API vs custom tools | — | waiting on P0 sign-off |
-| P1 | Chatbot vs agent | — | waiting on P0 sign-off |
-| P1 | Anatomy of an agent | — | waiting on P0 sign-off |
-| P2 | Agent orchestration | — | waiting on P0 sign-off |
-| P2 | Why LLMs have limitations | — | waiting on P0 sign-off |
+The set is planned as five scenes in one world — see `STORYBOARDS.md` for
+beat-level detail. Chatbot-vs-agent folded into the Garage; LLM limitations
+folded into the Paver; MCP vs CLI parked (see STORYBOARDS.md).
+
+| # | Scene | Concepts | Source | Status |
+|---|-------|----------|--------|--------|
+| 1 | The Garage | types of AI, model progression, chatbot vs agent | — | storyboard in review |
+| 2 | The Paver | prediction engine, tokens in/out, hallucination | — | storyboard in review |
+| 3 | The Truck v2 | context window, tools, tool overload | `context_window.py` | v1 ✅ rendered · v2 storyboard in review |
+| 4 | Pop the Hood | anatomy: model, tools, skills, loop, harness | — | storyboard in review |
+| 5 | The Fleet | subagents, orchestration | — | storyboard in review |

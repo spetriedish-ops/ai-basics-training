@@ -70,7 +70,8 @@ assets always travel with their source.
 
 ## Queue
 
-Next up (waiting on any P0 feedback): MCP vs CLI vs API vs custom tools;
-chatbot vs agent; anatomy of an agent. Then P2: agent orchestration; why
-LLMs have limitations. Storyboard first, get a nod in chat or a review
-comment, then produce.
+The set is planned end-to-end in `STORYBOARDS.md` (five scenes, one world,
+escalation-gag humor style). Production waits on Sarah's redline of that
+doc. Recommended production order: Truck v2 → Pop the Hood → Paver →
+Fleet → Garage. Storyboard first, get a nod in chat or a review comment,
+then produce.
