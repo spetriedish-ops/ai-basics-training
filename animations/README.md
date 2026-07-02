@@ -62,6 +62,9 @@ manim -r 1920,1080 --fps 30 --media_dir renders src/scenes/context_window.py Con
 
 # Or run the whole final pipeline (MP4 + optimized looping GIF):
 ./scripts/render.sh context_window ContextWindow
+
+# Scribble style with boiling lines (3 seed renders + frame interleave):
+./scripts/boil.sh context_window ContextWindow
 ```
 
 Finished assets land in `renders/final/`. Manim's intermediate output
@@ -83,7 +86,7 @@ STYLE.md             The visual language spec (read before adding a scene)
 
 | # | Concept | Scene | Status |
 |---|---------|-------|--------|
-| P0 | Context window & tokens | `context_window.py` | ✅ proof of concept — awaiting style/stack sign-off |
+| P0 | Context window & tokens | `context_window.py` | ✅ scribble redesign — awaiting style sign-off |
 | P1 | MCP vs CLI vs API vs custom tools | — | waiting on P0 sign-off |
 | P1 | Chatbot vs agent | — | waiting on P0 sign-off |
 | P1 | Anatomy of an agent | — | waiting on P0 sign-off |

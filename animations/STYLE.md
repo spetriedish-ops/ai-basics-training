@@ -19,15 +19,24 @@ and physical for a mixed-literacy audience.
   never meaning-by-color-alone).
 - **Trouble is ALERT orange-red** (`#E4572E`), used sparingly.
 
-## The look
+## The look — scribble edition ("kid's drawing brought to life")
 
-- Soft warm paper background (`#FDF6EC`), chunky ink outlines (`#33323E`),
-  rounded corners everywhere. No gradients, no 3D.
-- Labels: **Baloo 2** (bundled). Title top center, one short caption at the
-  bottom per beat. Captions ≤ 8 words, ≥ 28 pt equivalent — legible from the
-  back of a room.
+- Everything is drawn like a child's crayon picture that got up and moved:
+  wobbly hand-drawn outlines, translucent fills that color slightly outside
+  the lines, a doodled sun in the corner.
+- **Boiling lines:** each scene renders 3 times with different `SCRIBBLE_SEED`
+  values; `scripts/boil.sh` interleaves the frames (5 frames per seed at
+  30 fps ≈ 6 Hz) so the drawing looks continuously redrawn. Low amplitude,
+  low frequency — lively, never strobing.
+- Paper background (`#FAF7EF`), ink outlines (`#33323E`).
+- Text: **Patrick Hand** for titles/captions (legible handwriting),
+  **Gochi Hand** for block labels (extra kid-scrawl). Both bundled, OFL.
+  Captions ≤ 8 words, ≥ 28 pt equivalent — legible from the back of a room.
 - Motion: bouncy ease-outs for arrivals (`ease_out_bounce`), gentle sine for
-  travel. Dust puffs mark impacts. Nothing strobing or high-flicker.
+  travel. Dust puffs mark impacts.
+- The clean flat-vector look (Baloo 2 labels, crisp shapes) lives on in git
+  history and in `src/style.py`'s base builders — skip `crayonify()` to get
+  it back.
 
 ## Voice rules for on-screen text
 

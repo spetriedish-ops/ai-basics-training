@@ -100,3 +100,84 @@ def puff(at, n: int = 3, spread: float = 0.35) -> VGroup:
                    stroke_width=0).move_to(at + off)
         dots.add(c)
     return dots
+
+
+# ===================================================================
+# Scribble mode — "kid's drawing brought to life"
+# Hand-wobbled lines + crayon fill that colors outside the lines.
+# Set SCRIBBLE_SEED env var and render multiple passes, then
+# interleave frames (scripts/boil.sh) to get the "boiling" effect
+# of a drawing being redrawn every few frames.
+# ===================================================================
+import os
+
+import numpy as np
+
+SCRIBBLE_SEED = int(os.environ.get("SCRIBBLE_SEED", "1"))
+
+PAPER_SCRIBBLE = "#FAF7EF"   # plain white-ish drawing paper
+FONT_HAND = "Patrick Hand"   # captions/titles — legible handwriting
+FONT_SCRAWL = "Gochi Hand"   # block labels — extra kid-scrawl
+
+
+def hand_label(text: str, size: float = 34, color: str = INK,
+               scrawl: bool = False) -> Text:
+    return Text(text, font=FONT_SCRAWL if scrawl else FONT_HAND,
+                font_size=size, color=color)
+
+
+def _wobble(vm: VMobject, amp: float, rng) -> VMobject:
+    """Densify curves, then displace points with smooth sinusoidal noise.
+
+    Smooth (rather than i.i.d.) noise keeps the path from self-intersecting,
+    so fills stay solid while outlines get a hand-drawn waver.
+    """
+    for sm in vm.family_members_with_points():
+        n = len(sm.points)
+        if n == 0:
+            continue
+        try:
+            arc = sm.get_arc_length()
+            sm.insert_n_curves(max(2, int(arc / 0.22)))
+            n = len(sm.points)
+        except Exception:
+            pass
+        t = np.linspace(0.0, 2.0 * np.pi, n)
+        dx = np.zeros(n)
+        dy = np.zeros(n)
+        for freq in rng.integers(2, 7, size=3):
+            dx += rng.uniform(0.4, 1.0) * np.sin(freq * t + rng.uniform(0, 6.28))
+            dy += rng.uniform(0.4, 1.0) * np.sin(freq * t + rng.uniform(0, 6.28))
+        noise = np.zeros((n, 3))
+        noise[:, 0] = amp * dx
+        noise[:, 1] = amp * dy
+        sm.points = sm.points + noise
+    return vm
+
+
+def crayonify(vm: VMobject, amp: float = 0.028, seed: int = 0,
+              fill_slop: float = 1.8) -> VGroup:
+    """
+    Turn a clean vector shape into a crayon drawing:
+      - fill layer: wobblier, slightly translucent (colors outside the lines)
+      - outline layer: wobbled ink line with slightly uneven width
+    Deterministic per (SCRIBBLE_SEED, seed) so multi-pass boiling lines up.
+    """
+    rng = np.random.default_rng(SCRIBBLE_SEED * 7919 + seed)
+
+    fill = vm.copy()
+    for sm in fill.family_members_with_points():
+        sm.set_stroke(width=0)
+        if sm.get_fill_opacity() > 0:
+            sm.set_fill(opacity=min(0.85, float(sm.get_fill_opacity())))
+
+    outline = vm.copy()
+    for sm in outline.family_members_with_points():
+        sm.set_fill(opacity=0.0)
+        w = sm.get_stroke_width()
+        if w:  # zero-stroke shapes (meter fill, dust) stay outline-free
+            sm.set_stroke(width=max(3.5, w * rng.uniform(0.8, 1.15)))
+
+    _wobble(fill, amp * fill_slop, rng)
+    _wobble(outline, amp, rng)
+    return VGroup(fill, outline)
