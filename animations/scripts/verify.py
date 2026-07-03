@@ -45,7 +45,7 @@ SCENES = {
         20.0: {"alert": 1600, "ink": 25000},   # missed turnoff, ALERT caption
         25.0: {"amber": 8500, "coral": 5500,
                "lilac": 10000},                # loop-de-loop + DONE flag
-        28.0: {"teal": 9000, "lilac": 8000},   # ghost road, paver present
+        27.0: {"teal": 11000, "lilac": 6500},  # ghost road, loop still lit
     },
     # Pop the Hood (STORYBOARDS.md scene 4)
     "agent_anatomy": {
