@@ -47,6 +47,15 @@ SCENES = {
                "lilac": 10000},                # loop-de-loop + DONE flag
         27.0: {"teal": 11000, "lilac": 6500},  # ghost road, loop still lit
     },
+    # The Fleet (STORYBOARDS.md scene 5)
+    "fleet": {
+        4.0: {"teal": 45000, "ink": 30000},    # chief + BUILD THE SHED card
+        9.0: {"teal": 55000, "sage": 5000},    # van's own bed/fuel cutaway
+        15.0: {"teal": 60000, "amber": 4500},  # one package comes home
+        21.0: {"amber": 12000, "coral": 7500,
+               "alert": 3500},                 # avalanche gag, ALERT caption
+        26.0: {"teal": 60000, "coral": 6000},  # recovery + shed roof
+    },
     # Pop the Hood (STORYBOARDS.md scene 4)
     "agent_anatomy": {
         6.0: {"teal": 12000, "ink": 25000, "amber": 1800},  # cab + model bubble
