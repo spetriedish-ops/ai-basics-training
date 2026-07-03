@@ -151,8 +151,10 @@ def build_crane(seed: int = 50) -> VGroup:
     joint = Circle(radius=0.19, fill_color=AI_TEAL_DARK, fill_opacity=1,
                    stroke_color=INK, stroke_width=4)
     joint.move_to([-2.45, 0.85, 0])
+    # rotate by 180-48 so the boom's axis runs from the joint UP-LEFT to
+    # the tip (48° would run up-right and leave the boom floating)
     boom = rrect(1.45, 0.30, AI_TEAL, radius=0.10)
-    boom.rotate(48 * DEGREES)
+    boom.rotate(132 * DEGREES)
     boom.move_to([-2.45 - 0.725 * np.cos(48 * DEGREES),
                   0.85 + 0.725 * np.sin(48 * DEGREES), 0])
     tip = [-2.45 - 1.45 * np.cos(48 * DEGREES),

@@ -38,6 +38,15 @@ SCENES = {
     "style_test_scribble": {
         3.5: {"teal": 20000, "amber": 1500, "ink": 20000},
     },
+    # Pop the Hood (STORYBOARDS.md scene 4)
+    "agent_anatomy": {
+        6.0: {"teal": 12000, "ink": 25000, "amber": 1800},  # cab + model bubble
+        12.0: {"teal": 45000, "ink": 35000},   # bed + tools assembled, tags
+        19.0: {"teal": 40000, "amber": 4500},  # loop running, MIX crate
+        24.5: {"teal": 40000, "amber": 9000},  # harness props (pump amber)
+        28.0: {"teal": 40000, "ink": 35000},   # gate gag / APPROVED stamp
+        31.5: {"teal": 45000},                 # van tease + exit begins
+    },
 }
 
 
