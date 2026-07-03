@@ -38,6 +38,15 @@ SCENES = {
     "style_test_scribble": {
         3.5: {"teal": 20000, "amber": 1500, "ink": 20000},
     },
+    # The Paver (STORYBOARDS.md scene 2)
+    "paver": {
+        3.0: {"teal": 10000, "amber": 3500, "lilac": 5500, "ink": 20000},
+        13.0: {"teal": 11000, "sage": 6500},   # meter on, road growing
+        20.0: {"alert": 1600, "ink": 25000},   # missed turnoff, ALERT caption
+        25.0: {"amber": 8500, "coral": 5500,
+               "lilac": 10000},                # loop-de-loop + DONE flag
+        28.0: {"teal": 9000, "lilac": 8000},   # ghost road, paver present
+    },
     # Pop the Hood (STORYBOARDS.md scene 4)
     "agent_anatomy": {
         6.0: {"teal": 12000, "ink": 25000, "amber": 1800},  # cab + model bubble
