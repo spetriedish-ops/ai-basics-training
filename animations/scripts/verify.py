@@ -24,12 +24,16 @@ PALETTE = {
 
 # beat time (s) -> {color: min pixels at 1920x1080}
 SCENES = {
+    # Truck v2 (STORYBOARDS.md scene 3) — thresholds ≈ 40% of measured
     "context_window": {
-        4.5: {"teal": 20000, "amber": 1500, "coral": 1500, "ink": 30000},
-        7.0: {"lilac": 5000, "sage": 5000},
-        9.0: {"alert": 3000, "lilac": 8000},
-        13.8: {"teal": 20000, "ink": 20000},   # dump beat: bed still teal
-        16.5: {"teal": 20000},                  # fresh beat: truck present
+        5.5: {"teal": 40000, "amber": 1800, "lilac": 4500, "sage": 8000,
+              "ink": 30000},                     # info cargo loaded
+        10.5: {"teal": 40000, "coral": 2300},    # crane on + CRANE manual
+        16.5: {"coral": 6000, "alert": 2300},    # gag pile-on, meter red
+        18.5: {"alert": 4500, "amber": 11000},   # can't choose + LIFT ME
+        21.5: {"lilac": 16000, "alert": 4500},   # MORE DOCS overflow
+        25.0: {"teal": 42000, "ink": 30000},     # dump: bed tipped, truck ok
+        28.5: {"teal": 42000},                   # fresh: truck present, bare
     },
     "style_test_scribble": {
         3.5: {"teal": 20000, "amber": 1500, "ink": 20000},
