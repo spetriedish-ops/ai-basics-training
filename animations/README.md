@@ -71,6 +71,15 @@ Finished assets land in `renders/final/`. Manim's intermediate output
 (`renders/videos/`, partial movie files) is gitignored; only source and final
 assets are committed.
 
+## Interactive simulator
+
+`simulator.html` is a self-contained interactive version of the Truck scene
+(v0 prototype): type prompts, bolt on tools, add an MCP server, and watch
+the bed fill, truncate, and dump. No build step — open it in a browser, or
+`python3 -m http.server` from this folder. Same scribble style (the boiling
+lines are an SVG turbulence filter reseeded on a timer, mirroring the
+3-seed boil pipeline). Fonts load from `assets/fonts/`.
+
 ## Repo layout
 
 ```

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Context Window — truck simulator</title>
+<style>
+  @font-face { font-family: 'Patrick Hand'; src: url('assets/fonts/PatrickHand-Regular.ttf'); }
+  @font-face { font-family: 'Gochi Hand';   src: url('assets/fonts/GochiHand-Regular.ttf'); }
+  :root {
+    --paper:#FAF7EF; --ink:#33323E; --ink-soft:#8B8A97;
+    --teal:#2EA79A; --teal-dark:#1F7A71; --amber:#FFC94D; --coral:#FF8A5C;
+    --lilac:#C3B1E1; --sage:#A8D5A2; --alert:#E4572E;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Patrick Hand', 'Comic Sans MS', cursive;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh;
+  }
+  h1 { font-size:44px; margin:14px 0 0; letter-spacing:1px; }
+  .subtitle { color:var(--ink-soft); font-size:22px; margin:0 0 6px; }
+  #stagewrap { position:relative; width:min(96vw,1100px); }
+  svg { width:100%; height:auto; display:block; }
+  #caption {
+    text-align:center; font-size:26px; min-height:36px; margin:2px 0 8px;
+    transition:opacity .25s;
+  }
+  #caption.alert { color:var(--alert); }
+  #controls {
+    width:min(96vw,1100px); display:flex; flex-wrap:wrap; gap:10px;
+    justify-content:center; align-items:center; padding:10px 0 30px;
+  }
+  .panel {
+    border:3px solid var(--ink); border-radius:14px; background:#fff;
+    padding:10px 14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  }
+  .panel b { font-family:'Gochi Hand', cursive; font-size:19px; width:100%; }
+  input[type=text] {
+    font-family:'Patrick Hand', cursive; font-size:19px; padding:6px 10px;
+    border:3px solid var(--ink); border-radius:10px; width:290px; background:var(--paper);
+  }
+  button {
+    font-family:'Gochi Hand', cursive; font-size:18px; padding:7px 13px;
+    border:3px solid var(--ink); border-radius:12px; cursor:pointer;
+    background:var(--teal); color:#fff; transition:transform .08s;
+  }
+  button:hover { transform:scale(1.05) rotate(-1deg); }
+  button:disabled { background:var(--ink-soft); cursor:not-allowed; transform:none; }
+  button.warm { background:var(--coral); }
+  button.danger { background:var(--alert); }
+  button.ghost { background:#fff; color:var(--ink); }
+  #log {
+    width:min(96vw,1100px); text-align:center; font-size:20px;
+    color:var(--ink-soft); min-height:30px; padding-bottom:8px;
+  }
+</style>
+</head>
+<body>
+<h1>THE CONTEXT WINDOW</h1>
+<p class="subtitle">a truck you can load yourself &mdash; try to overdo it</p>
+
+<div id="stagewrap">
+<svg id="stage" viewBox="0 0 1100 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="wob" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="1" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="5"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#wob)" stroke-linecap="round">
+    <!-- sun -->
+    <circle cx="80" cy="70" r="26" fill="var(--amber)" stroke="var(--ink)" stroke-width="4"/>
+    <g stroke="var(--ink)" stroke-width="4">
+      <line x1="80" y1="24" x2="80" y2="10"/><line x1="80" y1="116" x2="80" y2="130"/>
+      <line x1="34" y1="70" x2="20" y2="70"/><line x1="126" y1="70" x2="140" y2="70"/>
+      <line x1="47" y1="37" x2="37" y2="27"/><line x1="113" y1="103" x2="123" y2="113"/>
+      <line x1="47" y1="103" x2="37" y2="113"/><line x1="113" y1="37" x2="123" y2="27"/>
+    </g>
+
+    <!-- ground -->
+    <line x1="20" y1="500" x2="1080" y2="500" stroke="var(--ink)" stroke-width="5"/>
+
+    <!-- token meter -->
+    <g id="meter">
+      <rect x="800" y="60" width="240" height="84" rx="14" fill="#fff" stroke="var(--ink)" stroke-width="4"/>
+      <text x="920" y="95" text-anchor="middle" font-size="24" fill="var(--ink)" font-family="Patrick Hand">TOKENS = fuel = $</text>
+      <rect x="822" y="108" width="196" height="22" rx="9" fill="var(--paper)" stroke="var(--ink)" stroke-width="3"/>
+      <rect id="meterfill" x="826" y="112" width="2" height="14" rx="6" fill="var(--teal)"/>
+    </g>
+    <text id="meterlabel" x="920" y="170" text-anchor="middle" font-size="20" fill="var(--ink-soft)" font-family="Patrick Hand">0 / 8,000</text>
+
+    <!-- attachments (hidden until bought) -->
+    <g id="att-crane" class="att" visibility="hidden">
+      <rect x="344" y="280" width="26" height="92" rx="8" fill="var(--teal-dark)" stroke="var(--ink)" stroke-width="4"/>
+      <circle cx="357" cy="284" r="11" fill="var(--teal-dark)" stroke="var(--ink)" stroke-width="3.5"/>
+      <rect x="255" y="275" width="102" height="18" rx="8" fill="var(--teal)" stroke="var(--ink)" stroke-width="4"
+            transform="rotate(-38 357 284)"/>
+      <line x1="277" y1="228" x2="277" y2="276" stroke="var(--ink)" stroke-width="3.5"/>
+      <path d="M 277 276 a 10 10 0 1 1 -10 12" fill="none" stroke="var(--ink)" stroke-width="4"/>
+    </g>
+    <g id="att-plow" class="att" visibility="hidden">
+      <rect x="822" y="452" width="34" height="10" rx="4" fill="var(--teal-dark)" stroke="var(--ink)" stroke-width="3.5"/>
+      <polygon points="856,494 888,494 876,414 852,422" fill="var(--teal)" stroke="var(--ink)" stroke-width="4"/>
+    </g>
+    <g id="att-lights" class="att" visibility="hidden">
+      <rect x="712" y="308" width="62" height="12" rx="5" fill="var(--teal-dark)" stroke="var(--ink)" stroke-width="3.5"/>
+      <circle cx="728" cy="300" r="8" fill="var(--amber)" stroke="var(--ink)" stroke-width="3.5"/>
+      <circle cx="758" cy="300" r="8" fill="var(--amber)" stroke="var(--ink)" stroke-width="3.5"/>
+    </g>
+    <g id="att-magnet" class="att" visibility="hidden">
+      <line x1="800" y1="440" x2="800" y2="394" stroke="var(--ink)" stroke-width="4"/>
+      <path d="M 784 398 a 16 16 0 0 1 32 0 v 12 h -10 v -12 a 6 6 0 0 0 -12 0 v 12 h -10 z"
+            fill="var(--alert)" stroke="var(--ink)" stroke-width="3.5"/>
+    </g>
+    <g id="att-oven" class="att" visibility="hidden">
+      <rect x="596" y="292" width="56" height="26" rx="6" fill="var(--coral)" stroke="var(--ink)" stroke-width="4"/>
+      <path d="M 598 292 a 28 28 0 0 1 52 0 z" fill="var(--coral)" stroke="var(--ink)" stroke-width="4"/>
+      <path d="M 612 292 a 12 12 0 0 1 24 0 z" fill="var(--ink)"/>
+    </g>
+    <g id="att-toolbox" class="att" visibility="hidden">
+      <rect x="634" y="410" width="62" height="32" rx="7" fill="var(--lilac)" stroke="var(--ink)" stroke-width="4"/>
+      <path d="M 650 410 v -7 a 13 7 0 0 1 28 0 v 7" fill="none" stroke="var(--ink)" stroke-width="4"/>
+      <text x="665" y="433" text-anchor="middle" font-size="16" font-family="Gochi Hand" fill="var(--ink)">MCP</text>
+    </g>
+
+    <!-- the truck -->
+    <g id="truck">
+      <rect x="330" y="440" width="360" height="22" rx="8" fill="var(--ink)"/>
+      <rect x="336" y="322" width="290" height="86" rx="10" fill="var(--teal-dark)" stroke="var(--ink)" stroke-width="4.5"/>
+      <rect id="bedfront" x="336" y="368" width="290" height="72" rx="10" fill="var(--teal)" stroke="var(--ink)" stroke-width="4.5"/>
+      <rect x="700" y="330" width="86" height="110" rx="12" fill="var(--teal)" stroke="var(--ink)" stroke-width="4.5"/>
+      <rect x="716" y="348" width="48" height="34" rx="7" fill="var(--paper)" stroke="var(--ink)" stroke-width="3.5"/>
+      <circle cx="752" cy="365" r="4.5" fill="var(--ink)"/>
+      <g fill="var(--ink)" stroke="var(--ink)">
+        <circle cx="392" cy="478" r="26"/><circle cx="488" cy="478" r="26"/><circle cx="742" cy="478" r="26"/>
+        <circle cx="392" cy="478" r="11" fill="var(--ink-soft)"/><circle cx="488" cy="478" r="11" fill="var(--ink-soft)"/>
+        <circle cx="742" cy="478" r="11" fill="var(--ink-soft)"/>
+      </g>
+    </g>
+
+    <!-- cargo layer -->
+    <g id="cargo"></g>
+  </g>
+</svg>
+</div>
+
+<div id="caption">everything you load takes tokens</div>
+<div id="log">the bed holds 8,000 tokens &mdash; see how far you get</div>
+
+<div id="controls">
+  <div class="panel">
+    <b>load context</b>
+    <input id="prompt" type="text" placeholder="type a prompt for the agent&hellip;" maxlength="300">
+    <button id="send">send prompt</button>
+    <button id="adddocs" class="ghost">+ attach docs (900)</button>
+  </div>
+  <div class="panel">
+    <b>bolt on tools <span style="color:var(--ink-soft)">(each manual rides in the bed)</span></b>
+    <button class="tool" data-tool="crane">+ crane (700)</button>
+    <button class="tool" data-tool="plow">+ plow (500)</button>
+    <button class="tool" data-tool="lights">+ lights (350)</button>
+    <button class="tool" data-tool="magnet">+ magnet (600)</button>
+    <button class="tool warm" data-tool="oven">+ pizza oven (1,200)</button>
+    <button id="mcp" class="warm">+ MCP server: TICKETS (2,100)</button>
+  </div>
+  <div class="panel">
+    <b>the part everyone forgets</b>
+    <button id="reset" class="danger">end session (dump the bed)</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  // boiling lines: swap the turbulence seed like the 3-seed boil pipeline
+  const turb = document.getElementById('turb');
+  let seed = 1;
+  setInterval(() => { seed = seed % 3 + 1; turb.setAttribute('seed', seed); }, 160);
+
+  const CAPACITY = 8000;
+  const cargoG = document.getElementById('cargo');
+  const capEl = document.getElementById('caption');
+  const logEl = document.getElementById('log');
+  const fill = document.getElementById('meterfill');
+  const mlabel = document.getElementById('meterlabel');
+
+  const TOOLS = {
+    crane:  { label:'CRANE',  cost:700,  color:'var(--coral)' },
+    plow:   { label:'PLOW',   cost:500,  color:'var(--lilac)' },
+    lights: { label:'LIGHTS', cost:350,  color:'var(--sage)'  },
+    magnet: { label:'MAGNET', cost:600,  color:'var(--amber)' },
+    oven:   { label:'OVEN',   cost:1200, color:'var(--coral)' },
+  };
+  const MCP_TOOLS = ['SEARCH','CREATE','UPDATE','COMMENT'];
+
+  // bed slots: 3 columns x 4 rows, stacking upward out of the bed
+  const SLOT = { x0:352, y0:376, w:88, h:40, cols:3, gap:6 };
+  let items = [];   // {id,label,tokens,color,kind,el}
+  let owned = new Set();
+  let nextId = 1;
+
+  const total = () => items.reduce((s,i) => s + i.tokens, 0);
+
+  function say(cap, alert=false) { capEl.textContent = cap; capEl.classList.toggle('alert', alert); }
+  function log(msg) { logEl.innerHTML = msg; }
+
+  function slotPos(idx) {
+    const col = idx % SLOT.cols, row = Math.floor(idx / SLOT.cols);
+    return { x: SLOT.x0 + col * (SLOT.w + SLOT.gap), y: SLOT.y0 - row * (SLOT.h + SLOT.gap) };
+  }
+
+  function updateMeter() {
+    const t = total(), frac = Math.min(1, t / CAPACITY);
+    fill.setAttribute('width', Math.max(2, 188 * frac));
+    fill.setAttribute('fill', frac > 0.85 ? 'var(--alert)' : 'var(--teal)');
+    mlabel.textContent = `${t.toLocaleString()} / ${CAPACITY.toLocaleString()}`;
+  }
+
+  // tween the SVG transform ATTRIBUTE in user units — CSS px transforms
+  // don't line up with viewBox coordinates
+  function tween(el, ms, frame, done) {
+    const t0 = performance.now();
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      frame(1, el);
+      if (done) done();
+    };
+    (function step(now) {
+      if (finished) return;
+      const t = Math.min(1, (now - t0) / ms);
+      frame(t, el);
+      if (t < 1) requestAnimationFrame(step);
+      else finish();
+    })(t0);
+    // rAF is throttled in background tabs — force the end state regardless
+    setTimeout(finish, ms + 80);
+  }
+  const easeOutBack = t => 1 + 2.3 * Math.pow(t - 1, 3) + 1.3 * Math.pow(t - 1, 2);
+
+  function makeBlock(label, tokens, color, kind) {
+    const id = nextId++;
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const idx = items.length;
+    const p = slotPos(idx);
+    const cx = p.x + SLOT.w / 2, cy = p.y + SLOT.h / 2;
+    g.innerHTML = `
+      <rect x="${p.x}" y="${p.y}" width="${SLOT.w}" height="${SLOT.h}" rx="8"
+            fill="${color}" stroke="var(--ink)" stroke-width="3.5"/>
+      <text x="${cx}" y="${p.y + 26}" text-anchor="middle" font-size="17"
+            font-family="Gochi Hand" fill="var(--ink)">${label}</text>`;
+    g.setAttribute('transform', 'translate(0,-520)');
+    cargoG.appendChild(g);
+    tween(g, 550, (t, el) => {
+      el.setAttribute('transform', `translate(0,${-520 * (1 - easeOutBack(t))})`);
+    }, () => g.setAttribute('transform', ''));
+    const item = { id, label, tokens, color, kind, el:g };
+    items.push(item);
+    updateMeter();
+    return item;
+  }
+
+  function blockCenter(item) {
+    const r = item.el.querySelector('rect');
+    return [ +r.getAttribute('x') + SLOT.w / 2, +r.getAttribute('y') + SLOT.h / 2 ];
+  }
+
+  function dropOut(item, why) {
+    const [cx, cy] = blockCenter(item);
+    tween(item.el, 600, (t, el) => {
+      el.setAttribute('transform',
+        `translate(${300 * t},${180 * t * t}) rotate(${24 * t} ${cx} ${cy})`);
+      el.setAttribute('opacity', String(1 - t * 0.9));
+    }, () => item.el.remove());
+    items = items.filter(i => i !== item);
+    reflow(); updateMeter();
+    if (why) log(why);
+  }
+
+  function reflow() {
+    items.forEach((it, idx) => {
+      const p = slotPos(idx);
+      const r = it.el.querySelector('rect'), t = it.el.querySelector('text');
+      r.setAttribute('x', p.x); r.setAttribute('y', p.y - 480);
+      t.setAttribute('x', p.x + SLOT.w/2); t.setAttribute('y', p.y - 480 + 26);
+    });
+  }
+
+  function makeRoom(incoming) {
+    // truncation: oldest conversation falls out first; manuals never do
+    while (total() + incoming > CAPACITY || items.length >= 12) {
+      const victim = items.find(i => i.kind === 'chat');
+      if (!victim) return items.length < 12 && total() + incoming <= CAPACITY;
+      dropOut(victim, `&#9888;&#65039; bed full &mdash; oldest chat "<b>${victim.label}</b>" fell out (that's truncation)`);
+    }
+    return true;
+  }
+
+  function addContext(label, tokens, color, kind, note) {
+    if (!makeRoom(tokens)) {
+      say('nothing left to drop — the tools take all the room', true);
+      log('manuals never fall out on their own. end the session or live with it.');
+      return null;
+    }
+    const it = makeBlock(label, tokens, color, kind);
+    if (note) log(note);
+    updateMeter();
+    if (total() / CAPACITY > 0.85) say('the bed is nearly full — things will start falling out', true);
+    return it;
+  }
+
+  // --- prompt + reply -------------------------------------------------
+  document.getElementById('send').addEventListener('click', sendPrompt);
+  document.getElementById('prompt').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendPrompt();
+  });
+  function sendPrompt() {
+    const box = document.getElementById('prompt');
+    const text = box.value.trim();
+    if (!text) { say('type something first — the truck hauls words'); return; }
+    const inTok = Math.max(12, Math.round(text.length / 4) + 12);
+    const short = text.length > 9 ? text.slice(0, 8) + '…' : text;
+    say('your prompt rides in the bed…');
+    const ok = addContext(short.toUpperCase(), inTok, 'var(--sage)', 'chat',
+      `prompt: <b>${inTok}</b> tokens in`);
+    if (!ok) return;
+    box.value = '';
+    setTimeout(() => {
+      const outTok = 60 + Math.floor(Math.random() * 220);
+      addContext('REPLY', outTok, 'var(--sage)', 'chat',
+        `…and the reply costs too: <b>${outTok}</b> tokens out. both bill.`);
+      say('tokens in AND tokens out — both cost');
+    }, 800);
+  }
+
+  document.getElementById('adddocs').addEventListener('click', () => {
+    say('docs are heavy — load what the job needs');
+    addContext('DOCS', 900, 'var(--lilac)', 'docs', 'docs: <b>900</b> tokens, every session they ride along');
+  });
+
+  // --- tools ----------------------------------------------------------
+  document.querySelectorAll('.tool').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.tool, t = TOOLS[key];
+      if (owned.has(key)) return;
+      const ok = addContext(t.label, t.cost, t.color, 'manual',
+        `the ${t.label.toLowerCase()} bolts on — its <b>${t.cost}</b>-token manual rides in the bed, used or not`);
+      if (!ok) return;
+      owned.add(key);
+      btn.disabled = true;
+      document.getElementById('att-' + key).setAttribute('visibility', 'visible');
+      say('new ability bolted on — and new weight');
+      if (owned.size >= 4) {
+        say('so many tools… picking the right one gets harder', true);
+        log('real effect: past a point, more tools make the agent choose WORSE. curate.');
+      }
+    });
+  });
+
+  document.getElementById('mcp').addEventListener('click', function () {
+    if (owned.has('mcp')) return;
+    if (!makeRoom(2100)) { say('no room for a whole MCP server', true); return; }
+    owned.add('mcp');
+    this.disabled = true;
+    document.getElementById('att-toolbox').setAttribute('visibility', 'visible');
+    say('one MCP server = a whole toolbox at once');
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i >= MCP_TOOLS.length) { clearInterval(timer);
+        log('4 tools, 4 manuals, <b>2,100</b> tokens — MCP is powerful and it is not free'); return; }
+      addContext('mcp:' + MCP_TOOLS[i], i === 0 ? 600 : 500, 'var(--lilac)', 'manual', null);
+      i++;
+    }, 260);
+  });
+
+  // --- session end ----------------------------------------------------
+  document.getElementById('reset').addEventListener('click', () => {
+    say('session over — the bed empties. all of it.');
+    items.forEach((it, k) => {
+      const [cx, cy] = blockCenter(it);
+      setTimeout(() => {
+        tween(it.el, 700, (t, el) => {
+          el.setAttribute('transform',
+            `translate(${-300 * t},${(200 + k * 8) * t * t}) rotate(${-28 * t} ${cx} ${cy})`);
+          el.setAttribute('opacity', String(1 - t * 0.95));
+        }, () => it.el.remove());
+      }, k * 45);
+    });
+    items = [];
+    document.querySelectorAll('.att').forEach(a => a.setAttribute('visibility', 'hidden'));
+    document.querySelectorAll('.tool, #mcp').forEach(b => b.disabled = false);
+    owned.clear();
+    updateMeter();
+    setTimeout(() => {
+      say('every new session starts empty');
+      log('context is working memory. the truck remembers nothing — reload what the next job needs.');
+    }, 1000);
+  });
+
+  updateMeter();
+})();
+</script>
+</body>
+</html>
