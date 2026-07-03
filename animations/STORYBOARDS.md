@@ -1,7 +1,10 @@
 # Storyboards — the five-scene Jobsite set
 
-Status: **in review** — Sarah redlines this doc (or comments in chat), then scenes
-go to production one at a time. Locked decisions this doc builds on:
+Status: **produced** (2026-07-03) — all five scenes built from this doc at
+Sarah's "build it all in its current state" go-ahead, pixel-verified, and
+committed to `renders/final/`. Redlines now apply to the rendered set;
+deviations taken during production are listed at the bottom. Locked
+decisions this doc builds on:
 
 - **World: the Jobsite.** One world, five zoom levels. Chosen over kitchen /
   brick-studio / music alternatives: physics teaches the limits (weight, sag,
@@ -149,3 +152,19 @@ it stays gag-free.
   paused on any beat while Sarah talks.
 - Concept sketches for the Truck v2 attachment direction live in
   `src/scenes/sketch_attachments.py` (stills, not production code).
+
+## Production deviations (2026-07-03)
+
+- **Scene 2 gag:** the cul-de-sac became a **loop-de-loop** — a circle of
+  road reads as nothing in side view; a vertical loop reads instantly and
+  is funnier. DONE flag on top kept.
+- **Scene 1 montage:** "bed grows per generation" simplified to GEN 1/2/3
+  plaques + a perk-up bounce + "fuel / load: down, down, down" — swapping
+  bed geometry mid-scene cost more than the beat earned.
+- **Scene 4:** the model callout is a bubble with a mini-paver cameo
+  pointing at the cab (no literal hood-pop — the cab has no hood seam).
+  Runtime came in at ~34s, well under the 60s ceiling.
+- **Scene 5 recovery caption** is "three vans, on a schedule" (the doc's
+  beat 7 had no caption specified for the recovery moment itself).
+- Scene 3's gag order peaks on the crane-for-the-crane (oven → disco ball
+  → mini crane), with the disco ball hung from the big crane's boom.

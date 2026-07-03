@@ -38,6 +38,15 @@ SCENES = {
     "style_test_scribble": {
         3.5: {"teal": 20000, "amber": 1500, "ink": 20000},
     },
+    # The Garage (STORYBOARDS.md scene 1)
+    "garage": {
+        3.0: {"amber": 8500, "ink": 18000},    # forklift on its line
+        5.5: {"alert": 1600, "lilac": 5500},   # off-line pallet, it stops
+        8.0: {"coral": 10000, "amber": 8500},  # the route van (+ cone)
+        14.0: {"teal": 45000, "ink": 35000},   # today's truck assembled
+        20.0: {"teal": 45000, "lilac": 9500},  # NEXT YEAR'S TRUCK poster
+        23.0: {"teal": 45000, "amber": 8500},  # forklift still on its line
+    },
     # The Paver (STORYBOARDS.md scene 2)
     "paver": {
         3.0: {"teal": 10000, "amber": 3500, "lilac": 5500, "ink": 20000},

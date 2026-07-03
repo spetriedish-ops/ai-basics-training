@@ -84,14 +84,15 @@ STYLE.md             The visual language spec (read before adding a scene)
 
 ## Status
 
-The set is planned as five scenes in one world — see `STORYBOARDS.md` for
-beat-level detail. Chatbot-vs-agent folded into the Garage; LLM limitations
-folded into the Paver; MCP vs CLI parked (see STORYBOARDS.md).
+Five scenes in one world — see `STORYBOARDS.md` for beat-level detail
+(chatbot-vs-agent folded into the Garage; LLM limitations folded into the
+Paver; MCP vs CLI parked). All five are produced, pixel-verified, and
+committed to `renders/final/`. Awaiting Sarah's review.
 
 | # | Scene | Concepts | Source | Status |
 |---|-------|----------|--------|--------|
-| 1 | The Garage | types of AI, model progression, chatbot vs agent | — | storyboard in review |
-| 2 | The Paver | prediction engine, tokens in/out, hallucination | — | storyboard in review |
-| 3 | The Truck v2 | context window, tools, tool overload | `context_window.py` | v1 ✅ rendered · v2 storyboard in review |
-| 4 | Pop the Hood | anatomy: model, tools, skills, loop, harness | — | storyboard in review |
-| 5 | The Fleet | subagents, orchestration | — | storyboard in review |
+| 1 | The Garage | types of AI, model progression, chatbot vs agent | `garage.py` | ✅ rendered |
+| 2 | The Paver | prediction engine, tokens in/out, hallucination | `paver.py` | ✅ rendered |
+| 3 | The Truck v2 | context window, tools, tool overload | `context_window.py` | ✅ rendered |
+| 4 | Pop the Hood | anatomy: model, tools, skills, loop, harness | `agent_anatomy.py` | ✅ rendered |
+| 5 | The Fleet | subagents, orchestration | `fleet.py` | ✅ rendered |
