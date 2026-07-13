@@ -93,10 +93,9 @@ STYLE.md             The visual language spec (read before adding a scene)
 
 ## Status
 
-Five scenes in one world — see `STORYBOARDS.md` for beat-level detail
+Six scenes in one world — see `STORYBOARDS.md` for beat-level detail
 (chatbot-vs-agent folded into the Garage; LLM limitations folded into the
-Paver; MCP vs CLI parked). All five are produced, pixel-verified, and
-committed to `renders/final/`. Awaiting Sarah's review.
+Paver). All produced, pixel-verified, and committed to `renders/final/`.
 
 | # | Scene | Concepts | Source | Status |
 |---|-------|----------|--------|--------|
@@ -105,3 +104,4 @@ committed to `renders/final/`. Awaiting Sarah's review.
 | 3 | The Truck v2 | context window, tools, tool overload | `context_window.py` | ✅ rendered |
 | 4 | Pop the Hood | anatomy: model, tools, skills, loop, harness | `agent_anatomy.py` | ✅ rendered |
 | 5 | The Fleet | subagents, orchestration | `fleet.py` | ✅ rendered |
+| 6 | The Toolbox | MCP: whole toolbox at once, card costs, wrong-tool risk, curation | `toolbox.py` | ✅ rendered |

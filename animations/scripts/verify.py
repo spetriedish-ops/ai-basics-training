@@ -65,6 +65,15 @@ SCENES = {
                "alert": 3500},                 # avalanche gag, ALERT caption
         26.0: {"teal": 60000, "coral": 6000},  # recovery + shed roof
     },
+    # The Toolbox — MCP analogy (STORYBOARDS.md scene 6)
+    "toolbox": {
+        4.0: {"teal": 45000, "lilac": 11000},   # MCP box mounted
+        8.0: {"teal": 45000, "lilac": 12000},   # cards billed into bed
+        16.0: {"amber": 12000, "sage": 17000,
+               "alert": 2300},                  # box pile-up, meter red
+        17.2: {"alert": 2000, "ink": 40000},    # wrong-tool grab
+        23.0: {"teal": 45000, "lilac": 11000},  # curated: one box left
+    },
     # Pop the Hood (STORYBOARDS.md scene 4)
     "agent_anatomy": {
         6.0: {"teal": 12000, "ink": 25000, "amber": 1800},  # cab + model bubble

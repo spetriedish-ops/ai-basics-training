@@ -1,10 +1,11 @@
-# Storyboards — the five-scene Jobsite set
+# Storyboards — the Jobsite set
 
-Status: **produced** (2026-07-03) — all five scenes built from this doc at
-Sarah's "build it all in its current state" go-ahead, pixel-verified, and
-committed to `renders/final/`. Redlines now apply to the rendered set;
-deviations taken during production are listed at the bottom. Locked
-decisions this doc builds on:
+Status: **produced** (2026-07-03) — the original five scenes built from
+this doc at Sarah's "build it all in its current state" go-ahead,
+pixel-verified, and committed to `renders/final/`. Scene 6 (The Toolbox)
+added 2026-07-13 at Sarah's direct request, produced same-day. Redlines
+now apply to the rendered set; deviations taken during production are
+listed at the bottom. Locked decisions this doc builds on:
 
 - **World: the Jobsite.** One world, five zoom levels. Chosen over kitchen /
   brick-studio / music alternatives: physics teaches the limits (weight, sag,
@@ -129,14 +130,35 @@ it stays gag-free.
 
 ---
 
-## Parked (not in the five-scene set)
+## Scene 6 — The Toolbox (MCP) · ~25s · added 2026-07-13
 
-- **MCP vs CLI vs API vs custom tools** (P1 in the original brief) — absent
-  from the revised session agenda, so unscheduled here. If it earns a slot
-  later it maps cleanly onto the Jobsite: a supplier hands the truck a
-  rambling handwritten note (CLI prose output) vs a labeled pallet, shrink-
-  wrapped and manifest attached (MCP structured output). Candidate for the
-  deep-dive track or a Truck v2 extension.
+From Sarah's pencil sketch (assets/sketches/03). Job: TOOL SELECTION and
+curation — deliberately distinct from Truck v2, which teaches weight.
+New legend entry: **a tool chest bolted to the truck = an MCP server**
+(one connection, many tools at once; matches the simulator's MCP box).
+
+| # | Action | Caption |
+|---|--------|---------|
+| 1 | Truck rolls in; a chest labeled TICKETS drops onto the bed rim. | one connection brings a whole toolbox |
+| 2 | Chest pops open: four tools fan out (SEARCH / CREATE / UPDATE / COMMENT); each drops an instruction card into the bed, meter ticking. Truck sags a touch. | every tool ships an instruction card → the cards ride along, used or not |
+| 3 | Job card FIND TICKET 42: the wrench flies over, sparkle, found. | more tools, more you can do |
+| 4 | **GAG** — CALENDAR chest, then WIKI chest stack on; six more cards rain in; meter red. | surely one more box |
+| 5 | Job card COMMENT ON 42: tools twitch, unsure — the CALENDAR mallet lunges and bonks the card. "?" over the cab. Sincere risk, comic delivery. | so many tools it grabs the wrong one |
+| 6 | The fix (sincere): extra chests unbolt and drop away, their cards leave, meter back to teal; the COMMENT pen does the job. done! | curate the toolbox for the job |
+| 7 | Exit with the one curated chest aboard. | *(carryover)* |
+
+Honesty flags: the wrong-tool grab is real behavior (selection degrades
+with tool count), so beat 5's caption states it straight; the curation
+ending gives the practical takeaway rather than ending on failure.
+
+## Parked (not in the set)
+
+- **MCP vs CLI vs API tradeoffs** (P1 in the original brief) — the MCP
+  half is now covered by Scene 6; the CLI/API comparison lives in Sarah's
+  sketch 03 as a handout/slide. If it later earns an animation: a supplier
+  hands the truck a rambling handwritten note (CLI prose output) vs a
+  labeled pallet, shrink-wrapped and manifest attached (MCP structured
+  output).
 
 ## Production notes
 
