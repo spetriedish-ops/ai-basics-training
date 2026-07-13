@@ -92,8 +92,12 @@ Into `animations/pencil-codex/` (your folder, on a branch named
 - All source needed to re-render, plus a `README.md` covering: your
   approach and why, exact re-render commands from a fresh checkout, and
   the expected time from "Sarah asks for a caption change" to a new file
-- Stretch: same set for the harness mind map (build out spoke by spoke,
-  ending on the full map)
+- Stretch: same set for the harness mind map — USE THE V2 SKETCH
+  (`04-harness-mind-map-v2.jpeg`). Build spokes in Sarah's narration
+  order: guardrails → interaction layer → context → tools → skills, and
+  end holding on the full map. Bonus if the render pauses cleanly after
+  the tools spoke (her talk detours to other imagery there and returns
+  for skills).
 
 ## 6. How Sarah will judge the bake-off
 

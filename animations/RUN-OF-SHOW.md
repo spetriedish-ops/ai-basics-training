@@ -1,38 +1,42 @@
 # Run of show — AI Basics, July 15 2026
 
-Every visual asset in session order. Rhythm: Jobsite scenes make a concept
-MOVE; Sarah's pencil pages organize it in her handwriting. Each act closes
-on paper; the next opens with motion. Kahoot breaks fit at act boundaries.
+Sarah's flow (2026-07-13, supersedes the earlier three-act draft).
+Marta opens with the history of AI; Sarah takes over for everything
+agentic. The harness mind map is the SPINE of the middle: Sarah walks
+its spokes in order, detouring to other imagery and returning.
 
-| # | Asset | Source | Status | Teaches |
-|---|-------|--------|--------|---------|
-| **ACT I — THE MACHINE** |||||
-| 1 | LLM brain + "needs a harness" | sketch 01 (top half) | Codex building | model alone = brain, no ears/mouth; harness defined |
-| 2 | The Garage | `garage.py` | ✅ rendered | types of AI, progression, chatbot vs agent |
-| 3 | The Paver | `paver.py` | ✅ rendered | prediction engine, tokens in/out, hallucination |
-| **ACT II — THE WORK** |||||
-| 4 | Agentic loop | sketch 01 (bottom half) | ✅ `pencil-claude/` | receive → reason → act → observe → repeat |
-| 5 | The Truck v2 | `context_window.py` | ✅ rendered | context window, tool weight, overflow, dump — *simulator demo slots here* |
-| 6 | The Toolbox | `toolbox.py` | ✅ rendered | MCP: whole toolbox, cards bill, curation |
-| 6a | MCP / CLI / API tradeoffs | sketch 03 | optional insert | depth handout for the technical crowd |
-| 7 | Pop the Hood | `agent_anatomy.py` | ✅ rendered | full anatomy assembly; ends on van tease |
-| 8 | Harness mind map v2 | sketch 04-v2 | Codex building | recap poster; closes "what is an agent?" question |
-| **ACT III — ECOSYSTEM & FINALE** |||||
-| 9 | Frontier labs landscape | sketch 02 | Codex building | companies vs models vs harnesses |
-| 10 | What is an Agent | sketch 05 | Codex building | definition, ambiguity beat, general vs specialized |
-| 11 | The Fleet | `fleet.py` | ✅ rendered | subagents, one-package handback, orchestration |
-| 12 | Multi-agent orchestration | sketch 06 | Sarah drawing | closing map on the verified foundation |
+## Marta — history of AI
 
-## Notes
+Basic AI → autocomplete → agentic systems.
 
-- **Landscape placed late deliberately** — its company/model/harness rows
-  only land after the harness is deeply taught (slot 8).
-- **Van-tease gap**: Scene 4 ends with the van; Fleet plays at 11. Talk
-  track holds the thread ("hold that thought") and pays it off ("about
-  that van..."). Fallback if it bothers in rehearsal: trim the tease beat
-  from Scene 4 (small edit + re-boil).
-- **Motion budget**: ~6 min of animation in a 45–50 min session — one
-  clip every 4–5 min.
-- Foundation-completeness gut-check for slot 12 lives in the session
-  notes (2026-07-13): all eleven orchestration prerequisites are taught
-  by slots 1–11.
+- 🎬 **The Garage** (`garage.py`) plays in or at the end of Marta's
+  section — the history arc in Jobsite form; the NEXT YEAR'S TRUCK gag
+  sets up Sarah's model-release-hullabaloo line. Coordinate with Marta.
+
+## Sarah
+
+| # | Beat | Visuals | Status |
+|---|------|---------|--------|
+| 1 | LLM = the brain; needs a harness to interact; what an LLM is; pre-training → post-training lifecycle; "models" + release hullabaloo | ✏️ sketch 01a (brain) | Codex building |
+| 2 | How the model works: prediction, tokens, hallucination | 🎬 The Paver | ✅ |
+| 3 | The agentic loop | ✏️ sketch 01b | ✅ pencil-claude/ |
+| 4 | Frontier labs: companies vs models vs harnesses; API wrap-up; multimodal vs multi-model | ✏️ sketch 02 | Codex building |
+| 5 | Harness mind map — walk begins: design → guardrails → interaction layer | ✏️ sketch 04-v2 | Codex building |
+| 6 | Context spoke | 🎬 The Truck v2 (+ optional simulator demo) | ✅ |
+| 7 | Tools spoke → detour off the map | 🎬 The Toolbox, then ✏️ sketch 03 (MCP/CLI/API) | ✅ / Codex |
+| 8 | Return to map → skills spoke (page closes on "if this is a harness, what is an agent?") | ✏️ sketch 04-v2 | — |
+| 9 | Assembly payoff: the whole walk clicks together; ends on van tease | 🎬 Pop the Hood | ✅ |
+| 10 | What is an Agent: definition, ambiguity beat, general vs specialized | ✏️ sketch 05 | Codex building |
+| 11 | Multi-agent orchestration finale | 🎬 The Fleet + ✏️ sketch 06 | ✅ / Sarah drawing |
+
+## Open items
+
+1. **Pre/post-training lifecycle** (beat 1) has no visual — talk track
+   carries it, or a ~10s "engine factory" micro-scene can be storyboarded
+   on request.
+2. **Mind-map animation build order** must match the spoke walk
+   (guardrails → interaction → context → tools → skills) — noted in
+   CODEX-HANDOFF.md.
+3. **Garage placement** needs Marta's sign-off.
+4. Van tease → Fleet gap is now one page; talk track holds it easily.
+5. Kahoot breaks: natural slots after beat 4 and at close.
