@@ -67,8 +67,8 @@ PIECES = (
     PieceSpec("reason", (1090, 2085, 1490, 2285), (900, 338), (400, 220), 2.10, 0.82),
     PieceSpec("arrow_reason_tools", (1480, 2165, 1655, 2360), (1117, 448), (180, 165), 2.88, 0.42),
     PieceSpec("tools", (1450, 2325, 1950, 2600), (1380, 520), (490, 245), 3.22, 0.86),
-    PieceSpec("arrow_tools_observe", (1480, 2595, 1680, 2725), (1250, 660), (190, 145), 4.03, 0.42),
-    PieceSpec("observe", (1040, 2580, 1465, 2805), (1040, 770), (410, 235), 4.38, 0.84),
+    PieceSpec("arrow_tools_observe", (1480, 2595, 1680, 2725), (1275, 660), (180, 118), 4.03, 0.42),
+    PieceSpec("observe", (1040, 2535, 1465, 2805), (1040, 770), (410, 235), 4.38, 0.84),
     PieceSpec("arrow_observe_repeat", (815, 2640, 1045, 2725), (752, 772), (215, 118), 5.17, 0.40),
     PieceSpec("repeat", (280, 2530, 840, 2790), (430, 760), (530, 270), 5.50, 0.88),
 )
@@ -141,7 +141,31 @@ def fit_piece(image: Image.Image, max_size: tuple[int, int]) -> Image.Image:
     return image.resize(size, Image.Resampling.LANCZOS)
 
 
-def warp_alpha(alpha: np.ndarray, seed: int) -> np.ndarray:
+def clean_piece_edges(name: str, image: Image.Image) -> Image.Image:
+    """Mask neighboring connector fragments captured by rectangular crops."""
+    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8).copy()
+    height, width = alpha.shape
+
+    if name == "arrow_reason_tools":
+        # The crop also catches a short section of the tools oval below the
+        # arrowhead; the complete oval lives in the tools piece.
+        alpha[round(height * 0.82) :, :] = 0
+    elif name == "tools":
+        # Remove the beginning of the outgoing connector below the oval.
+        alpha[round(height * 0.82) :, :] = 0
+    elif name == "observe":
+        # Remove the outgoing connector stub at the far left of the oval.
+        alpha[:, : round(width * 0.035)] = 0
+    elif name == "repeat":
+        # Remove a duplicate incoming arrowhead caught at the far-right edge.
+        alpha[:, round(width * 0.975) :] = 0
+
+    cleaned = image.copy()
+    cleaned.putalpha(Image.fromarray(alpha, "L"))
+    return cleaned
+
+
+def warp_alpha(alpha: np.ndarray, seed: int, amplitude: float = 0.52) -> np.ndarray:
     """Create a sub-pixel redraw variation without changing the linework."""
     rng = np.random.default_rng(seed)
     h, w = alpha.shape
@@ -151,18 +175,22 @@ def warp_alpha(alpha: np.ndarray, seed: int) -> np.ndarray:
     dy = gaussian_filter(raw_y, sigma=15.0)
     dx /= max(float(np.std(dx)), 1e-6)
     dy /= max(float(np.std(dy)), 1e-6)
-    dx *= 0.52
-    dy *= 0.52
+    dx *= amplitude
+    dy *= amplitude
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     warped = map_coordinates(alpha, (yy + dy, xx + dx), order=1, mode="nearest")
     return np.clip(warped, 0.0, 255.0)
 
 
-def boil_variants(image: Image.Image, seed: int) -> tuple[Image.Image, Image.Image, Image.Image]:
+def boil_variants(
+    image: Image.Image,
+    seed: int,
+    amplitude: float = 0.52,
+) -> tuple[Image.Image, Image.Image, Image.Image]:
     base = np.asarray(image.getchannel("A"), dtype=np.float32)
     variants: list[Image.Image] = []
     for index in range(3):
-        alpha = warp_alpha(base, seed * 101 + index * 17)
+        alpha = warp_alpha(base, seed * 101 + index * 17, amplitude=amplitude)
         # Tiny pressure changes read as graphite being redrawn, without flicker.
         alpha = np.clip(alpha * (0.98 + index * 0.018), 0.0, 255.0).astype(np.uint8)
         rgba = np.zeros((*alpha.shape, 4), dtype=np.uint8)
@@ -220,14 +248,18 @@ def prepare_pieces(ink: Image.Image) -> dict[str, PreparedPiece]:
     pieces: dict[str, PreparedPiece] = {}
     for index, spec in enumerate(PIECES):
         crop = trim_transparent(ink.crop(spec.crop))
-        fitted = fit_piece(crop, spec.max_size)
+        fitted = clean_piece_edges(spec.name, fit_piece(crop, spec.max_size))
         position = (
             round(spec.center[0] - fitted.width / 2),
             round(spec.center[1] - fitted.height / 2),
         )
         pieces[spec.name] = PreparedPiece(
             spec=spec,
-            variants=boil_variants(fitted, seed=index + 11),
+            variants=boil_variants(
+                fitted,
+                seed=index + 11,
+                amplitude=0.18 if spec.name == "repeat" else 0.52,
+            ),
             reveal_order=make_reveal_order(spec.name, fitted),
             position=position,
             size=fitted.size,
