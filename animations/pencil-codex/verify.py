@@ -70,12 +70,37 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as directory:
         temp = Path(directory)
         opening = frame(MP4, "0.00", temp / "opening.png")
-        ending = frame(MP4, "23.46", temp / "ending.png")
-        full = frame(MP4, "11.10", temp / "full.png")
-        active = frame(MP4, "12.55", temp / "active.png")
+        paper_boil = frame(MP4, "0.17", temp / "paper_boil.png")
+        ending = frame(MP4, "20.46", temp / "ending.png")
+        writing = frame(MP4, "1.38", temp / "writing.png")
+        written = frame(MP4, "1.72", temp / "written.png")
+        full = frame(MP4, "7.35", temp / "full.png")
+        active = frame(MP4, "8.85", temp / "active.png")
 
         seam_delta = float(np.abs(opening - ending).mean())
-        require(seam_delta < 2.0, f"opening/ending paper seam is clean (mean delta {seam_delta:.2f})")
+        require(seam_delta < 2.5, f"opening/ending paper seam is clean (mean delta {seam_delta:.2f})")
+
+        boil_delta = float(np.abs(opening - paper_boil).mean())
+        require(
+            0.15 < boil_delta < 2.5,
+            f"paper boil moves without flashing (mean delta {boil_delta:.2f})",
+        )
+
+        # Expected colors after the semi-transparent ruling is composited over
+        # the warm paper and H.264 encoded.
+        rule_blue = np.array([202, 222, 223], dtype=np.int16)
+        margin_red = np.array([235, 192, 186], dtype=np.int16)
+        blue_pixels = int((np.abs(opening - rule_blue).sum(axis=2) < 34).sum())
+        red_pixels = int((np.abs(opening - margin_red).sum(axis=2) < 38).sum())
+        require(blue_pixels > 8_000, f"notebook ruling is visible ({blue_pixels} blue pixels)")
+        require(red_pixels > 1_000, f"notebook margin is visible ({red_pixels} red pixels)")
+
+        writing_ink = int((writing.mean(axis=2) < 155).sum())
+        written_ink = int((written.mean(axis=2) < 155).sum())
+        require(
+            written_ink > writing_ink + 1_500,
+            f"live-writing reveal adds ink over time ({writing_ink} → {written_ink} pixels)",
+        )
 
         ink_pixels = int((full.mean(axis=2) < 155).sum())
         require(ink_pixels > 28_000, f"assembled loop has strong ink contrast ({ink_pixels} dark pixels)")

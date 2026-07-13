@@ -2,9 +2,10 @@
 """Render Sarah's photographed agentic-loop sketch as a slide-ready animation.
 
 The source handwriting and shapes are extracted directly from the committed
-photograph.  This script corrects the page perspective and lighting, isolates
-the pencil strokes, recomposes the original pieces for 16:9, and adds a subtle
-three-state line boil.  It does not trace or regenerate the drawing.
+photograph. This script corrects the page perspective and lighting, isolates
+the pencil strokes, recomposes the original pieces for 16:9, reveals those
+pixels in a fast hand-writing order, and adds a shared three-state boil to the
+ink and crinkled notebook paper. It does not trace or regenerate the drawing.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ OUT_DIR = HERE / "out"
 
 WIDTH, HEIGHT = 1920, 1080
 FPS = 30
-DURATION = 23.5
+DURATION = 20.5
 FRAME_COUNT = round(FPS * DURATION)
 
 PAPER = (250, 247, 239)
@@ -53,39 +54,32 @@ class PieceSpec:
     center: tuple[int, int]
     max_size: tuple[int, int]
     start: float
-    enter_from: tuple[int, int] = (0, 14)
+    reveal_duration: float = 0.80
 
 
 # Crops are measured on the rectified PAGE_SIZE image.  They intentionally
 # include Sarah's original outlines and lettering as a single inseparable
 # piece.  Spacing changes happen only when these pieces are composed.
 PIECES = (
-    PieceSpec("title", (800, 1945, 1465, 2080), (960, 112), (760, 150), 0.45, (0, -8)),
-    PieceSpec("receive", (480, 2125, 950, 2245), (390, 350), (470, 190), 1.55, (-24, 12)),
-    PieceSpec("arrow_receive_reason", (945, 2140, 1110, 2215), (661, 346), (150, 95), 2.80, (-12, 0)),
-    PieceSpec("reason", (1090, 2085, 1490, 2285), (900, 338), (400, 220), 3.30, (0, 16)),
-    PieceSpec("arrow_reason_tools", (1480, 2165, 1655, 2360), (1117, 448), (180, 165), 4.65, (-8, -10)),
-    PieceSpec("tools", (1450, 2325, 1950, 2600), (1380, 520), (490, 245), 5.15, (18, 8)),
-    PieceSpec("arrow_tools_observe", (1480, 2595, 1680, 2725), (1250, 660), (190, 145), 6.55, (12, -8)),
-    PieceSpec("observe", (1040, 2580, 1465, 2805), (1040, 770), (410, 235), 7.05, (10, 12)),
-    PieceSpec("arrow_observe_repeat", (815, 2640, 1045, 2725), (752, 772), (215, 118), 8.45, (12, 0)),
-    PieceSpec("repeat", (280, 2530, 840, 2790), (430, 760), (530, 270), 8.95, (-18, 10)),
+    PieceSpec("title", (800, 1945, 1465, 2080), (960, 112), (760, 150), 0.30, 0.78),
+    PieceSpec("receive", (480, 2125, 950, 2245), (390, 350), (470, 190), 1.05, 0.78),
+    PieceSpec("arrow_receive_reason", (945, 2140, 1110, 2215), (661, 346), (150, 95), 1.78, 0.40),
+    PieceSpec("reason", (1090, 2085, 1490, 2285), (900, 338), (400, 220), 2.10, 0.82),
+    PieceSpec("arrow_reason_tools", (1480, 2165, 1655, 2360), (1117, 448), (180, 165), 2.88, 0.42),
+    PieceSpec("tools", (1450, 2325, 1950, 2600), (1380, 520), (490, 245), 3.22, 0.86),
+    PieceSpec("arrow_tools_observe", (1480, 2595, 1680, 2725), (1250, 660), (190, 145), 4.03, 0.42),
+    PieceSpec("observe", (1040, 2580, 1465, 2805), (1040, 770), (410, 235), 4.38, 0.84),
+    PieceSpec("arrow_observe_repeat", (815, 2640, 1045, 2725), (752, 772), (215, 118), 5.17, 0.40),
+    PieceSpec("repeat", (280, 2530, 840, 2790), (430, 760), (530, 270), 5.50, 0.88),
 )
-
-NODE_NAMES = ("receive", "reason", "tools", "observe", "repeat")
-
 
 @dataclass
 class PreparedPiece:
     spec: PieceSpec
     variants: tuple[Image.Image, Image.Image, Image.Image]
+    reveal_order: np.ndarray
     position: tuple[int, int]
     size: tuple[int, int]
-
-
-def ease_out_cubic(t: float) -> float:
-    t = max(0.0, min(1.0, t))
-    return 1.0 - (1.0 - t) ** 3
 
 
 def smoothstep(edge0: float, edge1: float, x: float) -> float:
@@ -178,6 +172,50 @@ def boil_variants(image: Image.Image, seed: int) -> tuple[Image.Image, Image.Ima
     return tuple(variants)  # type: ignore[return-value]
 
 
+def make_reveal_order(name: str, image: Image.Image) -> np.ndarray:
+    """Approximate a quick human stroke order for the extracted raster ink.
+
+    The original pixels never move or get retraced. This map only determines
+    when each pixel becomes visible: outline first, handwriting by row, and
+    arrows in their direction of travel.
+    """
+    height, width = image.height, image.width
+    yy, xx = np.mgrid[0:height, 0:width].astype(np.float32)
+    xn = xx / max(width - 1, 1)
+    yn = yy / max(height - 1, 1)
+
+    if name == "title":
+        # Lettering first, then Sarah's long underline from left to right.
+        return np.where(yn < 0.63, 0.02 + 0.72 * xn, 0.72 + 0.27 * xn)
+
+    if name == "arrow_receive_reason":
+        return 0.04 + 0.92 * xn
+    if name == "arrow_reason_tools":
+        return 0.04 + 0.46 * xn + 0.47 * yn
+    if name == "arrow_tools_observe":
+        return 0.04 + 0.66 * yn + 0.27 * (1.0 - xn)
+    if name == "arrow_observe_repeat":
+        return 0.04 + 0.92 * (1.0 - xn)
+
+    # Node outlines draw in one quick lap. Interior lettering follows in
+    # reading order; two-line nodes write their upper row before the lower.
+    rx = (xn - 0.5) / 0.50
+    ry = (yn - 0.5) / 0.50
+    radius = np.sqrt(rx * rx + ry * ry)
+    # Keep far-right/left letters out of the outline phase; only the actual
+    # outer ring should draw before the words begin.
+    outline = radius > 0.88
+    theta = np.mod(np.arctan2(ry, rx) + math.pi, 2.0 * math.pi) / (2.0 * math.pi)
+    outline_order = 0.02 + 0.32 * theta
+
+    if name == "receive":
+        text_order = 0.30 + 0.68 * xn
+    else:
+        lower_row = (yn >= 0.50).astype(np.float32)
+        text_order = 0.30 + 0.33 * lower_row + 0.34 * xn
+    return np.where(outline, outline_order, text_order)
+
+
 def prepare_pieces(ink: Image.Image) -> dict[str, PreparedPiece]:
     pieces: dict[str, PreparedPiece] = {}
     for index, spec in enumerate(PIECES):
@@ -190,28 +228,89 @@ def prepare_pieces(ink: Image.Image) -> dict[str, PreparedPiece]:
         pieces[spec.name] = PreparedPiece(
             spec=spec,
             variants=boil_variants(fitted, seed=index + 11),
+            reveal_order=make_reveal_order(spec.name, fitted),
             position=position,
             size=fitted.size,
         )
     return pieces
 
 
-def make_paper_background(page: Image.Image) -> Image.Image:
-    """A quiet paper field with grain, but no ghosted handwriting."""
-    del page  # The original page supplies the ink; its text must not ghost here.
+def make_notebook_backgrounds() -> tuple[Image.Image, Image.Image, Image.Image]:
+    """Build three softly crumpled ruled-paper states for the 6 Hz boil."""
     rng = np.random.default_rng(20260713)
-    fine = gaussian_filter(rng.normal(size=(HEIGHT, WIDTH)), sigma=0.7)
-    broad = gaussian_filter(rng.normal(size=(HEIGHT, WIDTH)), sigma=72.0)
+    yy, xx = np.mgrid[0:HEIGHT, 0:WIDTH].astype(np.float32)
+
+    fine = gaussian_filter(rng.normal(size=(HEIGHT, WIDTH)), sigma=0.72)
+    broad = gaussian_filter(rng.normal(size=(HEIGHT, WIDTH)), sigma=68.0)
     fine /= max(float(np.std(fine)), 1e-6)
     broad /= max(float(np.std(broad)), 1e-6)
-    texture = np.clip(fine * 0.42 + broad * 0.58, -1.8, 1.8)
-    base = np.empty((HEIGHT, WIDTH, 3), dtype=np.float32)
-    base[:] = PAPER
-    base += texture[..., None]
-    return Image.fromarray(np.clip(base, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
+
+    crease_specs = []
+    for _ in range(13):
+        angle = rng.uniform(-1.25, 1.25)
+        offset = rng.uniform(-820.0, 820.0)
+        width = rng.uniform(3.5, 10.0)
+        amplitude = rng.uniform(2.8, 6.0)
+        crease_specs.append((angle, offset, width, amplitude))
+
+    backgrounds: list[Image.Image] = []
+    for variant, boil_shift in enumerate((-1.15, 0.0, 1.05)):
+        creases = np.zeros((HEIGHT, WIDTH), dtype=np.float32)
+        centered_x = xx - WIDTH / 2
+        centered_y = yy - HEIGHT / 2
+        for index, (angle, offset, width, amplitude) in enumerate(crease_specs):
+            along = -centered_x * math.sin(angle) + centered_y * math.cos(angle)
+            distance = (
+                centered_x * math.cos(angle)
+                + centered_y * math.sin(angle)
+                - offset
+                - boil_shift * (0.55 + 0.10 * (index % 3))
+                + (2.5 + 0.75 * (index % 4))
+                * np.sin(along / (145.0 + 17.0 * (index % 5)) + index * 0.9)
+            )
+            # Each fold gets a graphite-gray trough and a narrow paper-white
+            # ridge, which reads as a real crinkle without harsh flicker.
+            creases -= amplitude * np.exp(-((distance + width * 0.42) / width) ** 2)
+            creases += amplitude * 0.72 * np.exp(-((distance - width * 0.46) / (width * 0.72)) ** 2)
+
+        vignette = -1.3 * (
+            ((xx - WIDTH / 2) / (WIDTH / 2)) ** 2
+            + ((yy - HEIGHT / 2) / (HEIGHT / 2)) ** 2
+        )
+        texture = np.clip(fine * 0.48 + broad * 1.05 + creases + vignette, -9.0, 7.0)
+        base = np.empty((HEIGHT, WIDTH, 3), dtype=np.float32)
+        base[:] = PAPER
+        base += texture[..., None]
+        paper = Image.fromarray(np.clip(base, 0, 255).astype(np.uint8), "RGB").convert("RGBA")
+
+        ruling = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(ruling, "RGBA")
+        phase = variant * 0.72
+        for y0 in range(72, HEIGHT, 72):
+            points = []
+            for x in range(-20, WIDTH + 21, 24):
+                wobble = 0.90 * math.sin(x / 154.0 + phase + y0 * 0.003)
+                wobble += 0.35 * math.sin(x / 43.0 + phase * 0.7)
+                points.append((x, y0 + wobble))
+            draw.line(points, fill=(117, 177, 193, 92), width=2)
+
+        margin_points = []
+        for y in range(-20, HEIGHT + 21, 20):
+            x = 148 + 1.0 * math.sin(y / 92.0 + phase)
+            margin_points.append((x, y))
+        draw.line(margin_points, fill=(213, 113, 111, 105), width=3)
+        paper.alpha_composite(ruling)
+        backgrounds.append(paper)
+
+    return tuple(backgrounds)  # type: ignore[return-value]
 
 
-def make_debug_assets(clean_page: Image.Image, ink: Image.Image, pieces: dict[str, PreparedPiece]) -> None:
+def make_debug_assets(
+    clean_page: Image.Image,
+    ink: Image.Image,
+    pieces: dict[str, PreparedPiece],
+    backgrounds: tuple[Image.Image, Image.Image, Image.Image],
+) -> None:
     SOURCE_DIR.mkdir(parents=True, exist_ok=True)
     clean_page.save(SOURCE_DIR / "cleaned_page.png", optimize=True)
 
@@ -236,6 +335,7 @@ def make_debug_assets(clean_page: Image.Image, ink: Image.Image, pieces: dict[st
     for piece in pieces.values():
         layout.alpha_composite(piece.variants[1], piece.position)
     layout.convert("RGB").save(SOURCE_DIR / "layout_preview.png", quality=94)
+    backgrounds[1].convert("RGB").save(SOURCE_DIR / "notebook_background_preview.jpg", quality=92)
 
 
 def scaled_asset(asset: Image.Image, scale: float, opacity: float) -> Image.Image:
@@ -250,21 +350,21 @@ def scaled_asset(asset: Image.Image, scale: float, opacity: float) -> Image.Imag
 
 
 def active_node(time_s: float) -> tuple[str | None, float]:
-    """Two visible laps: one deliberate, then one fluent."""
+    """One deliberate visible lap, followed by two fluent passes."""
     beats = [
-        ("receive", 11.35, 12.20),
-        ("reason", 12.20, 13.05),
-        ("tools", 13.05, 13.90),
-        ("observe", 13.90, 14.75),
-        ("repeat", 14.75, 15.60),
-        ("reason", 15.70, 16.35),
-        ("tools", 16.35, 17.00),
-        ("observe", 17.00, 17.65),
-        ("repeat", 17.65, 18.30),
-        ("reason", 18.30, 18.95),
-        ("tools", 18.95, 19.60),
-        ("observe", 19.60, 20.25),
-        ("repeat", 20.25, 20.90),
+        ("receive", 7.80, 8.52),
+        ("reason", 8.52, 9.24),
+        ("tools", 9.24, 9.96),
+        ("observe", 9.96, 10.68),
+        ("repeat", 10.68, 11.40),
+        ("reason", 11.58, 12.18),
+        ("tools", 12.18, 12.78),
+        ("observe", 12.78, 13.38),
+        ("repeat", 13.38, 13.98),
+        ("reason", 14.14, 14.69),
+        ("tools", 14.69, 15.24),
+        ("observe", 15.24, 15.79),
+        ("repeat", 15.79, 16.34),
     ]
     for name, start, end in beats:
         if start <= time_s < end:
@@ -344,6 +444,21 @@ def draw_return_arrow(canvas: Image.Image, progress: float, variant: int, opacit
     canvas.alpha_composite(layer)
 
 
+def revealed_asset(
+    asset: Image.Image,
+    reveal_order: np.ndarray,
+    progress: float,
+    opacity: float,
+) -> Image.Image:
+    """Expose original graphite pixels behind a narrow moving pencil edge."""
+    out = asset.copy()
+    base_alpha = np.asarray(asset.getchannel("A"), dtype=np.float32)
+    edge = np.clip((progress - reveal_order) * 26.0 + 0.48, 0.0, 1.0)
+    alpha = np.clip(base_alpha * edge * opacity, 0.0, 255.0).astype(np.uint8)
+    out.putalpha(Image.fromarray(alpha, "L"))
+    return out
+
+
 def composite_piece(
     canvas: Image.Image,
     piece: PreparedPiece,
@@ -352,13 +467,10 @@ def composite_piece(
     highlight_strength: float,
     global_opacity: float,
 ) -> None:
-    enter = ease_out_cubic((time_s - piece.spec.start) / 0.62)
-    if enter <= 0.0:
+    progress = max(0.0, min(1.0, (time_s - piece.spec.start) / piece.spec.reveal_duration))
+    if progress <= 0.0:
         return
-    opacity = enter * global_opacity
-    scale = 0.94 + 0.06 * enter + 0.025 * highlight_strength
-    offset_x = round(piece.spec.enter_from[0] * (1.0 - enter))
-    offset_y = round(piece.spec.enter_from[1] * (1.0 - enter))
+    scale = 1.0 + 0.025 * highlight_strength
 
     if highlight_strength > 0.01:
         highlight = rough_rounded_highlight(piece.size, variant)
@@ -370,26 +482,29 @@ def composite_piece(
         hy = round(piece.spec.center[1] - highlight.height / 2)
         canvas.alpha_composite(highlight, (hx, hy))
 
-    asset = scaled_asset(piece.variants[variant], scale=scale, opacity=opacity)
-    x = round(piece.spec.center[0] - asset.width / 2) + offset_x
-    y = round(piece.spec.center[1] - asset.height / 2) + offset_y
+    written = revealed_asset(
+        piece.variants[variant], piece.reveal_order, progress, global_opacity
+    )
+    asset = scaled_asset(written, scale=scale, opacity=1.0)
+    x = round(piece.spec.center[0] - asset.width / 2)
+    y = round(piece.spec.center[1] - asset.height / 2)
     canvas.alpha_composite(asset, (x, y))
 
 
 def render_frame(
     frame_index: int,
-    background: Image.Image,
+    backgrounds: tuple[Image.Image, Image.Image, Image.Image],
     pieces: dict[str, PreparedPiece],
 ) -> Image.Image:
     time_s = frame_index / FPS
     variant = (frame_index // 5) % 3
-    canvas = background.copy()
+    canvas = backgrounds[variant].copy()
 
     # Fade the assembled drawing back to the same empty-paper opening.
-    global_opacity = 1.0 - smoothstep(21.35, 23.25, time_s)
+    global_opacity = 1.0 - smoothstep(18.45, 20.25, time_s)
     active, strength = active_node(time_s)
 
-    arrow_progress = ease_out_cubic((time_s - 10.05) / 0.95)
+    arrow_progress = smoothstep(0.0, 1.0, (time_s - 6.40) / 0.78)
     draw_return_arrow(canvas, arrow_progress, variant, global_opacity)
 
     for spec in PIECES:
@@ -406,7 +521,11 @@ def render_frame(
     return canvas.convert("RGB")
 
 
-def render_mp4(background: Image.Image, pieces: dict[str, PreparedPiece], output: Path) -> None:
+def render_mp4(
+    backgrounds: tuple[Image.Image, Image.Image, Image.Image],
+    pieces: dict[str, PreparedPiece],
+    output: Path,
+) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     command = [
         "ffmpeg", "-y", "-v", "error",
@@ -419,7 +538,7 @@ def render_mp4(background: Image.Image, pieces: dict[str, PreparedPiece], output
     assert process.stdin is not None
     try:
         for index in range(FRAME_COUNT):
-            frame = render_frame(index, background, pieces)
+            frame = render_frame(index, backgrounds, pieces)
             process.stdin.write(np.asarray(frame, dtype=np.uint8).tobytes())
             if index % 90 == 0:
                 print(f"rendered {index:>3}/{FRAME_COUNT} frames", flush=True)
@@ -430,11 +549,11 @@ def render_mp4(background: Image.Image, pieces: dict[str, PreparedPiece], output
 
 
 def render_gif(mp4: Path, output: Path) -> None:
-    # 800px/12fps/64 colors keeps the boiling pencil texture below 10 MB while
+    # 800px/12fps/56 colors keeps the boiling pencil texture below 10 MB while
     # retaining enough resolution for a wiki embed.
     filter_graph = (
         "fps=12,scale=800:-1:flags=lanczos,split[s0][s1];"
-        "[s0]palettegen=max_colors=64:stats_mode=diff[p];"
+        "[s0]palettegen=max_colors=56:stats_mode=diff[p];"
         "[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
     )
     subprocess.run(
@@ -474,15 +593,15 @@ def main() -> None:
     page = rectify_photo()
     clean_page, ink = isolate_pencil(page)
     pieces = prepare_pieces(ink)
-    make_debug_assets(clean_page, ink, pieces)
+    backgrounds = make_notebook_backgrounds()
+    make_debug_assets(clean_page, ink, pieces, backgrounds)
     if args.prepare_only:
         print(f"wrote source previews to {SOURCE_DIR}")
         return
 
-    background = make_paper_background(page)
     mp4 = OUT_DIR / "agentic_loop.mp4"
     gif = OUT_DIR / "agentic_loop.gif"
-    render_mp4(background, pieces, mp4)
+    render_mp4(backgrounds, pieces, mp4)
     probe(mp4)
     if not args.skip_gif:
         render_gif(mp4, gif)
