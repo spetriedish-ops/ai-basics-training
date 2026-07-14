@@ -12,3 +12,5 @@ else
   PYTHON="../.venv/bin/python"
 fi
 "$PYTHON" render_agentic_loop.py
+"$PYTHON" render_sketch_set.py
+"$PYTHON" render_multi_agent_orchestration.py
