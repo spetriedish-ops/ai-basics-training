@@ -1,5 +1,10 @@
 # Handoff → Claude Fable 5: Animated explainers for the "AI Basics" training
 
+> **Run-of-show handoff:** the original creative brief below remains useful
+> context. For the finished Sarah-approved pencil animations, exact asset
+> paths, Harness controls, and presentation integration notes, read
+> [`animations/CLAUDE-HANDOFF.md`](animations/CLAUDE-HANDOFF.md) first.
+
 **From:** Sarah Petrie (Principal Solutions Engineer, Atlassian)
 **To:** Claude Fable 5 (creative/animation partner, running on Sarah's personal machine)
 **Date:** 2026-07-02

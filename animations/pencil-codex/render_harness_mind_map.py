@@ -21,6 +21,7 @@ from PIL import Image, ImageDraw, ImageOps
 
 import render_agentic_loop as established
 import render_sketch_set as shared
+import personality_motifs as personality
 
 
 HERE = Path(__file__).resolve().parent
@@ -549,6 +550,7 @@ def compose(
         if amount <= 0.0:
             continue
         canvas.alpha_composite(revealed(layer, variant, amount, opacity), layer.position)
+    personality.harness_overlay(canvas, progress, variant, opacity)
     return canvas.convert("RGB")
 
 
@@ -570,6 +572,18 @@ def make_debug_assets(
             quality=94,
         )
     cumulative.convert("RGB").save(SOURCE_DIR / "layout_preview.png", quality=95)
+    compose(
+        backgrounds,
+        layers,
+        round(1.2 * FPS),
+        [1.0 for _ in layers],
+    ).save(SOURCE_DIR / "personality_final_answer.jpg", quality=95)
+    compose(
+        backgrounds,
+        layers,
+        round(1.2 * FPS),
+        [1.0] + [0.0 for _ in layers[1:]],
+    ).save(SOURCE_DIR / "personality_presenter.jpg", quality=95)
 
 
 def encode_frames(output: Path, frames: int, frame_builder) -> None:

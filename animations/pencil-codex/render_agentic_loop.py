@@ -20,6 +20,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from scipy.ndimage import gaussian_filter, map_coordinates
 
+import personality_motifs as personality
+
 
 HERE = Path(__file__).resolve().parent
 SOURCE_PHOTO = HERE.parent / "assets" / "sketches" / "01-llm-harness-agentic-loop.jpeg"
@@ -28,7 +30,7 @@ OUT_DIR = HERE / "out"
 
 WIDTH, HEIGHT = 1920, 1080
 FPS = 30
-DURATION = 20.5
+DURATION = 23.5
 FRAME_COUNT = round(FPS * DURATION)
 
 PAPER = (250, 247, 239)
@@ -368,6 +370,17 @@ def make_debug_assets(
         layout.alpha_composite(piece.variants[1], piece.position)
     layout.convert("RGB").save(SOURCE_DIR / "layout_preview.png", quality=94)
     backgrounds[1].convert("RGB").save(SOURCE_DIR / "notebook_background_preview.jpg", quality=92)
+    for label, seconds in (
+        ("intro", 0.72),
+        ("receive", 8.10),
+        ("reason", 9.92),
+        ("tools", 11.76),
+        ("observe", 13.56),
+        ("repeat", 15.34),
+    ):
+        render_frame(round(seconds * FPS), backgrounds, pieces).save(
+            SOURCE_DIR / f"personality_{label}.jpg", quality=94
+        )
 
 
 def scaled_asset(asset: Image.Image, scale: float, opacity: float) -> Image.Image:
@@ -382,21 +395,13 @@ def scaled_asset(asset: Image.Image, scale: float, opacity: float) -> Image.Imag
 
 
 def active_node(time_s: float) -> tuple[str | None, float]:
-    """One deliberate visible lap, followed by two fluent passes."""
+    """One deliberately paced lap with enough time to read each character beat."""
     beats = [
-        ("receive", 7.80, 8.52),
-        ("reason", 8.52, 9.24),
-        ("tools", 9.24, 9.96),
-        ("observe", 9.96, 10.68),
-        ("repeat", 10.68, 11.40),
-        ("reason", 11.58, 12.18),
-        ("tools", 12.18, 12.78),
-        ("observe", 12.78, 13.38),
-        ("repeat", 13.38, 13.98),
-        ("reason", 14.14, 14.69),
-        ("tools", 14.69, 15.24),
-        ("observe", 15.24, 15.79),
-        ("repeat", 15.79, 16.34),
+        ("receive", 7.25, 9.15),
+        ("reason", 8.95, 10.85),
+        ("tools", 10.65, 12.55),
+        ("observe", 12.35, 14.25),
+        ("repeat", 14.05, 16.05),
     ]
     for name, start, end in beats:
         if start <= time_s < end:
@@ -533,7 +538,7 @@ def render_frame(
     canvas = backgrounds[variant].copy()
 
     # Fade the assembled drawing back to the same empty-paper opening.
-    global_opacity = 1.0 - smoothstep(18.45, 20.25, time_s)
+    global_opacity = 1.0 - smoothstep(21.35, 23.25, time_s)
     active, strength = active_node(time_s)
 
     arrow_progress = smoothstep(0.0, 1.0, (time_s - 6.40) / 0.78)
@@ -549,6 +554,8 @@ def render_frame(
             strength if active == spec.name else 0.0,
             global_opacity,
         )
+
+    personality.agentic_loop_overlay(canvas, time_s, variant, global_opacity)
 
     return canvas.convert("RGB")
 

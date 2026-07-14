@@ -1,5 +1,9 @@
 # Handoff → Codex: "pencil boil" animations for the AI Basics training
 
+> **Historical brief.** This document records the incoming assignment from
+> 2026-07-13. For the completed Sarah-approved outputs and current Claude Code
+> handoff, read [`CLAUDE-HANDOFF.md`](CLAUDE-HANDOFF.md).
+
 **From:** Sarah Petrie (Principal Solutions Engineer, Atlassian)
 **To:** Codex (OpenAI agent)
 **Date:** 2026-07-13

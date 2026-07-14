@@ -69,9 +69,10 @@ def main() -> None:
 
     with tempfile.TemporaryDirectory() as directory:
         temp = Path(directory)
+        duration = float(mp4["format"]["duration"])
         opening = frame(MP4, "0.00", temp / "opening.png")
         paper_boil = frame(MP4, "0.17", temp / "paper_boil.png")
-        ending = frame(MP4, "20.46", temp / "ending.png")
+        ending = frame(MP4, f"{duration - 0.04:.2f}", temp / "ending.png")
         writing = frame(MP4, "1.38", temp / "writing.png")
         written = frame(MP4, "1.72", temp / "written.png")
         full = frame(MP4, "7.35", temp / "full.png")

@@ -21,6 +21,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from scipy.ndimage import gaussian_filter
 
 import render_agentic_loop as established
+import personality_motifs as personality
 
 
 HERE = Path(__file__).resolve().parent
@@ -78,7 +79,7 @@ SCENES: dict[str, SceneSpec] = {
         key="frontier_labs",
         source="02-frontier-labs-landscape-v2.jpeg",
         page_quad=((95, 135), (55, 3690), (2785, 3700), (2770, 160)),
-        duration=20.0,
+        duration=22.5,
         pieces=(
             PieceSpec("title", (1040, 15, 1775, 215), (1050, 72), (560, 105), 0.30, 0.72, "left", "title"),
             PieceSpec("labs", (0, 205, 3130, 710), (1050, 225), (1700, 285), 1.05, 1.30, "rows", "labs", 0.28),
@@ -90,22 +91,28 @@ SCENES: dict[str, SceneSpec] = {
             PieceSpec("open_weight_note", (0, 2150, 620, 2400), (390, 1018), (470, 88), 7.82, 0.72, "rows", "api", 0.24),
         ),
         focus_order=("labs", "models", "harnesses", "api"),
-        focus_start=9.45,
-        focus_step=1.90,
+        focus_start=7.90,
+        focus_step=3.00,
     ),
     "mcp_cli_api": SceneSpec(
         key="mcp_cli_api",
-        source="03-mcp-cli-api-tradeoffs.jpeg",
-        page_quad=((190, 150), (145, 5505), (4115, 5520), (4105, 165)),
-        duration=22.0,
+        source="03-mcp-cli-api-tools-v2.jpeg",
+        page_quad=((150, 210), (145, 3655), (2770, 3650), (2755, 235)),
+        duration=24.0,
         pieces=(
-            PieceSpec("mcp_column", (105, 300, 1335, 2400), (370, 548), (650, 1000), 0.40, 2.65, "rows", "mcp", 0.30),
-            PieceSpec("cli_column", (1340, 300, 2470, 2400), (1000, 548), (650, 1000), 3.45, 2.70, "rows", "cli", 0.30),
-            PieceSpec("api_column", (2470, 300, 3190, 1580), (1605, 445), (520, 820), 6.55, 2.20, "rows", "api", 0.30),
+            PieceSpec("tools_title", (1410, 110, 1990, 315), (960, 65), (430, 108), 0.25, 0.78, "left", "title", 0.24),
+            PieceSpec("mcp_heading", (300, 435, 900, 600), (360, 190), (430, 112), 1.15, 0.68, "left", "mcp", 0.24),
+            PieceSpec("mcp_official", (0, 1050, 1450, 1640), (410, 455), (520, 300), 1.95, 2.10, "rows", "mcp", 0.28),
+            PieceSpec("mcp_unofficial", (250, 1750, 1600, 2240), (410, 825), (520, 260), 4.30, 2.05, "rows", "mcp", 0.28),
+            PieceSpec("cli_heading", (1270, 420, 1670, 590), (960, 190), (330, 112), 7.05, 0.68, "left", "cli", 0.24),
+            PieceSpec("cli_agent", (1270, 625, 2035, 1000), (930, 420), (560, 280), 7.85, 1.55, "rows", "cli", 0.28),
+            PieceSpec("cli_terminal", (1815, 980, 2050, 1245), (830, 680), (175, 195), 9.55, 0.90, "outline", "cli", 0.26),
+            PieceSpec("api_heading", (2410, 535, 2870, 705), (1590, 190), (350, 112), 14.20, 0.68, "left", "api", 0.24),
+            PieceSpec("api_rack", (2380, 835, 3200, 1380), (1590, 515), (590, 390), 15.05, 2.20, "rows", "api", 0.28),
         ),
         focus_order=("mcp", "cli", "api"),
-        focus_start=10.0,
-        focus_step=2.55,
+        focus_start=4.00,
+        focus_step=6.20,
     ),
     "harness_mind_map": SceneSpec(
         key="harness_mind_map",
@@ -125,7 +132,7 @@ SCENES: dict[str, SceneSpec] = {
         key="what_is_an_agent",
         source="05-what-is-an-agent.jpeg",
         page_quad=((210, 140), (135, 3850), (2885, 3855), (2860, 165)),
-        duration=20.0,
+        duration=21.5,
         pieces=(
             PieceSpec("title", (990, 0, 2020, 230), (960, 105), (760, 140), 0.30, 0.85, "outline", "definition"),
             PieceSpec("definition", (760, 220, 2570, 465), (960, 245), (1240, 155), 1.22, 1.05, "left", "definition"),
@@ -134,8 +141,8 @@ SCENES: dict[str, SceneSpec] = {
             PieceSpec("specialized_examples", (2100, 725, 3200, 2100), (1445, 740), (720, 570), 7.15, 1.75, "rows", "specialized"),
         ),
         focus_order=("definition", "general", "specialized"),
-        focus_start=10.0,
-        focus_step=2.20,
+        focus_start=9.20,
+        focus_step=3.30,
     ),
 }
 
@@ -309,6 +316,16 @@ def make_debug_assets(
         layout.alpha_composite(piece.variants[1], piece.position)
     layout.convert("RGB").save(directory / "layout_preview.png", quality=94)
 
+    personality_times = {
+        "frontier_labs": (("intro", 1.00), ("lab", 9.20), ("model", 12.15), ("harness", 15.15), ("api", 18.20)),
+        "mcp_cli_api": (("mcp", 5.95), ("cli", 12.35), ("api", 19.20)),
+        "what_is_an_agent": (("intro", 1.10), ("definition", 10.80), ("general", 14.10), ("specialist", 17.45)),
+    }
+    for label, seconds in personality_times.get(scene.key, ()):
+        render_frame(scene, round(seconds * FPS), backgrounds, pieces).save(
+            directory / f"personality_{label}.jpg", quality=94
+        )
+
 
 def rough_highlight(size: tuple[int, int], variant: int, opacity: float) -> Image.Image:
     pad = 18
@@ -378,6 +395,13 @@ def render_frame(
         asset = revealed_asset(piece.variants[variant], piece.reveal_order, progress, global_opacity)
         canvas.alpha_composite(asset, piece.position)
 
+    if scene.key == "what_is_an_agent":
+        personality.what_is_agent_overlay(canvas, time_s, variant, global_opacity)
+    elif scene.key == "mcp_cli_api":
+        personality.mcp_cli_api_overlay(canvas, time_s, variant, global_opacity)
+    elif scene.key == "frontier_labs":
+        personality.frontier_overlay(canvas, time_s, variant, global_opacity)
+
     return canvas.convert("RGB")
 
 
@@ -412,9 +436,16 @@ def render_mp4(
 
 def render_gif(mp4: Path, output: Path) -> None:
     """Create a compact wiki preview; MP4 remains the presentation master."""
+    # The dense MCP page has more graphite change per frame and now holds its
+    # larger character beats longer. Give that preview a slightly leaner
+    # palette/raster so it still honors the wiki's 10 MB upload ceiling.
+    compact = output.stem == "mcp_cli_api"
+    fps = 9 if compact else 10
+    width = 680 if compact else 720
+    colors = 40 if compact else 48
     filter_graph = (
-        "fps=10,scale=720:-1:flags=lanczos,split[s0][s1];"
-        "[s0]palettegen=max_colors=48:stats_mode=diff[p];"
+        f"fps={fps},scale={width}:-1:flags=lanczos,split[s0][s1];"
+        f"[s0]palettegen=max_colors={colors}:stats_mode=diff[p];"
         "[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
     )
     subprocess.run(

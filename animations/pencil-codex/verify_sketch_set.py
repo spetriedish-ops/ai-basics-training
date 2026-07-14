@@ -18,8 +18,8 @@ OUT = HERE / "out"
 
 # writing, written, full, active-highlight sample times
 CHECKS = {
-    "frontier_labs": (1.55, 3.00, 9.55, 10.70),
-    "mcp_cli_api": (0.80, 3.20, 9.35, 10.75),
+    "frontier_labs": (1.55, 3.00, 9.55, 9.20),
+    "mcp_cli_api": (0.80, 3.20, 9.35, 12.70),
     "harness_mind_map": (0.60, 1.40, 22.80, 20.00),
     "what_is_an_agent": (0.65, 9.10, 9.65, 10.75),
     "multi_agent_orchestration": (2.20, 6.65, 20.65, 19.35),

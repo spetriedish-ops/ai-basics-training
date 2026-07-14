@@ -24,23 +24,29 @@ handled by `render_multi_agent_orchestration.py`. Together they:
 7. applies matching deterministic redraw states to the graphite, held for five
    frames each (about 6 Hz at 30 fps);
 8. add restrained teal outline-and-wash teaching cues without relying on color
-   alone (sketch 01 also adds one teal return arrow to clarify the loop, while
-   sketch 06 adds a warm flickering fire behind the original graphite flames);
+   alone, plus brief wordless character beats from `personality_motifs.py`;
+   sketch 01 also adds one teal return arrow to clarify the loop, while sketch
+   06 adds a warm flickering fire behind the original graphite flames;
 9. fades back to empty notebook paper for a clean loop.
 
 The Frontier Labs scene uses `02-frontier-labs-landscape-v2.jpeg`, Sarah's
 cleaner tier/model/harness/API table. The original sketch remains beside it for
 history.
 
-No replacement lettering or figures are used. New drawn accents are limited to
-the return arrow in sketch 01, the warm fire color in sketch 06, and a short
-graphite bridge where the photographed incinerator wall intersects a movable
-figure. The worked example remains on the source page rather than in sketch 01
-so its five primary beats can stay large enough for a room.
+No replacement lettering is used. The added figures and props are compact,
+wordless marginal doodles in the same boiling graphite language: the loop's
+agent catches input, thinks, carries tools, inspects, and runs; the definition
+page assembles an agent and contrasts juggling with specialization; the tools
+page contrasts an MCP toolbox, a CLI Swiss Army knife, and a standardized API
+port; the Frontier page turns Lab -> Model -> Harness -> API into a small
+package line; and the Harness finale lets the answer literally hop into the
+center circle. These temporary beats never re-typeset or cover Sarah's
+intentional wording.
 
 The generated audit assets in `source/` show cleanup, extraction regions,
-coordinate grids, and final static layouts. They make it easy to confirm that
-the lettering came from the photographs rather than a font or redraw.
+coordinate grids, final static layouts, and personality checkpoints. They make
+it easy to confirm that the lettering came from the photographs rather than a
+font or redraw, and to inspect every added gag without scrubbing a video.
 
 ## Fresh-checkout setup and render
 
@@ -74,10 +80,10 @@ The renderer also reuses the parent project environment when
 
 Outputs:
 
-- `out/agentic_loop.mp4` — 1920x1080, 30 fps, H.264, silent, 20.5 seconds
+- `out/agentic_loop.mp4` — 1920x1080, 30 fps, H.264, silent, 23.5 seconds
 - `out/agentic_loop.gif` — 800x450, 12 fps, looping, optimized for wiki use
 - `out/frontier_labs.{mp4,gif}` — sketch 02 vendor landscape
-- `out/mcp_cli_api.{mp4,gif}` — sketch 03 tradeoffs page
+- `out/mcp_cli_api.{mp4,gif}` — visual MCP, CLI, and API tools comparison
 - `out/harness_mind_map.{mp4,gif}` — updated sketch 04 mind map
 - `interactive/harness_mind_map/` — click-paced Harness player and eight stage clips
 - `out/what_is_an_agent.{mp4,gif}` — sketch 05 definition and examples
