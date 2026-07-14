@@ -17,7 +17,7 @@ Basic AI → autocomplete → agentic systems.
 
 | # | Beat | Visuals | Status |
 |---|------|---------|--------|
-| 1 | LLM = the brain; needs a harness to interact; what an LLM is; pre-training → post-training lifecycle; "models" + release hullabaloo | ✏️ sketch 01a (brain) | Codex building |
+| 1 | LLM = the brain; needs a harness to interact; what an LLM is; pre-training → post-training lifecycle; "models" + release hullabaloo | ✏️ sketch 01a (brain) + 🎬 The Engine Factory | Codex building / ✅ |
 | 2 | How the model works: prediction, tokens, hallucination | 🎬 The Paver | ✅ |
 | 3 | The agentic loop | ✏️ sketch 01b | ✅ pencil-claude/ |
 | 4 | Frontier labs: companies vs models vs harnesses; API wrap-up; multimodal vs multi-model | ✏️ sketch 02 | Codex building |
@@ -31,9 +31,8 @@ Basic AI → autocomplete → agentic systems.
 
 ## Open items
 
-1. **Pre/post-training lifecycle** (beat 1) has no visual — talk track
-   carries it, or a ~10s "engine factory" micro-scene can be storyboarded
-   on request.
+1. ~~Pre/post-training lifecycle~~ — resolved: The Engine Factory
+   (`engine_factory.py`) covers it in beat 1.
 2. **Mind-map animation build order** must match the spoke walk
    (guardrails → interaction → context → tools → skills) — noted in
    CODEX-HANDOFF.md.

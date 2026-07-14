@@ -151,6 +151,23 @@ Honesty flags: the wrong-tool grab is real behavior (selection degrades
 with tool count), so beat 5's caption states it straight; the curation
 ending gives the practical takeaway rather than ending on failure.
 
+## Scene 7 — The Engine Factory (model lifecycle) · ~16s · added 2026-07-13
+
+For run-of-show beat 1: the life of a model, requested by Sarah for the
+pre/post-training talk-track gap.
+
+| # | Action | Caption |
+|---|--------|---------|
+| 1 | An assembly machine chews through a mountain of material blocks; an engine rolls out onto the belt. The leftover pile stays — there is always more material than one engine eats. | pre-training: built from mountains of material |
+| 2 | The dyno: gauge sweeps, a wrench makes adjustments, a checklist ticks "ok" three times — and the pistons turn teal. | post-training: tuned to be helpful and safe |
+| 3 | Pedestal, NEW! banner, confetti and sparkles. | release day: a new model, much hullabaloo |
+| 4 | An open chassis rolls in; the engine seats into it; they drive off. | then it goes to work |
+
+Honesty flag: material feeds the MACHINE, never the engine — the engine
+visibly does not contain the blocks (teaching "the model stores its
+training data" would undo the Paver's lesson). No gag beat — at 16s it
+is all signal; the hullabaloo confetti carries the wink.
+
 ## Parked (not in the set)
 
 - **MCP vs CLI vs API tradeoffs** (P1 in the original brief) — the MCP

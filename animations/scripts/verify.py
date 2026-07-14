@@ -65,6 +65,13 @@ SCENES = {
                "alert": 3500},                 # avalanche gag, ALERT caption
         26.0: {"teal": 60000, "coral": 6000},  # recovery + shed roof
     },
+    # The Engine Factory — model lifecycle (STORYBOARDS.md scene 7)
+    "engine_factory": {
+        2.0: {"teal": 9000, "amber": 3000, "ink": 20000},  # machine + pile
+        6.5: {"teal": 12000, "ink": 22000},   # dyno tuning
+        10.8: {"amber": 9500},                # release-day hullabaloo
+        14.0: {"ink": 22000, "teal": 2500},   # engine seated on chassis
+    },
     # The Toolbox — MCP analogy (STORYBOARDS.md scene 6)
     "toolbox": {
         4.0: {"teal": 45000, "lilac": 11000},   # MCP box mounted
