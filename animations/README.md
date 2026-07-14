@@ -105,4 +105,4 @@ Paver). All produced, pixel-verified, and committed to `renders/final/`.
 | 4 | Pop the Hood | anatomy: model, tools, skills, loop, harness | `agent_anatomy.py` | ✅ rendered |
 | 5 | The Fleet | subagents, orchestration | `fleet.py` | ✅ rendered |
 | 6 | The Toolbox | MCP: whole toolbox at once, card costs, wrong-tool risk, curation | `toolbox.py` | ✅ rendered |
-| 7 | The Engine Factory | model lifecycle: pre-training, post-training, release day | `engine_factory.py` | ✅ rendered |
+| 7 | The Engine Factory | model lifecycle: pre-training, post-training, release, inference | `engine_factory.py` | ✅ rendered |

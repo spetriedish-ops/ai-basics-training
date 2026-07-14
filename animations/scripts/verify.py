@@ -71,6 +71,8 @@ SCENES = {
         6.5: {"teal": 12000, "ink": 22000},   # dyno tuning
         10.8: {"amber": 9500},                # release-day hullabaloo
         14.0: {"ink": 22000, "teal": 2500},   # engine seated on chassis
+        15.5: {"ink": 20000, "teal": 2000},   # factory CLOSED, truck ready
+        21.5: {"ink": 22000, "teal": 2500},   # odometer at 3, meter filled
     },
     # The Toolbox — MCP analogy (STORYBOARDS.md scene 6)
     "toolbox": {

@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from manim import *  # noqa: E402
 from jobsite import (  # noqa: E402
-    CaptionManager, GROUND_Y, build_stage, build_truck, roll,
+    CaptionManager, GROUND_Y, build_meter, build_stage, build_truck, roll,
 )
 from style import (  # noqa: E402
     ALERT, AI_TEAL, AI_TEAL_DARK, CARGO_AMBER, CARGO_CORAL, CARGO_LILAC,
@@ -172,9 +172,10 @@ class EngineFactory(Scene):
 
         # ------------------------------------- beat 3: release day -------
         cap.set("release day: a new model, much hullabaloo")
+        # the machine stays — beat 5 closes the factory on camera
         self.play(FadeOut(gauge), FadeOut(wrench), FadeOut(card),
                   FadeOut(card_lines), *[FadeOut(c) for c in checks],
-                  FadeOut(machine), FadeOut(gear), run_time=0.4)
+                  run_time=0.4)
 
         pedestal = crayonify(rrect(1.7, 0.5, "#FFFFFF", radius=0.08),
                              seed=80).move_to([-0.9, -2.30, 0])
@@ -236,12 +237,83 @@ class EngineFactory(Scene):
         self.play(FadeOut(d2), run_time=0.25)
         rig.add(engine)
 
+        # ---------------------------- beat 5: the factory closes ---------
+        cap.set("training happens once, back at the factory")
+        closed = crayonify(rrect(1.15, 0.5, "#FFFFFF", radius=0.08,
+                                 stroke_w=4), seed=85)
+        closed.rotate(-6 * DEGREES).move_to([-3.7, -0.60, 0])
+        closed_txt = hand_label("CLOSED", size=22, scrawl=True)
+        closed_txt.rotate(-6 * DEGREES).move_to([-3.7, -0.60, 0])
         leftover = VGroup(*list(pile)[6:])
+        self.play(machine.animate.set_opacity(0.35),
+                  gear.animate.set_opacity(0.35),
+                  leftover.animate.set_opacity(0.35),
+                  FadeIn(VGroup(closed, closed_txt), scale=1.3),
+                  run_time=0.7)
+        self.wait(0.8)
+
+        # ---------------------------- beat 6: the odometer ---------------
+        cap.set("inference: every time the engine runs")
+        odo_panel = crayonify(rrect(2.6, 0.95, "#FFFFFF", radius=0.14,
+                                    stroke_w=4), seed=90)
+        odo_panel.move_to([-4.35, 2.65, 0])
+        odo_tag = hand_label("INFERENCES", size=24)
+        odo_tag.move_to([-4.75, 2.65, 0])
+        count_at = np.array([-3.35, 2.65, 0])
+        odo_n = hand_label("0", size=32, scrawl=True, color=AI_TEAL_DARK)
+        odo_n.move_to(count_at)
+        md = build_meter(seed=95)
+        meter, bar = md["meter"], md["fill"]
+        self.play(FadeIn(VGroup(odo_panel, odo_tag, odo_n), shift=DOWN * 0.2),
+                  FadeIn(meter, shift=DOWN * 0.2), run_time=0.5)
+
+        n_count = [0]
+
+        def rev(fuel_w):
+            n_count[0] += 1
+            new_n = hand_label(str(n_count[0]), size=32, scrawl=True,
+                               color=AI_TEAL_DARK).move_to(count_at)
+            old = odo_n if n_count[0] == 1 else self._odo_cur
+            self._odo_cur = new_n
+            p = puff(engine.get_center() + UP * 0.55, n=3, spread=0.3)
+            self.play(FadeOut(old, shift=UP * 0.15),
+                      FadeIn(new_n, shift=UP * 0.15),
+                      FadeIn(p),
+                      bar.animate.stretch_to_fit_width(fuel_w,
+                                                       about_edge=LEFT),
+                      run_time=0.3)
+            self.play(FadeOut(p), run_time=0.2)
+
+        def cruise(dx, rt=0.55):
+            for w in wheels:
+                w.add_updater(make_roller(0.40))
+            self.play(rig.animate.shift(RIGHT * dx), run_time=rt,
+                      rate_func=rate_functions.ease_in_out_sine)
+            for w in wheels:
+                w.clear_updaters()
+
+        cruise(1.8)
+        rev(0.5)
+        cruise(-2.6)
+        rev(1.0)
+        cruise(1.6)
+        rev(1.5)
+
+        # the engine is untouched by all that driving
+        cap.set("the road never changes the engine")
+        self.play(Indicate(engine, color=AI_TEAL, scale_factor=1.12),
+                  run_time=0.7)
+        self.wait(0.8)
+
+        # ------------------------------------------------ exit -----------
         for w in wheels:
             w.add_updater(make_roller(0.40))
-        self.play(rig.animate.shift(RIGHT * 12),
+        self.play(rig.animate.shift(RIGHT * 11),
                   FadeOut(cap.current), FadeOut(leftover),
-                  run_time=1.5, rate_func=rate_functions.ease_in_sine)
+                  FadeOut(VGroup(machine, gear, closed, closed_txt)),
+                  FadeOut(VGroup(odo_panel, odo_tag, self._odo_cur)),
+                  FadeOut(meter),
+                  run_time=1.6, rate_func=rate_functions.ease_in_sine)
         for w in wheels:
             w.clear_updaters()
         self.wait(0.5)
