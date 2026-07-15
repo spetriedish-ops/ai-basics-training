@@ -132,7 +132,9 @@ the authoritative live version.
 
 Sarah explicitly approved the underlying finished visual set and described it
 as ready to wrap. The new Frontier and MCP click-pacing versions preserve that
-art and are built and verified, but still await Sarah's live review. The older
+art and are built and verified, but still await Sarah's live review.
+Still owed: the brain-in-harness animation (spec Task C) — blocked on
+Sarah's incoming sketch; it slots before the Engine Factory. The older
 animation set remains recoverable at `a038091` if a run-of-show edit ever
 exposes an unforeseen problem.
 
