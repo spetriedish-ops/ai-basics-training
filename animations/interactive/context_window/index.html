@@ -67,7 +67,7 @@
     }
 
     function advance() {
-      if (video.paused && video.currentTime < 0.05) { video.play().catch(() => {}); return; }
+      if (video.paused && !holding) { video.play().catch(() => {}); return; }
       if (index < stages.length - 1) loadStage(index + 1); }
     function back() { if (index > 0) loadStage(index - 1, false); }
 

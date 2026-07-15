@@ -105,6 +105,73 @@ def slug(label):
     return "-".join(keep.split())[:40]
 
 
+FPS = 30
+SEED_CYCLE = 15          # 3 boil seeds x 5 frames
+HOLD_FRAMES = SEED_CYCLE + 1
+
+
+def gray_frames(path):
+    """Whole video, 240x135 grayscale, as an (n, h, w) uint8 array."""
+    import numpy as np
+    p = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", str(path),
+         "-vf", "scale=240:135,format=gray", "-f", "rawvideo", "-"],
+        capture_output=True, check=True)
+    n = len(p.stdout) // (240 * 135)
+    return np.frombuffer(p.stdout[:n * 240 * 135], "uint8"
+                         ).reshape(n, 135, 240).astype("int16")
+
+
+def loop_scores(f):
+    """score[i] = motion across the would-be hold window starting at i.
+
+    Compares frames one full boil-seed cycle apart, so pure boil scores
+    ~0.1-0.9 and any real animation scores >2. A hold window is the
+    HOLD_FRAMES frames from i; it loops seamlessly iff static.
+    """
+    import numpy as np
+    d = np.abs(f[SEED_CYCLE:] - f[:-SEED_CYCLE]).mean(axis=(1, 2))
+    n = len(d)
+    return np.array([max(d[i], d[min(i + 1, n - 1)]) for i in range(n)])
+
+
+def place_cuts(scores, semantic_ends, duration):
+    """Snap each semantic cut to the nearest static boil window.
+
+    Prefers the latest static window at or before the semantic cut
+    (teaching content complete, tableau at rest); if the beat is still
+    moving there, walks forward toward the next cut. Returns
+    (end_frames, mode) per stage; mode 'freeze' marks no-window-found.
+    """
+    placed = []
+    prev = 0
+    n = len(scores)
+    for k, end_s in enumerate(semantic_ends):
+        c = min(int(end_s * FPS), n - 1)
+        hi = (min(int(semantic_ends[k + 1] * FPS), n) - 4
+              if k + 1 < len(semantic_ends)
+              else min(int(duration * FPS) - 2, n))
+        lo = prev + 8
+        pick, mode = None, "static"
+        for thr in (0.9, 1.8):
+            back = [i for i in range(lo, min(c, hi) - HOLD_FRAMES + 1)
+                    if scores[i] < thr]
+            if back:
+                pick = back[-1]
+                break
+            fwd = [i for i in range(min(c, hi) - HOLD_FRAMES + 1,
+                                    hi - HOLD_FRAMES + 1)
+                   if i >= lo and scores[i] < thr]
+            if fwd:
+                pick = fwd[0]
+                break
+        if pick is None:                    # fully animated beat tail
+            pick, mode = min(c, hi) - HOLD_FRAMES, "freeze"
+        placed.append((pick + HOLD_FRAMES, mode))
+        prev = pick + HOLD_FRAMES
+    return placed
+
+
 def sheets():
     from PIL import Image, ImageDraw
     for stem, (title, stages) in SCENES.items():
@@ -144,20 +211,43 @@ def split():
                     ["click", "Space", "ArrowRight", "ArrowLeft",
                      "H (hide HUD)", "R (restart)"],
                     "source": f"renders/final/{stem}.mp4"}
+        # snap every cut to a static boil window — a hold that loops any
+        # real motion reads as a skipping CD (found the hard way)
+        import numpy as np  # noqa: F401
+        f = gray_frames(src)
+        dur = float(subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "csv=p=0", str(src)], capture_output=True, text=True,
+            check=True).stdout.strip())
+        scores = loop_scores(f)
+        placed = place_cuts(scores, [e for _, e in stages], dur)
         prev = 0.0
-        for i, (label, end) in enumerate(stages, 1):
+        for i, ((label, _), (end_fr, mode)) in enumerate(
+                zip(stages, placed), 1):
+            end = end_fr / FPS
+            hold_start = (end_fr - HOLD_FRAMES) / FPS
+            if mode == "freeze":
+                print(f"  NOTE {stem} stage {i}: no static window — "
+                      f"freeze-frame hold")
             name = f"{i:02d}-{slug(label)}.mp4"
             subprocess.run(
                 ["ffmpeg", "-y", "-v", "error", "-ss", str(prev),
                  "-to", str(end), "-i", str(src),
                  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
                  str(stages_dir / name)], check=True)
-            # native hold loop: the stage's final boil cycle as its own clip
-            subprocess.run(
-                ["ffmpeg", "-y", "-v", "error", "-ss", str(end - HOLD),
-                 "-to", str(end), "-i", str(src),
-                 "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
-                 str(holds_dir / name)], check=True)
+            if mode == "freeze":
+                subprocess.run(
+                    ["ffmpeg", "-y", "-v", "error",
+                     "-ss", str(end - 1.0 / FPS), "-i", str(src),
+                     "-frames:v", "1", "-vf", f"loop={HOLD_FRAMES}:1:0",
+                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
+                     str(holds_dir / name)], check=True)
+            else:
+                subprocess.run(
+                    ["ffmpeg", "-y", "-v", "error", "-ss", str(hold_start),
+                     "-to", str(end), "-i", str(src),
+                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
+                     str(holds_dir / name)], check=True)
             manifest["stages"].append({"label": label,
                                        "src": f"stages/{name}",
                                        "hold": f"holds/{name}"})
@@ -181,15 +271,41 @@ def split():
         html = html.replace(
             old_adv,
             "function advance() {\n"
-            "      if (video.paused && video.currentTime < 0.05) {"
+            "      if (video.paused && !holding) {"
             " video.play().catch(() => {}); return; }\n"
             "      if (index < stages.length - 1)")
         (scene_dir / "index.html").write_text(html)
         print(f"{stem}: {len(stages)} stages -> {scene_dir}")
 
 
+def verify():
+    """Every hold clip must be loopable: seed-lag motion below threshold."""
+    import numpy as np
+    bad = []
+    for mf in sorted(OUT.glob("*/manifest.json")):
+        m = json.loads(mf.read_text())
+        for st in m["stages"]:
+            f = gray_frames(mf.parent / st["hold"])
+            lag = min(SEED_CYCLE, len(f) - 1)
+            d = float(np.abs(f[lag:] - f[:-lag]).mean())
+            ok = d < 1.9
+            print(f"[{'PASS' if ok else 'FAIL'}] {mf.parent.name}/"
+                  f"{st['hold']}  motion={d:.2f}")
+            if not ok:
+                bad.append(st["hold"])
+    if bad:
+        sys.exit(f"{len(bad)} hold clip(s) would skip — do not ship.")
+    print("\nAll hold clips loop clean.")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--sheets", action="store_true")
+    ap.add_argument("--verify", action="store_true")
     a = ap.parse_args()
-    sheets() if a.sheets else split()
+    if a.sheets:
+        sheets()
+    elif a.verify:
+        verify()
+    else:
+        split()
