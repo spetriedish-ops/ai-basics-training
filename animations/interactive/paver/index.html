@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The Paver — presenter player</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    body { display: grid; place-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .stage { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; background: #faf7ef; cursor: pointer; }
+    video { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .hud { position: absolute; right: 1.15rem; bottom: 1rem; display: grid; gap: .35rem; justify-items: end; color: #34323e; text-shadow: 0 1px rgba(250,247,239,.9); transition: opacity .18s; pointer-events: none; }
+    .hud.hidden { opacity: 0; }
+    .count { padding: .34rem .55rem; border: 1px solid rgba(52,50,62,.28); border-radius: 999px; background: rgba(250,247,239,.76); font-size: clamp(.66rem, 1.05vw, .94rem); }
+    .hint { font-size: clamp(.58rem, .88vw, .80rem); opacity: .72; }
+    .stage:focus-visible { outline: 4px solid #2ea79a; outline-offset: -4px; }
+  </style>
+</head>
+<body>
+  <main class="stage" tabindex="0" role="button" aria-label="Advance The Paver animation">
+    <video muted playsinline preload="auto"></video>
+    <div class="hud">
+      <div class="count" aria-live="polite"></div>
+      <div class="hint">click / space / → next · ← back · H hide</div>
+    </div>
+  </main>
+  <script>
+    const stages = [{"label": "The prediction engine", "src": "stages/01-the-prediction-engine.mp4"}, {"label": "Words become tokens", "src": "stages/02-words-become-tokens.mp4"}, {"label": "One brick at a time", "src": "stages/03-one-brick-at-a-time.mp4"}, {"label": "Tokens in, tokens out", "src": "stages/04-tokens-in-tokens-out.mp4"}, {"label": "Confident. Smooth. Wrong.", "src": "stages/05-confident-smooth-wrong.mp4"}, {"label": "It never checks the map", "src": "stages/06-it-never-checks-the-map.mp4"}, {"label": "Only the recent road", "src": "stages/07-only-the-recent-road.mp4"}];
+    const HOLD_SECONDS = 0.52;
+    const shell = document.querySelector('.stage');
+    const video = document.querySelector('video');
+    const hud = document.querySelector('.hud');
+    const count = document.querySelector('.count');
+    let index = 0;
+    let holding = false;
+    let holdTimer = 0;
+
+    function label() {
+      count.textContent = `${index + 1} / ${stages.length} · ${stages[index].label}`;
+    }
+
+    function loadStage(next, playFromStart = true) {
+      index = Math.max(0, Math.min(stages.length - 1, next));
+      holding = false;
+      window.clearTimeout(holdTimer);
+      label();
+      video.src = stages[index].src;
+      video.load();
+      const start = () => {
+        const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
+        if (!playFromStart) {
+          holding = true;
+          video.currentTime = loopStart;
+        } else {
+          // Background WebViews may throttle interval/timeupdate events enough
+          // to skip the hold boundary. This one-shot arms the final loop at
+          // the media-clock moment even when those recurring events are sparse.
+          holdTimer = window.setTimeout(() => {
+            holding = true;
+            if (video.currentTime < loopStart - 0.08) video.currentTime = loopStart;
+          }, Math.max(0, (loopStart - 0.04) * 1000));
+        }
+        video.play().catch(() => {});
+      };
+      video.addEventListener('loadedmetadata', start, { once: true });
+    }
+
+    function advance() {
+      if (video.paused && video.currentTime < 0.05) { video.play().catch(() => {}); return; }
+      if (index < stages.length - 1) loadStage(index + 1);
+    }
+
+    function back() {
+      if (index > 0) loadStage(index - 1, false);
+    }
+
+    video.addEventListener('timeupdate', () => {
+      if (!video.duration) return;
+      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
+      if (!holding && video.currentTime >= loopStart) holding = true;
+      if (holding && video.currentTime >= video.duration - 0.08) {
+        video.currentTime = loopStart;
+      }
+    });
+    video.addEventListener('ended', () => {
+      holding = true;
+      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
+      video.currentTime = loopStart;
+      video.play().catch(() => {});
+    });
+    // WebViews can emit timeupdate too sparsely to catch the last frame before
+    // `ended`. A tiny presenter-only poll keeps the hold inside the completed
+    // 0.52-second boil segment without replaying the drawing.
+    window.setInterval(() => {
+      if (!video.duration) return;
+      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
+      if (!holding && video.currentTime >= loopStart) holding = true;
+      if (holding && (
+        video.currentTime >= video.duration - 0.14 ||
+        video.currentTime < loopStart - 0.08
+      )) video.currentTime = loopStart;
+    }, 40);
+    shell.addEventListener('click', advance);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') { event.preventDefault(); advance(); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); back(); }
+      if (event.key.toLowerCase() === 'h') hud.classList.toggle('hidden');
+      if (event.key.toLowerCase() === 'r') loadStage(0);
+    });
+    loadStage(0);
+    shell.focus();
+  </script>
+</body>
+</html>

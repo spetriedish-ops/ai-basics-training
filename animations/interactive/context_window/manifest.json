@@ -1,0 +1,46 @@
+{
+  "stages": [
+    {
+      "label": "Everything you load takes tokens",
+      "src": "stages/01-everything-you-load-takes-tokens.mp4"
+    },
+    {
+      "label": "Tools bolt on abilities",
+      "src": "stages/02-tools-bolt-on-abilities.mp4"
+    },
+    {
+      "label": "Every tool adds weight",
+      "src": "stages/03-every-tool-adds-weight.mp4"
+    },
+    {
+      "label": "Surely one more",
+      "src": "stages/04-surely-one-more.mp4"
+    },
+    {
+      "label": "Too many to choose",
+      "src": "stages/05-too-many-to-choose.mp4"
+    },
+    {
+      "label": "Overfill and things fall out",
+      "src": "stages/06-overfill-and-things-fall-out.mp4"
+    },
+    {
+      "label": "The dump: session over",
+      "src": "stages/07-the-dump-session-over.mp4"
+    },
+    {
+      "label": "Every new session starts empty",
+      "src": "stages/08-every-new-session-starts-empty.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H (hide HUD)",
+    "R (restart)"
+  ],
+  "hold_seconds": 0.52,
+  "source": "renders/final/context_window.mp4"
+}

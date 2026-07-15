@@ -1,0 +1,34 @@
+{
+  "stages": [
+    {
+      "label": "Rules: perfect on the line",
+      "src": "stages/01-rules-perfect-on-the-line.mp4"
+    },
+    {
+      "label": "One learned route",
+      "src": "stages/02-one-learned-route.mp4"
+    },
+    {
+      "label": "An engine for anything",
+      "src": "stages/03-an-engine-for-anything.mp4"
+    },
+    {
+      "label": "Each generation hauls more",
+      "src": "stages/04-each-generation-hauls-more.mp4"
+    },
+    {
+      "label": "Meet today's truck",
+      "src": "stages/05-meet-todays-truck.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H (hide HUD)",
+    "R (restart)"
+  ],
+  "hold_seconds": 0.52,
+  "source": "renders/final/garage.mp4"
+}

@@ -2,7 +2,7 @@
 
 **From:** Sarah + Codex
 **To:** Claude Code
-**Date:** 2026-07-14
+**Date:** 2026-07-15
 **Purpose:** Assemble the full presentation run of show using the finished,
 Sarah-approved pencil animation set.
 
@@ -13,17 +13,64 @@ bake-off. It is useful background, but its scope and status table are stale.
 This document describes the finished work. `RUN-OF-SHOW.md` now contains the
 current visual mapping.
 
-The completed personality pass was developed on `codex/personality-pass`. If
-it has not yet been merged, fetch and switch to that branch before assembling
-the deck; confirm the local state with `git status`. Commit `a038091` is the
+The completed personality pass is merged into `main`. Commit `a038091` is the
 preserved fallback: it contains the approved pencil set immediately before the
 later personality and timing pass.
 
-## Slide-ready deliverables
+## Primary live-delivery artifacts
 
-Use the MP4s for presentation slides. They are silent, H.264, 1920x1080,
-30 fps, no longer than 25 seconds, and loop back through empty notebook paper.
-The GIFs are smaller wiki previews, not the preferred slide assets.
+The delivery format has changed: the full-screen HTML click-through is the
+presentation, not a Google Slides deck. Use these presenter players for the
+three teaching visuals that need narration-controlled pacing:
+
+| Presentation concept | Presenter player | Stages |
+|---|---|---:|
+| Frontier labs, models, harnesses, APIs | `pencil-codex/interactive/frontier_labs/index.html` | 3 |
+| Harness mind map | `pencil-codex/interactive/harness_mind_map/index.html` | 8 |
+| MCP vs CLI vs API | `pencil-codex/interactive/mcp_cli_api/index.html` | 3 |
+
+Serve `pencil-codex/` over localhost and open the relevant `index.html`.
+Controls are consistent across all three players:
+
+- click, Space, Enter, or Right Arrow: draw the next stage;
+- Left Arrow: return to the previous completed stage;
+- `H`: hide/show the presenter HUD;
+- `R`: restart at stage one.
+
+Each completed stage waits indefinitely while the paper and pencil retain
+their subtle boil. Frontier stages are Labs → Models → Harnesses + API; the
+last stage includes the open-weight note. MCP stages are MCP → CLI → API; the
+entire official/unofficial MCP section appears together in stage one.
+
+## Jobsite scene players (added 2026-07-15)
+
+The seven vector Jobsite scenes follow the same presenter-player contract
+(identical controls and hold behavior; one extra hardening: if autoplay is
+blocked, the first click plays the current stage instead of advancing).
+Serve `animations/` over localhost:
+
+| Presentation concept | Presenter player | Stages |
+|---|---|---:|
+| The Garage (session kickoff) | `interactive/garage/index.html` | 5 |
+| Engine Factory (model lifecycle + inference) | `interactive/engine_factory/index.html` | 5 |
+| The Paver (prediction engine) | `interactive/paver/index.html` | 7 |
+| The Truck (context window) | `interactive/context_window/index.html` | 8 |
+| The Toolbox (MCP) | `interactive/toolbox/index.html` | 6 |
+| Pop the Hood (anatomy) | `interactive/agent_anatomy/index.html` | 8 |
+| The Fleet (orchestration) | `interactive/fleet/index.html` | 8 |
+
+Stage clips are cut from the verified boiled finals at caption beats
+(`scripts/stage_split.py`, timelines from `scripts/beat_times.py`); each
+stage holds by looping its last 0.52 s boil cycle. The scenes' old
+roll-off-to-empty endings are deliberately cut — every player ends holding
+the complete tableau. The `renders/final/*.mp4` masters are unchanged
+(archival; they still include the exit beats).
+
+## Continuous take-home masters
+
+The silent H.264, 1920x1080, 30 fps MP4s remain useful as archival/take-home
+versions. All now end on the complete drawing and keep boiling; none fades back
+to empty notebook paper. The GIFs are smaller wiki previews.
 
 | Presentation concept | Slide master | Duration |
 |---|---|---:|
@@ -37,21 +84,13 @@ The GIFs are smaller wiki previews, not the preferred slide assets.
 All corresponding `.gif` files are in `pencil-codex/out/`. All passed the
 repository's visual/format checks and are below the 10 MB wiki ceiling.
 
-## Harness presenter player
+## Harness presenter sequence
 
 The Harness animation has a second, presenter-controlled delivery mode:
 
 `pencil-codex/interactive/harness_mind_map/index.html`
 
-Serve `pencil-codex/` over localhost and open that page. Controls:
-
-- click, Space, Enter, or Right Arrow: draw the next stage;
-- Left Arrow: return to the previous completed stage;
-- `H`: hide/show the presenter HUD;
-- `R`: restart at Harness.
-
-Each completed stage holds indefinitely while the paper and pencil continue
-their gentle boil. The Sarah-approved stage order is:
+The Sarah-approved stage order is:
 
 1. Harness
 2. Model
@@ -62,15 +101,8 @@ their gentle boil. The Sarah-approved stage order is:
 7. Skills, followed by the dotted Context-to-Skills line drawing left to right
 8. “If this is a harness, what is an agent?”
 
-Google Slides cannot directly host this local interactive HTML artifact. For
-the deck, choose one of these approaches:
-
-1. Import the 24.8-second master MP4 for automatic playback.
-2. Put the eight files in `interactive/harness_mind_map/stages/` on eight
-   consecutive slides so slide advancement becomes the presenter click.
-3. Keep the browser player open separately and switch to it during the talk.
-
-Option 2 is the closest Google Slides equivalent to the interactive player.
+The continuous Harness MP4 is an archival fallback. The interactive player is
+the authoritative live version.
 
 ## Approved creative decisions to preserve
 
@@ -121,7 +153,8 @@ From `animations/pencil-codex/`:
 ../.venv/bin/python verify_sketch_set.py
 ```
 
-For a single shared-renderer page:
+For a single shared-renderer page (this also regenerates its interactive player
+when the scene is Frontier or MCP):
 
 ```bash
 ../.venv/bin/python render_sketch_set.py --scene mcp_cli_api
@@ -133,10 +166,8 @@ audit images, then rerun both verifiers before committing.
 
 ## Run-of-show integration guidance
 
-`RUN-OF-SHOW.md` is the current content spine. Claude has additional deck and
-talk-track context and may adjust slide ordering or playback settings, but
-should preserve each animation's internal teaching order and the creative
-decisions above. Prefer one animation per slide, autoplay muted, with looping
-enabled where the slide software supports it. The full set was designed for
-Sarah to narrate live; no audio track or additional explanatory captions are
-needed.
+`RUN-OF-SHOW.md` is the current content spine. Claude has additional
+presentation and talk-track context and may adjust ordering, but should
+preserve each animation's internal teaching order and the creative decisions
+above. The set was designed for Sarah to narrate live; no audio track or
+additional explanatory captions are needed.

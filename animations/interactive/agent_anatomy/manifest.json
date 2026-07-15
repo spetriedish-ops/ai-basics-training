@@ -1,0 +1,46 @@
+{
+  "stages": [
+    {
+      "label": "Meet the agent",
+      "src": "stages/01-meet-the-agent.mp4"
+    },
+    {
+      "label": "The model inside",
+      "src": "stages/02-the-model-inside.mp4"
+    },
+    {
+      "label": "The context window",
+      "src": "stages/03-the-context-window.mp4"
+    },
+    {
+      "label": "Tools",
+      "src": "stages/04-tools.mp4"
+    },
+    {
+      "label": "Skills",
+      "src": "stages/05-skills.mp4"
+    },
+    {
+      "label": "The loop, twice around",
+      "src": "stages/06-the-loop-twice-around.mp4"
+    },
+    {
+      "label": "The harness: the site",
+      "src": "stages/07-the-harness-the-site.mp4"
+    },
+    {
+      "label": "Backup arrives",
+      "src": "stages/08-backup-arrives.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H (hide HUD)",
+    "R (restart)"
+  ],
+  "hold_seconds": 0.52,
+  "source": "renders/final/agent_anatomy.mp4"
+}

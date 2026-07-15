@@ -1,0 +1,46 @@
+{
+  "stages": [
+    {
+      "label": "Some jobs are too big alone",
+      "src": "stages/01-some-jobs-are-too-big-alone.mp4"
+    },
+    {
+      "label": "A subagent goes out",
+      "src": "stages/02-a-subagent-goes-out.mp4"
+    },
+    {
+      "label": "Its own bed, its own fuel",
+      "src": "stages/03-its-own-bed-its-own-fuel.mp4"
+    },
+    {
+      "label": "Only the result comes back",
+      "src": "stages/04-only-the-result-comes-back.mp4"
+    },
+    {
+      "label": "One coordinator, many specialists",
+      "src": "stages/05-one-coordinator-many-specialists.mp4"
+    },
+    {
+      "label": "Coordination is also a job",
+      "src": "stages/06-coordination-is-also-a-job.mp4"
+    },
+    {
+      "label": "Three vans, on a schedule",
+      "src": "stages/07-three-vans-on-a-schedule.mp4"
+    },
+    {
+      "label": "The whole site",
+      "src": "stages/08-the-whole-site.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H (hide HUD)",
+    "R (restart)"
+  ],
+  "hold_seconds": 0.52,
+  "source": "renders/final/fleet.mp4"
+}
