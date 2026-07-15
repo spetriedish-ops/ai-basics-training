@@ -1,4 +1,4 @@
-# Run of show — AI Basics, July 15 2026
+# Run of show — AI Basics, July 16 2026
 
 For paths, controls, approved visual decisions, and all interactive pencil
 sequences, see [`CLAUDE-HANDOFF.md`](CLAUDE-HANDOFF.md).
