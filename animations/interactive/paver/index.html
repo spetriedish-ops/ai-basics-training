@@ -27,54 +27,39 @@
     </div>
   </main>
   <script>
-    const stages = [{"label": "The prediction engine", "src": "stages/01-the-prediction-engine.mp4", "hold": "holds/01-the-prediction-engine.mp4"}, {"label": "Words become tokens", "src": "stages/02-words-become-tokens.mp4", "hold": "holds/02-words-become-tokens.mp4"}, {"label": "One brick at a time", "src": "stages/03-one-brick-at-a-time.mp4", "hold": "holds/03-one-brick-at-a-time.mp4"}, {"label": "Tokens in, tokens out", "src": "stages/04-tokens-in-tokens-out.mp4", "hold": "holds/04-tokens-in-tokens-out.mp4"}, {"label": "Confident. Smooth. Wrong.", "src": "stages/05-confident-smooth-wrong.mp4", "hold": "holds/05-confident-smooth-wrong.mp4"}, {"label": "It never checks the map", "src": "stages/06-it-never-checks-the-map.mp4", "hold": "holds/06-it-never-checks-the-map.mp4"}, {"label": "Only the recent road", "src": "stages/07-only-the-recent-road.mp4", "hold": "holds/07-only-the-recent-road.mp4"}];
+    const stages = [{"label": "The prediction engine", "src": "stages/01-the-prediction-engine.mp4"}, {"label": "Words become tokens", "src": "stages/02-words-become-tokens.mp4"}, {"label": "One brick at a time", "src": "stages/03-one-brick-at-a-time.mp4"}, {"label": "Tokens in, tokens out", "src": "stages/04-tokens-in-tokens-out.mp4"}, {"label": "Confident. Smooth. Wrong.", "src": "stages/05-confident-smooth-wrong.mp4"}, {"label": "It never checks the map", "src": "stages/06-it-never-checks-the-map.mp4"}, {"label": "Only the recent road", "src": "stages/07-only-the-recent-road.mp4"}];
     const shell = document.querySelector('.stage');
     const video = document.querySelector('video');
     const hud = document.querySelector('.hud');
     const count = document.querySelector('.count');
     let index = 0;
-    let holding = false;
-    let holdTimer = 0;
 
     function label() {
       count.textContent = `${index + 1} / ${stages.length} · ${stages[index].label}`;
     }
 
-    function loadHold() {
-      if (holding) return;
-      holding = true;
-      window.clearTimeout(holdTimer);
-      video.loop = true;
-      video.src = stages[index].hold;
-      video.load();
-      video.addEventListener('loadedmetadata', () => video.play().catch(() => {}), { once: true });
-    }
-
     function loadStage(next, playFromStart = true) {
       index = Math.max(0, Math.min(stages.length - 1, next));
-      holding = false;
-      window.clearTimeout(holdTimer);
       label();
-      if (!playFromStart) { loadHold(); return; }
-      video.loop = false;
       video.src = stages[index].src;
       video.load();
-      const start = () => {
-        holdTimer = window.setTimeout(loadHold, Math.max(0, (video.duration - 0.10) * 1000));
-        video.play().catch(() => {});
-      };
-      video.addEventListener('loadedmetadata', start, { once: true });
+      video.addEventListener('loadedmetadata', () => {
+        if (playFromStart) { video.play().catch(() => {}); }
+        else { video.currentTime = Math.max(0, video.duration - 0.05); }
+      }, { once: true });
     }
 
     function advance() {
-      if (video.paused && !holding) { video.play().catch(() => {}); return; }
-      if (index < stages.length - 1) loadStage(index + 1); }
+      // autoplay was blocked on a fresh stage: first click plays it
+      if (video.paused && !video.ended && video.currentTime < 0.1) {
+        video.play().catch(() => {});
+        return;
+      }
+      if (index < stages.length - 1) loadStage(index + 1);
+    }
+
     function back() { if (index > 0) loadStage(index - 1, false); }
 
-    video.addEventListener('timeupdate', () => {
-      if (!holding && video.duration && video.currentTime >= video.duration - 0.12) loadHold();
-    });
-    video.addEventListener('ended', loadHold);
     shell.addEventListener('click', advance);
     window.addEventListener('keydown', (event) => {
       if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') { event.preventDefault(); advance(); }

@@ -2,28 +2,23 @@
   "stages": [
     {
       "label": "Rules: perfect on the line",
-      "src": "stages/01-rules-perfect-on-the-line.mp4",
-      "hold": "holds/01-rules-perfect-on-the-line.mp4"
+      "src": "stages/01-rules-perfect-on-the-line.mp4"
     },
     {
       "label": "One learned route",
-      "src": "stages/02-one-learned-route.mp4",
-      "hold": "holds/02-one-learned-route.mp4"
+      "src": "stages/02-one-learned-route.mp4"
     },
     {
       "label": "An engine for anything",
-      "src": "stages/03-an-engine-for-anything.mp4",
-      "hold": "holds/03-an-engine-for-anything.mp4"
+      "src": "stages/03-an-engine-for-anything.mp4"
     },
     {
       "label": "Each generation hauls more",
-      "src": "stages/04-each-generation-hauls-more.mp4",
-      "hold": "holds/04-each-generation-hauls-more.mp4"
+      "src": "stages/04-each-generation-hauls-more.mp4"
     },
     {
       "label": "Meet today's truck",
-      "src": "stages/05-meet-todays-truck.mp4",
-      "hold": "holds/05-meet-todays-truck.mp4"
+      "src": "stages/05-meet-todays-truck.mp4"
     }
   ],
   "controls": [

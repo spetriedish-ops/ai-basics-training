@@ -2,38 +2,31 @@
   "stages": [
     {
       "label": "The prediction engine",
-      "src": "stages/01-the-prediction-engine.mp4",
-      "hold": "holds/01-the-prediction-engine.mp4"
+      "src": "stages/01-the-prediction-engine.mp4"
     },
     {
       "label": "Words become tokens",
-      "src": "stages/02-words-become-tokens.mp4",
-      "hold": "holds/02-words-become-tokens.mp4"
+      "src": "stages/02-words-become-tokens.mp4"
     },
     {
       "label": "One brick at a time",
-      "src": "stages/03-one-brick-at-a-time.mp4",
-      "hold": "holds/03-one-brick-at-a-time.mp4"
+      "src": "stages/03-one-brick-at-a-time.mp4"
     },
     {
       "label": "Tokens in, tokens out",
-      "src": "stages/04-tokens-in-tokens-out.mp4",
-      "hold": "holds/04-tokens-in-tokens-out.mp4"
+      "src": "stages/04-tokens-in-tokens-out.mp4"
     },
     {
       "label": "Confident. Smooth. Wrong.",
-      "src": "stages/05-confident-smooth-wrong.mp4",
-      "hold": "holds/05-confident-smooth-wrong.mp4"
+      "src": "stages/05-confident-smooth-wrong.mp4"
     },
     {
       "label": "It never checks the map",
-      "src": "stages/06-it-never-checks-the-map.mp4",
-      "hold": "holds/06-it-never-checks-the-map.mp4"
+      "src": "stages/06-it-never-checks-the-map.mp4"
     },
     {
       "label": "Only the recent road",
-      "src": "stages/07-only-the-recent-road.mp4",
-      "hold": "holds/07-only-the-recent-road.mp4"
+      "src": "stages/07-only-the-recent-road.mp4"
     }
   ],
   "controls": [

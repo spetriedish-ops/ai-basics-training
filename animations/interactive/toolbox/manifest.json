@@ -2,33 +2,27 @@
   "stages": [
     {
       "label": "One connection, a whole toolbox",
-      "src": "stages/01-one-connection-a-whole-toolbox.mp4",
-      "hold": "holds/01-one-connection-a-whole-toolbox.mp4"
+      "src": "stages/01-one-connection-a-whole-toolbox.mp4"
     },
     {
       "label": "Every tool ships a card",
-      "src": "stages/02-every-tool-ships-a-card.mp4",
-      "hold": "holds/02-every-tool-ships-a-card.mp4"
+      "src": "stages/02-every-tool-ships-a-card.mp4"
     },
     {
       "label": "More tools, more you can do",
-      "src": "stages/03-more-tools-more-you-can-do.mp4",
-      "hold": "holds/03-more-tools-more-you-can-do.mp4"
+      "src": "stages/03-more-tools-more-you-can-do.mp4"
     },
     {
       "label": "Surely one more box",
-      "src": "stages/04-surely-one-more-box.mp4",
-      "hold": "holds/04-surely-one-more-box.mp4"
+      "src": "stages/04-surely-one-more-box.mp4"
     },
     {
       "label": "The wrong tool grabs",
-      "src": "stages/05-the-wrong-tool-grabs.mp4",
-      "hold": "holds/05-the-wrong-tool-grabs.mp4"
+      "src": "stages/05-the-wrong-tool-grabs.mp4"
     },
     {
       "label": "Curate the toolbox",
-      "src": "stages/06-curate-the-toolbox.mp4",
-      "hold": "holds/06-curate-the-toolbox.mp4"
+      "src": "stages/06-curate-the-toolbox.mp4"
     }
   ],
   "controls": [

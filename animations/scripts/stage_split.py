@@ -93,11 +93,85 @@ SCENES = {
     ]),
 }
 
-# the frontier player is the newest pattern: dedicated native hold clips
-# (holds/NN.mp4, loop=true) instead of JS tail-seeking — immune to
-# throttled-tab replay glitches
-PLAYER_TEMPLATE_PATH = (HERE / "pencil-codex" / "interactive" /
-                        "frontier_labs" / "index.html")
+# Self-contained player: each stage is ONE file that plays once and ends
+# frozen on its tableau (the boiling hold is baked into the file's tail).
+# No src swaps mid-flight, no native loops of tiny files — both stuttered
+# on the presentation machine.
+PLAYER = """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>__TITLE__ — presenter player</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    body { display: grid; place-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .stage { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; background: #faf7ef; cursor: pointer; }
+    video { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .hud { position: absolute; right: 1.15rem; bottom: 1rem; display: grid; gap: .35rem; justify-items: end; color: #34323e; text-shadow: 0 1px rgba(250,247,239,.9); transition: opacity .18s; pointer-events: none; }
+    .hud.hidden { opacity: 0; }
+    .count { padding: .34rem .55rem; border: 1px solid rgba(52,50,62,.28); border-radius: 999px; background: rgba(250,247,239,.76); font-size: clamp(.66rem, 1.05vw, .94rem); }
+    .hint { font-size: clamp(.58rem, .88vw, .80rem); opacity: .72; }
+    .stage:focus-visible { outline: 4px solid #2ea79a; outline-offset: -4px; }
+  </style>
+</head>
+<body>
+  <main class="stage" tabindex="0" role="button" aria-label="Advance __TITLE__ animation">
+    <video muted playsinline preload="auto"></video>
+    <div class="hud">
+      <div class="count" aria-live="polite"></div>
+      <div class="hint">click / space / → next · ← back · H hide</div>
+    </div>
+  </main>
+  <script>
+    const stages = __STAGES__;
+    const shell = document.querySelector('.stage');
+    const video = document.querySelector('video');
+    const hud = document.querySelector('.hud');
+    const count = document.querySelector('.count');
+    let index = 0;
+
+    function label() {
+      count.textContent = `${index + 1} / ${stages.length} · ${stages[index].label}`;
+    }
+
+    function loadStage(next, playFromStart = true) {
+      index = Math.max(0, Math.min(stages.length - 1, next));
+      label();
+      video.src = stages[index].src;
+      video.load();
+      video.addEventListener('loadedmetadata', () => {
+        if (playFromStart) { video.play().catch(() => {}); }
+        else { video.currentTime = Math.max(0, video.duration - 0.05); }
+      }, { once: true });
+    }
+
+    function advance() {
+      // autoplay was blocked on a fresh stage: first click plays it
+      if (video.paused && !video.ended && video.currentTime < 0.1) {
+        video.play().catch(() => {});
+        return;
+      }
+      if (index < stages.length - 1) loadStage(index + 1);
+    }
+
+    function back() { if (index > 0) loadStage(index - 1, false); }
+
+    shell.addEventListener('click', advance);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') { event.preventDefault(); advance(); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); back(); }
+      if (event.key.toLowerCase() === 'h') hud.classList.toggle('hidden');
+      if (event.key.toLowerCase() === 'r') loadStage(0);
+    });
+    loadStage(0);
+    shell.focus();
+  </script>
+</body>
+</html>
+"""
 
 
 def slug(label):
@@ -108,6 +182,7 @@ def slug(label):
 FPS = 30
 SEED_CYCLE = 15          # 3 boil seeds x 5 frames
 HOLD_FRAMES = SEED_CYCLE + 1
+TAIL_REPS = 15           # boil cycles baked onto each stage (~8.5 s)
 
 
 def gray_frames(path):
@@ -199,20 +274,23 @@ def sheets():
 
 
 def split():
-    template = PLAYER_TEMPLATE_PATH.read_text()
+    import shutil
     for stem, (title, stages) in SCENES.items():
         src = FINAL / f"{stem}.mp4"
         scene_dir = OUT / stem
         stages_dir = scene_dir / "stages"
-        holds_dir = scene_dir / "holds"
         stages_dir.mkdir(parents=True, exist_ok=True)
-        holds_dir.mkdir(parents=True, exist_ok=True)
+        shutil.rmtree(scene_dir / "holds", ignore_errors=True)
         manifest = {"stages": [], "controls":
                     ["click", "Space", "ArrowRight", "ArrowLeft",
                      "H (hide HUD)", "R (restart)"],
                     "source": f"renders/final/{stem}.mp4"}
-        # snap every cut to a static boil window — a hold that loops any
-        # real motion reads as a skipping CD (found the hard way)
+        # snap every cut to a static boil window, then bake the boiling
+        # hold INTO the stage file: the static window repeated TAIL_REPS
+        # times in one continuous encode. One file per stage, played once,
+        # freezing at its end — no src swaps, no native loops, nothing for
+        # a browser to stutter on. (Separate looping hold files skipped
+        # frames on the presentation machine — twice.)
         import numpy as np  # noqa: F401
         f = gray_frames(src)
         dur = float(subprocess.run(
@@ -228,74 +306,53 @@ def split():
             hold_start = (end_fr - HOLD_FRAMES) / FPS
             if mode == "freeze":
                 print(f"  NOTE {stem} stage {i}: no static window — "
-                      f"freeze-frame hold")
+                      f"tail freezes without boil")
             name = f"{i:02d}-{slug(label)}.mp4"
+            fc = (
+                f"[0:v]trim=start={prev}:end={end},"
+                f"setpts=PTS-STARTPTS[body];"
+                f"[0:v]trim=start={hold_start}:end={end},"
+                f"setpts=PTS-STARTPTS,loop=loop={TAIL_REPS}:"
+                f"size={HOLD_FRAMES}:start=0[tail];"
+                f"[body][tail]concat=n=2:v=1[out]"
+            )
             subprocess.run(
-                ["ffmpeg", "-y", "-v", "error", "-ss", str(prev),
-                 "-to", str(end), "-i", str(src),
+                ["ffmpeg", "-y", "-v", "error", "-i", str(src),
+                 "-filter_complex", fc, "-map", "[out]",
                  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
                  str(stages_dir / name)], check=True)
-            if mode == "freeze":
-                subprocess.run(
-                    ["ffmpeg", "-y", "-v", "error",
-                     "-ss", str(end - 1.0 / FPS), "-i", str(src),
-                     "-frames:v", "1", "-vf", f"loop={HOLD_FRAMES}:1:0",
-                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
-                     str(holds_dir / name)], check=True)
-            else:
-                subprocess.run(
-                    ["ffmpeg", "-y", "-v", "error", "-ss", str(hold_start),
-                     "-to", str(end), "-i", str(src),
-                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
-                     str(holds_dir / name)], check=True)
             manifest["stages"].append({"label": label,
-                                       "src": f"stages/{name}",
-                                       "hold": f"holds/{name}"})
+                                       "src": f"stages/{name}"})
             prev = end
         (scene_dir / "manifest.json").write_text(
             json.dumps(manifest, indent=2))
 
-        import re
-        html = template
-        html = re.sub(r"<title>.*?</title>",
-                      f"<title>{title} — presenter player</title>", html)
-        html = re.sub(r'aria-label="Advance [^"]*"',
-                      f'aria-label="Advance {title} animation"', html)
-        html = re.sub(r"const stages = \[.*?\];",
-                      "const stages = " + json.dumps(manifest["stages"]) + ";",
-                      html, count=1, flags=re.S)
-        # hardening: if autoplay was blocked, the first click PLAYS the
-        # current stage instead of skipping past it
-        old_adv = "function advance() { if (index < stages.length - 1)"
-        assert old_adv in html, "player template changed; update the patch"
-        html = html.replace(
-            old_adv,
-            "function advance() {\n"
-            "      if (video.paused && !holding) {"
-            " video.play().catch(() => {}); return; }\n"
-            "      if (index < stages.length - 1)")
+        html = (PLAYER
+                .replace("__TITLE__", title)
+                .replace("__STAGES__", json.dumps(manifest["stages"])))
         (scene_dir / "index.html").write_text(html)
         print(f"{stem}: {len(stages)} stages -> {scene_dir}")
 
 
 def verify():
-    """Every hold clip must be loopable: seed-lag motion below threshold."""
+    """Every stage file's baked tail must be static boil (no jumping)."""
     import numpy as np
+    tail_frames = HOLD_FRAMES * TAIL_REPS
     bad = []
     for mf in sorted(OUT.glob("*/manifest.json")):
         m = json.loads(mf.read_text())
         for st in m["stages"]:
-            f = gray_frames(mf.parent / st["hold"])
-            lag = min(SEED_CYCLE, len(f) - 1)
-            d = float(np.abs(f[lag:] - f[:-lag]).mean())
+            f = gray_frames(mf.parent / st["src"])
+            t = f[-min(tail_frames, len(f) - 1):]
+            d = float(np.abs(t[SEED_CYCLE:] - t[:-SEED_CYCLE]).mean())
             ok = d < 1.9
             print(f"[{'PASS' if ok else 'FAIL'}] {mf.parent.name}/"
-                  f"{st['hold']}  motion={d:.2f}")
+                  f"{st['src']}  tail motion={d:.2f}")
             if not ok:
-                bad.append(st["hold"])
+                bad.append(st["src"])
     if bad:
-        sys.exit(f"{len(bad)} hold clip(s) would skip — do not ship.")
-    print("\nAll hold clips loop clean.")
+        sys.exit(f"{len(bad)} stage tail(s) would jump — do not ship.")
+    print("\nAll stage tails hold clean.")
 
 
 if __name__ == "__main__":
