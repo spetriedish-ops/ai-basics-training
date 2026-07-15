@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Jobsite — 3D walkthrough</title>
+<style>
+  @font-face { font-family: 'Patrick Hand'; src: url('../../assets/fonts/PatrickHand-Regular.ttf'); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #E8F1F8;
+               font-family: 'Patrick Hand', 'Comic Sans MS', cursive; }
+  #app { position: fixed; inset: 0; }
+  .hud { position: fixed; left: 50%; transform: translateX(-50%);
+         text-align: center; color: #33323E; z-index: 5; pointer-events: none; }
+  #title { top: 14px; font-size: 30px; }
+  #station { bottom: 74px; font-size: 26px; background: rgba(250,247,239,.85);
+             border: 3px solid #33323E; border-radius: 14px; padding: 4px 18px; }
+  #hint { bottom: 14px; font-size: 17px; color: #8B8A97; }
+  #nav { position: fixed; bottom: 70px; width: 100%; display: flex;
+         justify-content: space-between; padding: 0 22px; z-index: 6; }
+  button { font-family: inherit; font-size: 20px; padding: 8px 16px;
+           border: 3px solid #33323E; border-radius: 12px; background: #2EA79A;
+           color: #fff; cursor: pointer; }
+  #stations { position: fixed; top: 12px; right: 12px; z-index: 6;
+              display: flex; flex-direction: column; gap: 4px; max-height: 90vh;
+              overflow-y: auto; }
+  #stations button { font-size: 14px; padding: 3px 10px; background: #fff;
+                     color: #33323E; border-width: 2px; text-align: left; }
+  #stations button.active { background: #2EA79A; color: #fff; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hud" id="title">THE JOBSITE — the whole training, walkable</div>
+<div class="hud" id="station"></div>
+<div class="hud" id="hint">click to walk (WASD + mouse, esc to release) · or use the buttons</div>
+<div id="nav">
+  <button id="prev">&larr; previous</button>
+  <button id="next">next station &rarr;</button>
+</div>
+<div id="stations"></div>
+
+<script type="importmap">
+{ "imports": { "three": "./three.module.min.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from './GLTFLoader.js';
+import { PointerLockControls } from './PointerLockControls.js';
+
+// Blender (x, y, 0) -> glTF/three (x, z-up->y, -y). One entry per station.
+const S = i => ({ x: Math.sin(i * 0.55) * 10.0, z: -i * 14.0 });
+const STATIONS = [
+  ['00', 'The Garage'], ['01', 'Engine Factory'], ['02', 'The Paver'],
+  ['03', 'Agentic Loop'], ['04', 'Frontier Labs'], ['05', 'The Harness Map'],
+  ['06', 'The Toolbox'], ['07', 'MCP · CLI · API'], ['08', 'Context Truck'],
+  ['09', 'Pop the Hood'], ['10', 'What is an Agent'], ['11', 'The Fleet'],
+  ['12', 'Orchestration'],
+].map(([n, t], i) => ({ n, t, ...S(i) }));
+
+const app = document.getElementById('app');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xE8F1F8);
+scene.fog = new THREE.Fog(0xE8F1F8, 60, 160);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 400);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+app.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xD8CBB2, 1.4));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(30, 60, 20);
+scene.add(sun);
+
+new GLTFLoader().load('./jobsite.glb', g => scene.add(g.scene),
+  undefined, e => console.error('GLB load failed', e));
+
+const controls = new PointerLockControls(camera, renderer.domElement);
+renderer.domElement.addEventListener('click', () => controls.lock());
+
+const keys = {};
+addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'KeyN' || e.code === 'ArrowRight') go(idx + 1);
+  if (e.code === 'KeyP' || e.code === 'ArrowLeft') go(idx - 1);
+});
+addEventListener('keyup', e => keys[e.code] = false);
+
+let idx = -1;
+const stationEl = document.getElementById('station');
+const listEl = document.getElementById('stations');
+STATIONS.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.textContent = `${s.n} · ${s.t}`;
+  b.onclick = () => go(i);
+  listEl.appendChild(b);
+});
+
+function go(i) {
+  idx = Math.max(0, Math.min(STATIONS.length - 1, i));
+  const s = STATIONS[idx];
+  camera.position.set(s.x, 1.7, s.z + 9);
+  camera.lookAt(s.x, 1.6, s.z);
+  stationEl.textContent = `${s.n} · ${s.t}`;
+  [...listEl.children].forEach((b, k) => b.classList.toggle('active', k === idx));
+}
+document.getElementById('next').onclick = () => go(idx + 1);
+document.getElementById('prev').onclick = () => go(idx - 1);
+
+const clock = new THREE.Clock();
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const speed = (keys.ShiftLeft || keys.ShiftRight) ? 14 : 7;
+  if (controls.isLocked) {
+    const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0);
+    const r = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
+    controls.moveForward(f * speed * dt);
+    controls.moveRight(r * speed * dt);
+    camera.position.y = 1.7;
+  }
+  renderer.render(scene, camera);
+}
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+go(0);
+tick();
+</script>
+</body>
+</html>
