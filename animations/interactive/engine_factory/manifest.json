@@ -2,23 +2,28 @@
   "stages": [
     {
       "label": "Pre-training",
-      "src": "stages/01-pretraining.mp4"
+      "src": "stages/01-pretraining.mp4",
+      "hold": "holds/01-pretraining.mp4"
     },
     {
       "label": "Post-training",
-      "src": "stages/02-posttraining.mp4"
+      "src": "stages/02-posttraining.mp4",
+      "hold": "holds/02-posttraining.mp4"
     },
     {
       "label": "Release day",
-      "src": "stages/03-release-day.mp4"
+      "src": "stages/03-release-day.mp4",
+      "hold": "holds/03-release-day.mp4"
     },
     {
       "label": "To work; the factory closes",
-      "src": "stages/04-to-work-the-factory-closes.mp4"
+      "src": "stages/04-to-work-the-factory-closes.mp4",
+      "hold": "holds/04-to-work-the-factory-closes.mp4"
     },
     {
       "label": "Inference: every time it runs",
-      "src": "stages/05-inference-every-time-it-runs.mp4"
+      "src": "stages/05-inference-every-time-it-runs.mp4",
+      "hold": "holds/05-inference-every-time-it-runs.mp4"
     }
   ],
   "controls": [
@@ -29,6 +34,5 @@
     "H (hide HUD)",
     "R (restart)"
   ],
-  "hold_seconds": 0.52,
   "source": "renders/final/engine_factory.mp4"
 }

@@ -106,3 +106,11 @@ or supplied as another photographed label.
 
 Run `./render.sh` after any revision. It regenerates the audit images, MP4, and
 GIF deterministically; then run `verify.py` before committing the result.
+
+## Owed work (recorded 2026-07-15)
+
+- **Task C — brain-in-harness animation** (CODEX-SPEC-staged-animations.md §6)
+  is NOT YET BUILT: correctly blocked on Sarah's incoming brain/body sketch,
+  which is not yet in `assets/sketches/`. When the photo lands, build per the
+  spec (2 stages: brain alone → harness drawn around it) and slot it BEFORE
+  the Engine Factory in the run of show.

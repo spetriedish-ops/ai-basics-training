@@ -93,8 +93,11 @@ SCENES = {
     ]),
 }
 
+# the frontier player is the newest pattern: dedicated native hold clips
+# (holds/NN.mp4, loop=true) instead of JS tail-seeking — immune to
+# throttled-tab replay glitches
 PLAYER_TEMPLATE_PATH = (HERE / "pencil-codex" / "interactive" /
-                        "harness_mind_map" / "index.html")
+                        "frontier_labs" / "index.html")
 
 
 def slug(label):
@@ -134,11 +137,13 @@ def split():
         src = FINAL / f"{stem}.mp4"
         scene_dir = OUT / stem
         stages_dir = scene_dir / "stages"
+        holds_dir = scene_dir / "holds"
         stages_dir.mkdir(parents=True, exist_ok=True)
+        holds_dir.mkdir(parents=True, exist_ok=True)
         manifest = {"stages": [], "controls":
                     ["click", "Space", "ArrowRight", "ArrowLeft",
                      "H (hide HUD)", "R (restart)"],
-                    "hold_seconds": HOLD, "source": f"renders/final/{stem}.mp4"}
+                    "source": f"renders/final/{stem}.mp4"}
         prev = 0.0
         for i, (label, end) in enumerate(stages, 1):
             name = f"{i:02d}-{slug(label)}.mp4"
@@ -147,25 +152,34 @@ def split():
                  "-to", str(end), "-i", str(src),
                  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
                  str(stages_dir / name)], check=True)
+            # native hold loop: the stage's final boil cycle as its own clip
+            subprocess.run(
+                ["ffmpeg", "-y", "-v", "error", "-ss", str(end - HOLD),
+                 "-to", str(end), "-i", str(src),
+                 "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
+                 str(holds_dir / name)], check=True)
             manifest["stages"].append({"label": label,
-                                       "src": f"stages/{name}"})
+                                       "src": f"stages/{name}",
+                                       "hold": f"holds/{name}"})
             prev = end
         (scene_dir / "manifest.json").write_text(
             json.dumps(manifest, indent=2))
 
-        html = template
-        html = html.replace(
-            "Harness mind map — presenter player", f"{title} — presenter player")
-        html = html.replace(
-            "Advance Harness mind map animation", f"Advance {title} animation")
         import re
+        html = template
+        html = re.sub(r"<title>.*?</title>",
+                      f"<title>{title} — presenter player</title>", html)
+        html = re.sub(r'aria-label="Advance [^"]*"',
+                      f'aria-label="Advance {title} animation"', html)
         html = re.sub(r"const stages = \[.*?\];",
                       "const stages = " + json.dumps(manifest["stages"]) + ";",
                       html, count=1, flags=re.S)
         # hardening: if autoplay was blocked, the first click PLAYS the
         # current stage instead of skipping past it
+        old_adv = "function advance() { if (index < stages.length - 1)"
+        assert old_adv in html, "player template changed; update the patch"
         html = html.replace(
-            "function advance() {\n      if (index < stages.length - 1)",
+            old_adv,
             "function advance() {\n"
             "      if (video.paused && video.currentTime < 0.05) {"
             " video.play().catch(() => {}); return; }\n"
