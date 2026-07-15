@@ -1,6 +1,6 @@
 # Pencil Codex — animated sketch set
 
-These animations bring Sarah's six photographed drawings to life while
+These animations bring Sarah's photographed drawings and brain reference to life while
 keeping her handwriting, wording, shapes, and original arrows intact. The
 outputs are silent, presenter-paced, and designed to read in a full-screen
 16:9 HTML player. They play on softly crumpled ruled notebook paper that boils
@@ -8,7 +8,9 @@ with the drawing.
 
 ## Approach
 
-`render_agentic_loop.py` handles sketch 01. `render_sketch_set.py` is the
+`render_agentic_loop.py` handles sketch 01. `render_brain_in_harness.py`
+combines Sarah's giant-headed figure with a graphite redraw of her supplied
+brain reference. `render_sketch_set.py` is the
 shared, scene-configured renderer for sketches 02–05, delegating the staged
 Harness page to `render_harness_mind_map.py`. The motion-rich sixth sketch is
 handled by `render_multi_agent_orchestration.py`. Together they:
@@ -69,7 +71,7 @@ For a faster single-page revision:
 .venv/bin/python render_sketch_set.py --scene harness_mind_map
 ```
 
-Frontier Labs, MCP/CLI/API, and the Harness page have presenter-controlled
+Brain in Harness, Frontier Labs, MCP/CLI/API, and the Harness page have presenter-controlled
 players under `interactive/<scene>/index.html`. Serve the `pencil-codex`
 directory over localhost, open the desired page, and use click, Space, or Right
 Arrow to draw the next teaching stage. Left Arrow moves back, `H` hides the
@@ -86,6 +88,8 @@ Outputs:
 
 - `out/agentic_loop.mp4` — 1920x1080, 30 fps, H.264, silent, 23.5 seconds
 - `out/agentic_loop.gif` — 800x450, 12 fps, looping, optimized for wiki use
+- `out/brain_in_harness.{mp4,gif}` — brain → embodied harness take-home master
+- `interactive/brain_in_harness/` — click-gated Brain → Harness player
 - `out/frontier_labs.{mp4,gif}` — sketch 02 vendor landscape
 - `interactive/frontier_labs/` — click-paced Labs → Models → Harnesses/API player
 - `out/mcp_cli_api.{mp4,gif}` — visual MCP, CLI, and API tools comparison
@@ -107,10 +111,8 @@ or supplied as another photographed label.
 Run `./render.sh` after any revision. It regenerates the audit images, MP4, and
 GIF deterministically; then run `verify.py` before committing the result.
 
-## Owed work (recorded 2026-07-15)
+## Task C completion (2026-07-15)
 
-- **Task C — brain-in-harness animation** (CODEX-SPEC-staged-animations.md §6)
-  is NOT YET BUILT: correctly blocked on Sarah's incoming brain/body sketch,
-  which is not yet in `assets/sketches/`. When the photo lands, build per the
-  spec (2 stages: brain alone → harness drawn around it) and slot it BEFORE
-  the Engine Factory in the run of show.
+The brain-in-harness animation is built from Sarah's supplied brain reference
+and giant-headed stick figure. Its presenter player has exactly two gated
+stages—Brain, then Harness—and slots before the Engine Factory.

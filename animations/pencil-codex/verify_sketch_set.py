@@ -18,6 +18,7 @@ OUT = HERE / "out"
 
 # writing, written, full, active-highlight sample times
 CHECKS = {
+    "brain_in_harness": (0.70, 1.90, 8.00, 1.10),
     "frontier_labs": (1.55, 3.00, 9.55, 9.20),
     "mcp_cli_api": (0.80, 3.20, 9.35, 12.70),
     "harness_mind_map": (0.60, 1.40, 22.80, 20.00),
@@ -26,6 +27,7 @@ CHECKS = {
 }
 
 PLAYERS = {
+    "brain_in_harness": ("The brain", "The harness"),
     "harness_mind_map": (
         "Harness",
         "Model",
@@ -103,9 +105,12 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
         full = frame(mp4, times[2], temp / "full.png")
         active = frame(mp4, times[3], temp / "active.png")
 
+        # The brain scene is deliberately a sparse stick figure, and its brain
+        # uses a finer pencil weight to match Sarah's portrait linework.
+        minimum_ink = 11_000 if stem == "brain_in_harness" else 18_000
         ending_ink = int((ending.mean(axis=2) < 155).sum())
         require(
-            ending_ink > 18_000,
+            ending_ink > minimum_ink,
             f"{stem}: completed drawing persists through the final frame ({ending_ink} dark pixels)",
         )
         hold_delta = float(np.abs(holding - ending).mean())
@@ -120,9 +125,9 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
         written_ink = int((written.mean(axis=2) < 155).sum())
         require(written_ink > writing_ink + 450, f"{stem}: live writing adds ink ({writing_ink} → {written_ink})")
         full_ink = int((full.mean(axis=2) < 155).sum())
-        require(full_ink > 18_000, f"{stem}: final composition has strong contrast ({full_ink} dark pixels)")
+        require(full_ink > minimum_ink, f"{stem}: final composition has strong contrast ({full_ink} dark pixels)")
 
-        if stem != "harness_mind_map":
+        if stem not in ("harness_mind_map", "brain_in_harness"):
             teal = np.array([46, 167, 154], dtype=np.int16)
             teal_pixels = int((np.abs(active - teal).sum(axis=2) < 125).sum())
             require(teal_pixels > 900, f"{stem}: active teaching cue is visible ({teal_pixels} teal pixels)")

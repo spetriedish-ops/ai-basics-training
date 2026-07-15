@@ -1,0 +1,22 @@
+{
+  "stages": [
+    {
+      "label": "The brain",
+      "src": "stages/01-the-brain.mp4",
+      "hold": "holds/01-the-brain.mp4"
+    },
+    {
+      "label": "The harness",
+      "src": "stages/02-the-harness.mp4",
+      "hold": "holds/02-the-harness.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H",
+    "R"
+  ]
+}
