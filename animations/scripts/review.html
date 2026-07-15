@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI Basics — local animation review</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f7f3e8;
+      --muted: #aaa6a0;
+      --panel: #1c1c1f;
+      --edge: #3a3a3e;
+      --teal: #2ea79a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: var(--ink); }
+    body { display: grid; grid-template-rows: auto 1fr; font: 14px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    header { display: grid; grid-template-columns: auto minmax(12rem, 28rem) 1fr auto; align-items: center; gap: .75rem; padding: .65rem .8rem; background: var(--panel); border-bottom: 1px solid var(--edge); }
+    .brand { font-weight: 760; white-space: nowrap; }
+    select, button, a { font: inherit; }
+    select, button { min-height: 2.2rem; border: 1px solid var(--edge); border-radius: .45rem; background: #29292d; color: var(--ink); }
+    select { width: 100%; padding: 0 .65rem; }
+    button { padding: 0 .75rem; cursor: pointer; }
+    button:hover, button:focus-visible, a:focus-visible { border-color: var(--teal); outline: none; }
+    button:disabled { opacity: .35; cursor: default; }
+    .meta { min-width: 0; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .actions { display: flex; align-items: center; gap: .5rem; }
+    .open { display: inline-grid; place-items: center; min-height: 2.2rem; padding: 0 .75rem; border: 1px solid var(--edge); border-radius: .45rem; color: var(--ink); text-decoration: none; background: #29292d; white-space: nowrap; }
+    main { position: relative; min-height: 0; display: grid; place-items: center; background: #0d0d0f; }
+    iframe, video { width: 100%; height: 100%; border: 0; background: #111; object-fit: contain; }
+    .tip { position: absolute; left: 1rem; bottom: 1rem; z-index: 4; padding: .38rem .55rem; border: 1px solid rgba(255,255,255,.16); border-radius: .45rem; background: rgba(20,20,23,.78); color: var(--muted); pointer-events: none; transition: opacity .2s; }
+    main:focus-within .tip { opacity: .2; }
+    @media (max-width: 900px) {
+      header { grid-template-columns: 1fr auto; }
+      .brand, .meta { display: none; }
+      select { grid-column: 1; }
+      .actions { grid-column: 2; }
+      .open { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">AI Basics · local review</div>
+    <select id="scene" aria-label="Choose an animation"></select>
+    <div class="meta" id="meta"></div>
+    <div class="actions">
+      <button id="prev" type="button" aria-label="Previous animation">← Previous</button>
+      <button id="next" type="button" aria-label="Next animation">Next →</button>
+      <a class="open" id="open" target="_blank" rel="noreferrer">Open standalone ↗</a>
+    </div>
+  </header>
+  <main id="viewer">
+    <div class="tip" id="tip"></div>
+  </main>
+  <script>
+    const scenes = [
+      { title: "The Garage", kind: "video", src: "00-garage-session-kickoff.mp4" },
+      { title: "The LLM Brain + Harness", kind: "player", stages: 2, src: "../pencil-codex/interactive/brain_in_harness/index.html" },
+      { title: "The Engine Factory", kind: "video", src: "01-engine-factory.mp4" },
+      { title: "The Paver", kind: "video", src: "02-paver.mp4" },
+      { title: "The Agentic Loop", kind: "video", src: "../pencil-codex/out/agentic_loop.mp4" },
+      { title: "Frontier Labs", kind: "player", stages: 3, src: "../pencil-codex/interactive/frontier_labs/index.html" },
+      { title: "Harness Mind Map", kind: "player", stages: 8, src: "../pencil-codex/interactive/harness_mind_map/index.html" },
+      { title: "The Toolbox", kind: "video", src: "06-toolbox.mp4" },
+      { title: "MCP / CLI / API", kind: "player", stages: 3, src: "../pencil-codex/interactive/mcp_cli_api/index.html" },
+      { title: "The Truck — Context Window", kind: "video", src: "08-context-truck.mp4" },
+      { title: "Pop the Hood — Agent Anatomy", kind: "video", src: "09-pop-the-hood.mp4" },
+      { title: "What Is an Agent?", kind: "video", src: "../pencil-codex/out/what_is_an_agent.mp4" },
+      { title: "The Fleet", kind: "video", src: "11-fleet.mp4" },
+      { title: "Multi-Agent Orchestration", kind: "video", src: "../pencil-codex/out/multi_agent_orchestration.mp4" }
+    ];
+
+    const select = document.querySelector('#scene');
+    const viewer = document.querySelector('#viewer');
+    const meta = document.querySelector('#meta');
+    const tip = document.querySelector('#tip');
+    const prev = document.querySelector('#prev');
+    const next = document.querySelector('#next');
+    const open = document.querySelector('#open');
+
+    scenes.forEach((scene, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = `${String(index + 1).padStart(2, '0')} · ${scene.title}`;
+      select.append(option);
+    });
+
+    function selectedFromHash() {
+      const slug = location.hash.slice(1);
+      const found = scenes.findIndex(scene => scene.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === slug);
+      return found >= 0 ? found : 0;
+    }
+
+    function show(index) {
+      const safe = Math.max(0, Math.min(scenes.length - 1, index));
+      const scene = scenes[safe];
+      select.value = safe;
+      prev.disabled = safe === 0;
+      next.disabled = safe === scenes.length - 1;
+      meta.textContent = scene.kind === 'player'
+        ? `${safe + 1} of ${scenes.length} · ${scene.stages} presenter-controlled stages`
+        : `${safe + 1} of ${scenes.length} · continuous pencil animation`;
+      tip.textContent = scene.kind === 'player'
+        ? 'Click inside the animation to advance its stages.'
+        : 'Continuous video — plays straight through.';
+      open.href = scene.src;
+
+      viewer.querySelector('iframe, video')?.remove();
+      if (scene.kind === 'player') {
+        const frame = document.createElement('iframe');
+        frame.src = scene.src;
+        frame.title = scene.title;
+        frame.allow = 'autoplay; fullscreen';
+        viewer.prepend(frame);
+      } else {
+        const video = document.createElement('video');
+        video.src = scene.src;
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+        video.controls = true;
+        video.playsInline = true;
+        viewer.prepend(video);
+        video.play().catch(() => {});
+      }
+      const slug = scene.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      history.replaceState(null, '', `#${slug}`);
+    }
+
+    select.addEventListener('change', () => show(Number(select.value)));
+    prev.addEventListener('click', () => show(Number(select.value) - 1));
+    next.addEventListener('click', () => show(Number(select.value) + 1));
+    show(selectedFromHash());
+  </script>
+</body>
+</html>

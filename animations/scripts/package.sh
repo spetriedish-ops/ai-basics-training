@@ -9,7 +9,10 @@ OUT="deliverables"
 rm -rf "$OUT"
 mkdir -p "$OUT/05-harness-stages" "$OUT/extras"
 
+cp scripts/review.html                            "$OUT/review.html"
 cp renders/final/garage.mp4                       "$OUT/00-garage-session-kickoff.mp4"
+cp pencil-codex/out/brain_in_harness.mp4          "$OUT/00b-brain-in-harness.mp4"
+cp -R pencil-codex/interactive/brain_in_harness   "$OUT/00b-brain-in-harness-player"
 cp renders/final/engine_factory.mp4               "$OUT/01-engine-factory.mp4"
 cp assets/sketches/01-llm-harness-agentic-loop.jpeg "$OUT/01b-brain-sketch-static.jpeg"
 cp renders/final/paver.mp4                        "$OUT/02-paver.mp4"
@@ -48,7 +51,9 @@ localhost (for example, `python3 -m http.server`) and open each player's
 |------|------|-------|
 | 00-garage-session-kickoff.mp4 | Sarah opens the session | NEXT YEAR'S TRUCK gag plants the hullabaloo line |
 | — | Marta: history of AI | no repo asset |
-| 01-engine-factory.mp4 + 01b-brain-sketch-static.jpeg | Beat 1: LLM, lifecycle, inference | odometer beat = inference |
+| 00b-brain-in-harness-player/ | Beat 1: LLM needs a harness | primary; click-gated Brain → Harness |
+| 00b-brain-in-harness.mp4 | Beat 1 | continuous fallback; complete character persists |
+| 01-engine-factory.mp4 + 01b-brain-sketch-static.jpeg | Beat 1: lifecycle and inference | odometer beat = inference; static sketch retained as fallback |
 | 02-paver.mp4 | Beat 2: prediction engine | |
 | 03-agentic-loop.mp4 | Beat 3 | pencil (Codex set) |
 | 04-frontier-labs-player/ | Beat 4 | primary; click-paced Labs → Models → Harnesses + API |
