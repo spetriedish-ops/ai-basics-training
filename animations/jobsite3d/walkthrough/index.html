@@ -60,8 +60,8 @@ const STATIONS = [
 
 const app = document.getElementById('app');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xE8F1F8);
-scene.fog = new THREE.Fog(0xE8F1F8, 60, 160);
+scene.background = new THREE.Color(0xFAF7EF);   // the world lives on paper
+scene.fog = new THREE.Fog(0xFAF7EF, 55, 150);
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 400);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -69,13 +69,74 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 app.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0xD8CBB2, 1.4));
-const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xEDE5D4, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
 sun.position.set(30, 60, 20);
 scene.add(sun);
 
-new GLTFLoader().load('./jobsite.glb', g => scene.add(g.scene),
-  undefined, e => console.error('GLB load failed', e));
+// ------------------------------------------------------ the crayon look --
+// The 2D deck has no shading: flat fills + ink outlines. Same here —
+// every surface is unlit flat color; outlines and fog carry the depth.
+
+// the deck's _wobble, in 3D: two-scale position-based sine field, held at
+// ~6 Hz so the whole world boils like the drawings
+const boilUniform = { value: 0 };
+function boilify(material, amp = 0.035) {
+  if (amp <= 0) return;               // no shader surgery for static meshes
+  const A = amp.toFixed(4);           // GLSL needs a float literal, not "0"
+  material.customProgramCacheKey = () => 'boil' + A;
+  material.onBeforeCompile = sh => {
+    sh.uniforms.uBoil = boilUniform;
+    sh.vertexShader = 'uniform float uBoil;\n' + sh.vertexShader.replace(
+      '#include <begin_vertex>',
+      `#include <begin_vertex>
+       {
+         vec4 wp = modelMatrix * vec4(position, 1.0);
+         float s = uBoil * 6.2831;
+         transformed.x += ${A} * (0.65 * sin(2.1*wp.y + 3.3*wp.z + s)
+                                + 0.35 * sin(7.3*wp.x + 6.1*wp.y + s*2.0));
+         transformed.y += ${A} * (0.65 * sin(2.7*wp.x + 2.2*wp.z + s + 1.7)
+                                + 0.35 * sin(6.7*wp.z + 5.9*wp.x + s*2.0));
+         transformed.z += ${A} * (0.65 * sin(2.4*wp.x + 2.9*wp.y + s + 3.1)
+                                + 0.35 * sin(6.3*wp.y + 7.1*wp.x + s*2.0));
+       }`);
+  };
+}
+
+const OUTLINE = new THREE.MeshBasicMaterial({ color: 0x33323E,
+                                              side: THREE.BackSide });
+boilify(OUTLINE, 0.035);
+
+const Q = new URLSearchParams(location.search);   // debug: ?nooutline&notoon
+new GLTFLoader().load('./jobsite.glb', g => {
+  const meshes = [];
+  g.scene.traverse(o => { if (o.isMesh) meshes.push(o); });
+  for (const o of meshes) {
+    const name = o.name.toLowerCase();
+    const isPage = name.startsWith('page');
+    const isText = name.startsWith('num') || name.startsWith('ttl') ||
+                   name.startsWith('chestlbl');
+    const isGround = name === 'ground' || name.startsWith('path');
+    const old = o.material;
+    if (isPage) {
+      // sketch pages: unlit so the pencil reads at full brightness
+      o.material = new THREE.MeshBasicMaterial({ map: old.map,
+                                                 side: THREE.DoubleSide });
+    } else if (!Q.has('notoon')) {
+      const m = new THREE.MeshBasicMaterial({ color: old.color.clone() });
+      if (old.map) m.map = old.map;
+      boilify(m, isGround ? 0.0 : 0.03);
+      o.material = m;
+    }
+    // ink outline: inverted hull (skip flats, text, and the pages)
+    if (!Q.has('nooutline') && !isPage && !isText && !isGround) {
+      const hull = new THREE.Mesh(o.geometry, OUTLINE);
+      hull.scale.multiplyScalar(1.045);
+      o.add(hull);
+    }
+  }
+  scene.add(g.scene);
+}, undefined, e => console.error('GLB load failed', e));
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 renderer.domElement.addEventListener('click', () => controls.lock());
@@ -110,9 +171,12 @@ document.getElementById('next').onclick = () => go(idx + 1);
 document.getElementById('prev').onclick = () => go(idx - 1);
 
 const clock = new THREE.Clock();
+let elapsed = 0;
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
+  elapsed += dt;
+  boilUniform.value = Math.floor(elapsed * 6) % 3;  // 3 seeds, held ~6 Hz
   const speed = (keys.ShiftLeft || keys.ShiftRight) ? 14 : 7;
   if (controls.isLocked) {
     const f = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0);

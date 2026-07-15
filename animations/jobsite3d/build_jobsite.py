@@ -53,12 +53,16 @@ def mat(color, name=None):
     return m
 
 
-def box(name, size, loc, color, rot=(0, 0, 0), parent=None):
+def box(name, size, loc, color, rot=(0, 0, 0), parent=None, bevel=0.05):
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc, rotation=rot)
     o = bpy.context.object
     o.name = name
     o.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
     o.data.materials.append(mat(color))
+    if bevel:
+        b = o.modifiers.new("bevel", 'BEVEL')
+        b.width = bevel
+        b.segments = 2
     if parent:
         o.parent = parent
     return o
@@ -101,29 +105,47 @@ def label3d(name, text, loc, parent=None, size=0.55, color=INK,
 # ------------------------------------------------------------ props -------
 
 def truck(parent, with_crane=True, scale=1.0, body=TEAL):
+    """Proportions ported from src/jobsite.py's 2D truck (side profile)."""
     s = scale
-    box("chassis", (4.6 * s, 1.6 * s, 0.35 * s), (0, 0, 0.85 * s), INK,
+    # 2D: chassis 4.6x0.32 at z -1.95; ground at -2.55; wheels r 0.40
+    box("chassis", (4.6 * s, 1.4 * s, 0.32 * s), (0, 0, 0.60 * s), INK,
         parent=parent)
-    box("bed_back", (2.6 * s, 1.5 * s, 1.0 * s), (-0.85 * s, 0, 1.6 * s),
-        TEAL_DARK, parent=parent)
-    box("bed_front", (2.6 * s, 1.56 * s, 0.6 * s), (-0.85 * s, 0, 1.35 * s),
+    # bed: back panel tall (3.55 x 1.45), front panel shorter (x 0.85)
+    box("bed_back", (3.55 * s, 1.30 * s, 1.45 * s),
+        (-0.85 * s, 0, 1.50 * s), TEAL_DARK, parent=parent)
+    box("bed_front", (3.55 * s, 1.42 * s, 0.85 * s),
+        (-0.85 * s, 0, 1.20 * s), body, parent=parent)
+    # cab 1.35 x 1.45 with paper window + ink eye
+    box("cab", (1.35 * s, 1.42 * s, 1.45 * s), (2.05 * s, 0, 1.45 * s),
         body, parent=parent)
-    box("cab", (1.2 * s, 1.5 * s, 1.3 * s), (1.6 * s, 0, 1.7 * s), body,
-        parent=parent)
-    box("window", (0.15 * s, 1.0 * s, 0.5 * s), (2.18 * s, 0, 1.95 * s),
-        PAPER, parent=parent)
-    for i, (x, y) in enumerate([(-1.6, 0.85), (-1.6, -0.85), (0.1, 0.85),
-                                (0.1, -0.85), (1.7, 0.85), (1.7, -0.85)]):
-        cyl(f"wheel{i}", 0.42 * s, 0.3 * s, (x * s, y * s, 0.42 * s), INK,
+    box("window", (0.72 * s, 1.46 * s, 0.52 * s), (2.07 * s, 0, 1.73 * s),
+        PAPER, bevel=0.03, parent=parent)
+    cyl("eye", 0.07 * s, 1.50 * s, (2.21 * s, 0, 1.73 * s), INK,
+        rot=(math.radians(90), 0, 0), parent=parent)
+    for i, (x, y) in enumerate([(-2.10, 0.72), (-2.10, -0.72),
+                                (-0.55, 0.72), (-0.55, -0.72),
+                                (1.95, 0.72), (1.95, -0.72)]):
+        cyl(f"wheel{i}", 0.40 * s, 0.30 * s, (x * s, y * s, 0.40 * s), INK,
             rot=(math.radians(90), 0, 0), parent=parent)
+        cyl(f"hub{i}", 0.18 * s, 0.32 * s, (x * s, y * s, 0.40 * s),
+            INK_SOFT, rot=(math.radians(90), 0, 0), parent=parent)
     if with_crane:
-        cyl("mast", 0.14 * s, 1.3 * s, (-1.9 * s, 0, 2.6 * s), TEAL_DARK,
+        # 2D crane: mast at x -2.45 (h 1.35), joint z 0.85, boom 48deg
+        box("mast", (0.44 * s, 0.40 * s, 1.35 * s),
+            (-2.45 * s, 0, 2.85 * s), TEAL_DARK, parent=parent)
+        box("boom", (1.45 * s, 0.30 * s, 0.30 * s),
+            (-2.95 * s, 0, 4.05 * s), body,
+            rot=(0, math.radians(-48), 0), parent=parent)
+        cyl("cable", 0.025 * s, 0.85 * s, (-3.42 * s, 0, 3.7 * s), INK,
             parent=parent)
-        box("boom", (1.6 * s, 0.18 * s, 0.18 * s),
-            (-2.55 * s, 0, 3.55 * s), body,
-            rot=(0, math.radians(-35), 0), parent=parent)
-        cyl("cable", 0.02 * s, 0.8 * s, (-3.2 * s, 0, 3.6 * s), INK,
-            parent=parent)
+        bpy.ops.mesh.primitive_torus_add(
+            major_radius=0.16 * s, minor_radius=0.045 * s,
+            location=(-3.42 * s, 0, 3.15 * s),
+            rotation=(math.radians(90), 0, 0))
+        hook = bpy.context.object
+        hook.name = "hook"
+        hook.data.materials.append(mat(INK))
+        hook.parent = parent
 
 
 def cargo_row(parent, colors, z=2.0, s=1.0):
@@ -362,7 +384,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     glb = os.path.join(out_dir, "jobsite.glb")
     bpy.ops.export_scene.gltf(filepath=glb, export_format='GLB',
-                              export_yup=True)
+                              export_yup=True, export_apply=True)
     print("EXPORTED", glb, os.path.getsize(glb), "bytes")
 
     # --------------------------------------------------------- preview ----
