@@ -37,6 +37,5 @@
     "H (hide HUD)",
     "R (restart)"
   ],
-  "hold_seconds": 0.52,
   "source": "renders/final/paver.mp4"
 }

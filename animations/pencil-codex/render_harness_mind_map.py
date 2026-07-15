@@ -620,7 +620,9 @@ def render_timed(
             np.clip((time_s - start) / duration, 0.0, 1.0)
             for start, duration in TIMED_BEATS
         ]
-        opacity = 1.0 - established.smoothstep(23.15, 24.65, time_s)
+        # The continuous master is archival, but it must still persist on the
+        # complete drawing now that the click-through is the live presentation.
+        opacity = 1.0
         return compose(backgrounds, layers, index, progress, opacity)
 
     encode_frames(output, frames, frame_builder)
@@ -642,6 +644,8 @@ def render_interactive_clips(
     layers: list[StageLayer], backgrounds: tuple[Image.Image, Image.Image, Image.Image]
 ) -> list[Path]:
     STAGE_DIR.mkdir(parents=True, exist_ok=True)
+    hold_dir = INTERACTIVE_DIR / "holds"
+    hold_dir.mkdir(parents=True, exist_ok=True)
     outputs: list[Path] = []
     for stage_index in range(len(layers)):
         draw_duration, hold_duration = interactive_duration(stage_index)
@@ -655,6 +659,13 @@ def render_interactive_clips(
             return compose(backgrounds, layers, index, progress)
 
         encode_frames(output, frames, frame_builder)
+        hold_frames = max(2, round(0.52 * FPS))
+        hold_start = max(0, frames - hold_frames)
+        encode_frames(
+            hold_dir / output.name,
+            hold_frames,
+            lambda hold_index: frame_builder(hold_start + hold_index),
+        )
         outputs.append(output)
     return outputs
 
@@ -662,7 +673,11 @@ def render_interactive_clips(
 def write_interactive_player(clips: list[Path]) -> None:
     INTERACTIVE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = [
-        {"label": STAGE_NAMES[index], "src": f"stages/{clip.name}"}
+        {
+            "label": STAGE_NAMES[index],
+            "src": f"stages/{clip.name}",
+            "hold": f"holds/{clip.name}",
+        }
         for index, clip in enumerate(clips)
     ]
     html = f"""<!doctype html>
@@ -695,7 +710,6 @@ def write_interactive_player(clips: list[Path]) -> None:
   </main>
   <script>
     const stages = {json.dumps(manifest)};
-    const HOLD_SECONDS = 0.52;
     const shell = document.querySelector('.stage');
     const video = document.querySelector('video');
     const hud = document.querySelector('.hud');
@@ -708,27 +722,27 @@ def write_interactive_player(clips: list[Path]) -> None:
       count.textContent = `${{index + 1}} / ${{stages.length}} · ${{stages[index].label}}`;
     }}
 
+    function loadHold() {{
+      if (holding) return;
+      holding = true;
+      window.clearTimeout(holdTimer);
+      video.loop = true;
+      video.src = stages[index].hold;
+      video.load();
+      video.addEventListener('loadedmetadata', () => video.play().catch(() => {{}}), {{ once: true }});
+    }}
+
     function loadStage(next, playFromStart = true) {{
       index = Math.max(0, Math.min(stages.length - 1, next));
       holding = false;
       window.clearTimeout(holdTimer);
       label();
+      if (!playFromStart) {{ loadHold(); return; }}
+      video.loop = false;
       video.src = stages[index].src;
       video.load();
       const start = () => {{
-        const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
-        if (!playFromStart) {{
-          holding = true;
-          video.currentTime = loopStart;
-        }} else {{
-          // Background WebViews may throttle interval/timeupdate events enough
-          // to skip the hold boundary. This one-shot arms the final loop at
-          // the media-clock moment even when those recurring events are sparse.
-          holdTimer = window.setTimeout(() => {{
-            holding = true;
-            if (video.currentTime < loopStart - 0.08) video.currentTime = loopStart;
-          }}, Math.max(0, (loopStart - 0.04) * 1000));
-        }}
+        holdTimer = window.setTimeout(loadHold, Math.max(0, (video.duration - 0.10) * 1000));
         video.play().catch(() => {{}});
       }};
       video.addEventListener('loadedmetadata', start, {{ once: true }});
@@ -743,31 +757,9 @@ def write_interactive_player(clips: list[Path]) -> None:
     }}
 
     video.addEventListener('timeupdate', () => {{
-      if (!video.duration) return;
-      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
-      if (!holding && video.currentTime >= loopStart) holding = true;
-      if (holding && video.currentTime >= video.duration - 0.08) {{
-        video.currentTime = loopStart;
-      }}
+      if (!holding && video.duration && video.currentTime >= video.duration - 0.12) loadHold();
     }});
-    video.addEventListener('ended', () => {{
-      holding = true;
-      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
-      video.currentTime = loopStart;
-      video.play().catch(() => {{}});
-    }});
-    // WebViews can emit timeupdate too sparsely to catch the last frame before
-    // `ended`. A tiny presenter-only poll keeps the hold inside the completed
-    // 0.52-second boil segment without replaying the drawing.
-    window.setInterval(() => {{
-      if (!video.duration) return;
-      const loopStart = Math.max(0, video.duration - HOLD_SECONDS);
-      if (!holding && video.currentTime >= loopStart) holding = true;
-      if (holding && (
-        video.currentTime >= video.duration - 0.14 ||
-        video.currentTime < loopStart - 0.08
-      )) video.currentTime = loopStart;
-    }}, 40);
+    video.addEventListener('ended', loadHold);
     shell.addEventListener('click', advance);
     window.addEventListener('keydown', (event) => {{
       if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') {{ event.preventDefault(); advance(); }}

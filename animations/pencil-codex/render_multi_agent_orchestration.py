@@ -289,16 +289,13 @@ def compose(
     backgrounds: tuple[Image.Image, Image.Image, Image.Image],
     pieces: dict[str, PreparedAsset],
     walkers: dict[str, PreparedAsset],
-    fade: bool = True,
 ) -> Image.Image:
     time_s = frame_index / FPS
     variant = (frame_index // 5) % 3
     canvas = backgrounds[variant].copy()
-    opacity = (
-        1.0 - established.smoothstep(DURATION - 1.65, DURATION - 0.18, time_s)
-        if fade
-        else 1.0
-    )
+    # Hold the completed orchestration page for presenter narration. The HTML
+    # click-through owns advancement, so fading to empty is no longer useful.
+    opacity = 1.0
     canvas.alpha_composite(panel_highlight(time_s, variant, opacity))
 
     # Draw all static graphite except the incinerator first. Fire is colored
@@ -388,9 +385,9 @@ def make_debug_assets(
         ("discarding_mid", 16.85),
         ("incinerator", 19.35),
     ):
-        frame = compose(round(seconds * FPS), backgrounds, pieces, walkers, fade=False)
+        frame = compose(round(seconds * FPS), backgrounds, pieces, walkers)
         frame.save(SOURCE_DIR / f"keyframe_{label}.jpg", quality=95)
-    compose(round(20.75 * FPS), backgrounds, pieces, walkers, fade=False).save(
+    compose(round(20.75 * FPS), backgrounds, pieces, walkers).save(
         SOURCE_DIR / "layout_preview.png", quality=95
     )
 

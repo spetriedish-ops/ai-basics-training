@@ -1,0 +1,27 @@
+{
+  "stages": [
+    {
+      "label": "Labs",
+      "src": "stages/01-labs.mp4",
+      "hold": "holds/01-labs.mp4"
+    },
+    {
+      "label": "Models",
+      "src": "stages/02-models.mp4",
+      "hold": "holds/02-models.mp4"
+    },
+    {
+      "label": "Harnesses + API",
+      "src": "stages/03-harnesses-api.mp4",
+      "hold": "holds/03-harnesses-api.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H",
+    "R"
+  ]
+}

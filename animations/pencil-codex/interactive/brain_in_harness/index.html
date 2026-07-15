@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Brain In Harness — presenter player</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }
+    body { display: grid; place-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .stage { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; background: #faf7ef; cursor: pointer; }
+    video { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .hud { position: absolute; right: 1.15rem; bottom: 1rem; display: grid; gap: .35rem; justify-items: end; color: #34323e; text-shadow: 0 1px rgba(250,247,239,.9); transition: opacity .18s; pointer-events: none; }
+    .hud.hidden { opacity: 0; }
+    .count { padding: .34rem .55rem; border: 1px solid rgba(52,50,62,.28); border-radius: 999px; background: rgba(250,247,239,.76); font-size: clamp(.66rem, 1.05vw, .94rem); }
+    .hint { font-size: clamp(.58rem, .88vw, .80rem); opacity: .72; }
+    .stage:focus-visible { outline: 4px solid #2ea79a; outline-offset: -4px; }
+  </style>
+</head>
+<body>
+  <main class="stage" tabindex="0" role="button" aria-label="Advance Brain In Harness animation">
+    <video muted playsinline preload="auto"></video>
+    <div class="hud">
+      <div class="count" aria-live="polite"></div>
+      <div class="hint">click / space / → next · ← back · H hide</div>
+    </div>
+  </main>
+  <script>
+    const stages = [{"label": "The brain", "src": "stages/01-the-brain.mp4", "hold": "holds/01-the-brain.mp4"}, {"label": "The harness", "src": "stages/02-the-harness.mp4", "hold": "holds/02-the-harness.mp4"}];
+    const shell = document.querySelector('.stage');
+    const video = document.querySelector('video');
+    const hud = document.querySelector('.hud');
+    const count = document.querySelector('.count');
+    let index = 0;
+    let holding = false;
+    let holdTimer = 0;
+
+    function label() {
+      count.textContent = `${index + 1} / ${stages.length} · ${stages[index].label}`;
+    }
+
+    function loadHold() {
+      if (holding) return;
+      holding = true;
+      window.clearTimeout(holdTimer);
+      video.loop = true;
+      video.src = stages[index].hold;
+      video.load();
+      video.addEventListener('loadedmetadata', () => video.play().catch(() => {}), { once: true });
+    }
+
+    function loadStage(next, playFromStart = true) {
+      index = Math.max(0, Math.min(stages.length - 1, next));
+      holding = false;
+      window.clearTimeout(holdTimer);
+      label();
+      if (!playFromStart) { loadHold(); return; }
+      video.loop = false;
+      video.src = stages[index].src;
+      video.load();
+      const start = () => {
+        holdTimer = window.setTimeout(loadHold, Math.max(0, (video.duration - 0.10) * 1000));
+        video.play().catch(() => {});
+      };
+      video.addEventListener('loadedmetadata', start, { once: true });
+    }
+
+    function advance() { if (index < stages.length - 1) loadStage(index + 1); }
+    function back() { if (index > 0) loadStage(index - 1, false); }
+
+    video.addEventListener('timeupdate', () => {
+      if (!holding && video.duration && video.currentTime >= video.duration - 0.12) loadHold();
+    });
+    video.addEventListener('ended', loadHold);
+    shell.addEventListener('click', advance);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') { event.preventDefault(); advance(); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); back(); }
+      if (event.key.toLowerCase() === 'h') hud.classList.toggle('hidden');
+      if (event.key.toLowerCase() === 'r') loadStage(0);
+    });
+    loadStage(0);
+    shell.focus();
+  </script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the format, loop, contrast, and accent cues of the final outputs."""
+"""Verify format, persistent final state, contrast, and accent cues."""
 
 from __future__ import annotations
 
@@ -72,14 +72,23 @@ def main() -> None:
         duration = float(mp4["format"]["duration"])
         opening = frame(MP4, "0.00", temp / "opening.png")
         paper_boil = frame(MP4, "0.17", temp / "paper_boil.png")
+        holding = frame(MP4, f"{duration - 0.43:.2f}", temp / "holding.png")
         ending = frame(MP4, f"{duration - 0.04:.2f}", temp / "ending.png")
         writing = frame(MP4, "1.38", temp / "writing.png")
         written = frame(MP4, "1.72", temp / "written.png")
         full = frame(MP4, "7.35", temp / "full.png")
         active = frame(MP4, "8.85", temp / "active.png")
 
-        seam_delta = float(np.abs(opening - ending).mean())
-        require(seam_delta < 2.5, f"opening/ending paper seam is clean (mean delta {seam_delta:.2f})")
+        ending_ink = int((ending.mean(axis=2) < 155).sum())
+        require(
+            ending_ink > 28_000,
+            f"completed drawing persists through the final frame ({ending_ink} dark pixels)",
+        )
+        hold_delta = float(np.abs(holding - ending).mean())
+        require(
+            hold_delta < 3.5,
+            f"final hold stays complete while boiling (mean delta {hold_delta:.2f})",
+        )
 
         boil_delta = float(np.abs(opening - paper_boil).mean())
         require(

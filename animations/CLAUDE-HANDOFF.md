@@ -21,16 +21,17 @@ later personality and timing pass.
 
 The delivery format has changed: the full-screen HTML click-through is the
 presentation, not a Google Slides deck. Use these presenter players for the
-three teaching visuals that need narration-controlled pacing:
+four teaching visuals that need narration-controlled pacing:
 
 | Presentation concept | Presenter player | Stages |
 |---|---|---:|
+| LLM brain → embodied harness | `pencil-codex/interactive/brain_in_harness/index.html` | 2 |
 | Frontier labs, models, harnesses, APIs | `pencil-codex/interactive/frontier_labs/index.html` | 3 |
 | Harness mind map | `pencil-codex/interactive/harness_mind_map/index.html` | 8 |
 | MCP vs CLI vs API | `pencil-codex/interactive/mcp_cli_api/index.html` | 3 |
 
 Serve `pencil-codex/` over localhost and open the relevant `index.html`.
-Controls are consistent across all three players:
+Controls are consistent across all four players:
 
 - click, Space, Enter, or Right Arrow: draw the next stage;
 - Left Arrow: return to the previous completed stage;
@@ -38,7 +39,8 @@ Controls are consistent across all three players:
 - `R`: restart at stage one.
 
 Each completed stage waits indefinitely while the paper and pencil retain
-their subtle boil. Frontier stages are Labs → Models → Harnesses + API; the
+their subtle boil. Brain in Harness is Brain → Harness and must run before the
+Engine Factory. Frontier stages are Labs → Models → Harnesses + API; the
 last stage includes the open-weight note. MCP stages are MCP → CLI → API; the
 entire official/unofficial MCP section appears together in stage one.
 
@@ -74,6 +76,7 @@ to empty notebook paper. The GIFs are smaller wiki previews.
 
 | Presentation concept | Slide master | Duration |
 |---|---|---:|
+| LLM brain in a harness | `pencil-codex/out/brain_in_harness.mp4` | 12.0 s |
 | Agentic loop | `pencil-codex/out/agentic_loop.mp4` | 23.5 s |
 | Frontier labs, models, harnesses, APIs | `pencil-codex/out/frontier_labs.mp4` | 22.5 s |
 | Harness mind map, automatically paced | `pencil-codex/out/harness_mind_map.mp4` | 24.8 s |
@@ -112,6 +115,9 @@ the authoritative live version.
   reveals, and restrained teal focus treatment are intentional.
 - The recurring little agent is deliberately large enough to read in a room
   and appears early enough for each joke to land. Avoid shortening these beats.
+- Brain in Harness: stage one is the graphite brain alone; only a presenter
+  click may trigger Sarah's comically large head, expressive face, and stick
+  body drawing around it. The brain remains visible in the finished character.
 - Agentic Loop: the character catches input, thinks, carries tools, inspects
   the result, and runs the loop. Previously reported broken circle/arrow
   intersections were corrected.
@@ -130,15 +136,18 @@ the authoritative live version.
   incinerator fire are intentional. The main agent owns the goal and combines
   outputs; subagents are short-lived workers.
 
-Sarah explicitly approved the finished set and described it as ready to wrap.
-The older animation set remains recoverable at `a038091` if a run-of-show edit
-ever exposes an unforeseen problem.
+Sarah explicitly approved the underlying finished visual set and described it
+as ready to wrap. The new Brain in Harness, Frontier, and MCP click-pacing
+versions preserve that art; they are built, verified, and approved after
+Sarah's live review. The older animation set remains recoverable at `a038091`
+if a run-of-show edit ever exposes an unforeseen problem.
 
 ## Source and regeneration
 
 The reproducible implementation is in `pencil-codex/`:
 
 - `render_agentic_loop.py` — Agentic Loop
+- `render_brain_in_harness.py` — LLM brain → embodied Harness
 - `render_sketch_set.py` — Frontier Labs, MCP/CLI/API, What Is an Agent
 - `render_harness_mind_map.py` — Harness master and interactive stage clips
 - `render_multi_agent_orchestration.py` — Multi-agent Orchestration
