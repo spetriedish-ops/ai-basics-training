@@ -130,9 +130,11 @@ the authoritative live version.
   incinerator fire are intentional. The main agent owns the goal and combines
   outputs; subagents are short-lived workers.
 
-Sarah explicitly approved the finished set and described it as ready to wrap.
-The older animation set remains recoverable at `a038091` if a run-of-show edit
-ever exposes an unforeseen problem.
+Sarah explicitly approved the underlying finished visual set and described it
+as ready to wrap. The new Frontier and MCP click-pacing versions preserve that
+art and are built and verified, but still await Sarah's live review. The older
+animation set remains recoverable at `a038091` if a run-of-show edit ever
+exposes an unforeseen problem.
 
 ## Source and regeneration
 

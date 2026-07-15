@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify formats, loop seams, writing reveals, and visual cues for sketches 02–06."""
+"""Verify formats, persistent holds, writing reveals, players, and visual cues."""
 
 from __future__ import annotations
 
@@ -23,6 +23,21 @@ CHECKS = {
     "harness_mind_map": (0.60, 1.40, 22.80, 20.00),
     "what_is_an_agent": (0.65, 9.10, 9.65, 10.75),
     "multi_agent_orchestration": (2.20, 6.65, 20.65, 19.35),
+}
+
+PLAYERS = {
+    "harness_mind_map": (
+        "Harness",
+        "Model",
+        "Interaction / Application Layer",
+        "Guardrails",
+        "Tools",
+        "Context",
+        "Skills",
+        "What is an agent?",
+    ),
+    "frontier_labs": ("Labs", "Models", "Harnesses + API"),
+    "mcp_cli_api": ("MCP", "CLI", "API"),
 }
 
 
@@ -81,14 +96,23 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
         temp = Path(directory)
         opening = frame(mp4, 0.00, temp / "opening.png")
         paper_boil = frame(mp4, 0.17, temp / "boil.png")
+        holding = frame(mp4, duration - 0.43, temp / "holding.png")
         ending = frame(mp4, duration - 0.04, temp / "ending.png")
         writing = frame(mp4, times[0], temp / "writing.png")
         written = frame(mp4, times[1], temp / "written.png")
         full = frame(mp4, times[2], temp / "full.png")
         active = frame(mp4, times[3], temp / "active.png")
 
-        seam_delta = float(np.abs(opening - ending).mean())
-        require(seam_delta < 2.6, f"{stem}: opening/ending seam is clean ({seam_delta:.2f})")
+        ending_ink = int((ending.mean(axis=2) < 155).sum())
+        require(
+            ending_ink > 18_000,
+            f"{stem}: completed drawing persists through the final frame ({ending_ink} dark pixels)",
+        )
+        hold_delta = float(np.abs(holding - ending).mean())
+        require(
+            hold_delta < 3.5,
+            f"{stem}: final hold stays complete while boiling ({hold_delta:.2f} mean delta)",
+        )
         boil_delta = float(np.abs(opening - paper_boil).mean())
         require(0.15 < boil_delta < 2.5, f"{stem}: paper boils without flashing ({boil_delta:.2f})")
 
@@ -119,36 +143,73 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
             require(motion_delta > 1.0, f"{stem}: sub-agents visibly change position ({motion_delta:.2f} mean delta)")
 
 
-def verify_harness_player() -> None:
-    directory = HERE / "interactive" / "harness_mind_map"
+def verify_player(stem: str, expected_labels: tuple[str, ...]) -> None:
+    directory = HERE / "interactive" / stem
     html = directory / "index.html"
     manifest_path = directory / "manifest.json"
-    require(html.is_file(), "Harness player: HTML exists")
-    require(manifest_path.is_file(), "Harness player: manifest exists")
+    display = stem.replace("_", " ").title()
+    require(html.is_file(), f"{display} player: HTML exists")
+    require(manifest_path.is_file(), f"{display} player: manifest exists")
 
     source = html.read_text(encoding="utf-8")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     stages = manifest["stages"]
-    require(len(stages) == 8, "Harness player: all eight stages are configured")
-    require("ArrowRight" in source and "ArrowLeft" in source, "Harness player: keyboard navigation is wired")
-    require("shell.addEventListener('click', advance)" in source, "Harness player: click advancement is wired")
-    require("HOLD_SECONDS" in source, "Harness player: completed stages keep boiling")
+    labels = tuple(stage["label"] for stage in stages)
+    require(labels == expected_labels, f"{display} player: stage labels and order are exact")
+    require("ArrowRight" in source and "ArrowLeft" in source, f"{display} player: keyboard navigation is wired")
+    require("shell.addEventListener('click', advance)" in source, f"{display} player: click advancement is wired")
+    require("video.loop = true" in source, f"{display} player: completed stages keep boiling")
 
+    previous_final_ink = 0
     for index, stage in enumerate(stages, start=1):
         clip = directory / stage["src"]
-        require(clip.is_file(), f"Harness player: stage {index} clip exists")
+        hold_clip = directory / stage["hold"]
+        require(clip.is_file(), f"{display} player: stage {index} clip exists")
+        require(hold_clip.is_file(), f"{display} player: stage {index} hold clip exists")
         info = probe(clip)
         video = next(stream for stream in info["streams"] if stream["codec_type"] == "video")
-        require(video["codec_name"] == "h264", f"Harness player: stage {index} is H.264")
-        require((video["width"], video["height"]) == (1920, 1080), f"Harness player: stage {index} is 1920x1080")
+        duration = float(info["format"]["duration"])
+        require(video["codec_name"] == "h264", f"{display} player: stage {index} is H.264")
+        require((video["width"], video["height"]) == (1920, 1080), f"{display} player: stage {index} is 1920x1080")
+        require(not any(s["codec_type"] == "audio" for s in info["streams"]), f"{display} player: stage {index} is silent")
+
+        hold_info = probe(hold_clip)
+        hold_video = next(stream for stream in hold_info["streams"] if stream["codec_type"] == "video")
+        hold_duration = float(hold_info["format"]["duration"])
+        require(hold_video["codec_name"] == "h264", f"{display} player: stage {index} hold is H.264")
+        require((hold_video["width"], hold_video["height"]) == (1920, 1080), f"{display} player: stage {index} hold is 1920x1080")
+        require(0.45 <= hold_duration <= 0.60, f"{display} player: stage {index} has a short native hold loop")
+
+        with tempfile.TemporaryDirectory() as directory_name:
+            temp = Path(directory_name)
+            opening = frame(clip, 0.05, temp / "opening.png")
+            holding = frame(clip, duration - 0.43, temp / "holding.png")
+            ending = frame(clip, duration - 0.04, temp / "ending.png")
+            opening_ink = int((opening.mean(axis=2) < 155).sum())
+            ending_ink = int((ending.mean(axis=2) < 155).sum())
+            require(
+                ending_ink > opening_ink + 180,
+                f"{display} player: stage {index} adds visible ink ({opening_ink} → {ending_ink})",
+            )
+            require(
+                ending_ink + 450 >= previous_final_ink,
+                f"{display} player: stage {index} preserves prior content",
+            )
+            hold_delta = float(np.abs(holding - ending).mean())
+            require(
+                hold_delta < 3.5,
+                f"{display} player: stage {index} holds a complete boiling frame ({hold_delta:.2f})",
+            )
+            previous_final_ink = ending_ink
 
 
 def main() -> None:
     for stem, times in CHECKS.items():
         print(f"\n{stem}")
         verify_scene(stem, times)
-    print("\nHarness interactive player")
-    verify_harness_player()
+    for stem, labels in PLAYERS.items():
+        print(f"\n{stem} interactive player")
+        verify_player(stem, labels)
     print("\nAll sketch-set delivery checks passed.")
 
 

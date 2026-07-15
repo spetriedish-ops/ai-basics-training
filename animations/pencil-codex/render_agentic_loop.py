@@ -537,8 +537,9 @@ def render_frame(
     variant = (frame_index // 5) % 3
     canvas = backgrounds[variant].copy()
 
-    # Fade the assembled drawing back to the same empty-paper opening.
-    global_opacity = 1.0 - smoothstep(21.35, 23.25, time_s)
+    # Presenter-controlled delivery requires the completed drawing to remain
+    # available for narration instead of dissolving back to empty paper.
+    global_opacity = 1.0
     active, strength = active_node(time_s)
 
     arrow_progress = smoothstep(0.0, 1.0, (time_s - 6.40) / 0.78)

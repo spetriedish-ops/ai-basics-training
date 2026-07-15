@@ -2,8 +2,9 @@
 
 These animations bring Sarah's six photographed drawings to life while
 keeping her handwriting, wording, shapes, and original arrows intact. The
-outputs are silent, presenter-paced, and designed to read on a 16:9 slide.
-They play on softly crumpled ruled notebook paper that boils with the drawing.
+outputs are silent, presenter-paced, and designed to read in a full-screen
+16:9 HTML player. They play on softly crumpled ruled notebook paper that boils
+with the drawing.
 
 ## Approach
 
@@ -27,7 +28,8 @@ handled by `render_multi_agent_orchestration.py`. Together they:
    alone, plus brief wordless character beats from `personality_motifs.py`;
    sketch 01 also adds one teal return arrow to clarify the loop, while sketch
    06 adds a warm flickering fire behind the original graphite flames;
-9. fades back to empty notebook paper for a clean loop.
+9. holds the complete drawing with the paper and graphite still boiling until
+   the presenter advances.
 
 The Frontier Labs scene uses `02-frontier-labs-landscape-v2.jpeg`, Sarah's
 cleaner tier/model/harness/API table. The original sketch remains beside it for
@@ -67,12 +69,14 @@ For a faster single-page revision:
 .venv/bin/python render_sketch_set.py --scene harness_mind_map
 ```
 
-The Harness page also has a presenter-controlled player at
-`interactive/harness_mind_map/index.html`. Serve the `pencil-codex` directory
-over localhost, open that page, and use click, Space, or Right Arrow to draw
-the next teaching stage. Left Arrow moves back, `H` hides the small presenter
-overlay, and `R` restarts. Each completed stage holds indefinitely with the
-paper and pencil boil still moving.
+Frontier Labs, MCP/CLI/API, and the Harness page have presenter-controlled
+players under `interactive/<scene>/index.html`. Serve the `pencil-codex`
+directory over localhost, open the desired page, and use click, Space, or Right
+Arrow to draw the next teaching stage. Left Arrow moves back, `H` hides the
+small presenter overlay, and `R` restarts. Each completed stage holds
+indefinitely with the paper and pencil boil still moving. Each stage has a
+dedicated half-second native hold clip under `holds/`; this prevents a
+background/throttled browser tab from replaying the drawing reveal.
 
 The renderer also reuses the parent project environment when
 `animations/.venv/` already exists. Override it explicitly with
@@ -83,7 +87,9 @@ Outputs:
 - `out/agentic_loop.mp4` — 1920x1080, 30 fps, H.264, silent, 23.5 seconds
 - `out/agentic_loop.gif` — 800x450, 12 fps, looping, optimized for wiki use
 - `out/frontier_labs.{mp4,gif}` — sketch 02 vendor landscape
+- `interactive/frontier_labs/` — click-paced Labs → Models → Harnesses/API player
 - `out/mcp_cli_api.{mp4,gif}` — visual MCP, CLI, and API tools comparison
+- `interactive/mcp_cli_api/` — click-paced MCP → CLI → API player
 - `out/harness_mind_map.{mp4,gif}` — updated sketch 04 mind map
 - `interactive/harness_mind_map/` — click-paced Harness player and eight stage clips
 - `out/what_is_an_agent.{mp4,gif}` — sketch 05 definition and examples

@@ -2,35 +2,43 @@
   "stages": [
     {
       "label": "Harness",
-      "src": "stages/01-harness.mp4"
+      "src": "stages/01-harness.mp4",
+      "hold": "holds/01-harness.mp4"
     },
     {
       "label": "Model",
-      "src": "stages/02-model.mp4"
+      "src": "stages/02-model.mp4",
+      "hold": "holds/02-model.mp4"
     },
     {
       "label": "Interaction / Application Layer",
-      "src": "stages/03-interaction-application-layer.mp4"
+      "src": "stages/03-interaction-application-layer.mp4",
+      "hold": "holds/03-interaction-application-layer.mp4"
     },
     {
       "label": "Guardrails",
-      "src": "stages/04-guardrails.mp4"
+      "src": "stages/04-guardrails.mp4",
+      "hold": "holds/04-guardrails.mp4"
     },
     {
       "label": "Tools",
-      "src": "stages/05-tools.mp4"
+      "src": "stages/05-tools.mp4",
+      "hold": "holds/05-tools.mp4"
     },
     {
       "label": "Context",
-      "src": "stages/06-context.mp4"
+      "src": "stages/06-context.mp4",
+      "hold": "holds/06-context.mp4"
     },
     {
       "label": "Skills",
-      "src": "stages/07-skills.mp4"
+      "src": "stages/07-skills.mp4",
+      "hold": "holds/07-skills.mp4"
     },
     {
       "label": "What is an agent?",
-      "src": "stages/08-what-is-an-agent.mp4"
+      "src": "stages/08-what-is-an-agent.mp4",
+      "hold": "holds/08-what-is-an-agent.mp4"
     }
   ],
   "controls": [

@@ -10,6 +10,7 @@ writing order, and applies the same restrained paper/line boil as sketch 01.
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import subprocess
 import sys
@@ -28,6 +29,7 @@ HERE = Path(__file__).resolve().parent
 SKETCH_DIR = HERE.parent / "assets" / "sketches"
 SOURCE_DIR = HERE / "source"
 OUT_DIR = HERE / "out"
+INTERACTIVE_ROOT = HERE / "interactive"
 
 WIDTH, HEIGHT = 1920, 1080
 FPS = 30
@@ -61,6 +63,13 @@ class SceneSpec:
     focus_order: tuple[str, ...]
     focus_start: float
     focus_step: float
+
+
+@dataclass(frozen=True)
+class InteractiveSceneSpec:
+    labels: tuple[str, ...]
+    groups: tuple[tuple[str, ...], ...]
+    personality_ranges: tuple[tuple[float, float], ...]
 
 
 @dataclass
@@ -143,6 +152,20 @@ SCENES: dict[str, SceneSpec] = {
         focus_order=("definition", "general", "specialized"),
         focus_start=9.20,
         focus_step=3.30,
+    ),
+}
+
+
+INTERACTIVE_SCENES: dict[str, InteractiveSceneSpec] = {
+    "frontier_labs": InteractiveSceneSpec(
+        labels=("Labs", "Models", "Harnesses + API"),
+        groups=(("title", "labs"), ("models",), ("harnesses", "api")),
+        personality_ranges=((7.88, 10.50), (10.62, 13.35), (13.48, 20.50)),
+    ),
+    "mcp_cli_api": InteractiveSceneSpec(
+        labels=("MCP", "CLI", "API"),
+        groups=(("title", "mcp"), ("cli",), ("api",)),
+        personality_ranges=((1.85, 7.80), (9.65, 14.85), (15.05, 21.85)),
     ),
 }
 
@@ -364,6 +387,17 @@ def revealed_asset(
     return out
 
 
+def add_personality(
+    canvas: Image.Image, scene: SceneSpec, time_s: float, variant: int, opacity: float = 1.0
+) -> None:
+    if scene.key == "what_is_an_agent":
+        personality.what_is_agent_overlay(canvas, time_s, variant, opacity)
+    elif scene.key == "mcp_cli_api":
+        personality.mcp_cli_api_overlay(canvas, time_s, variant, opacity)
+    elif scene.key == "frontier_labs":
+        personality.frontier_overlay(canvas, time_s, variant, opacity)
+
+
 def render_frame(
     scene: SceneSpec,
     frame_index: int,
@@ -373,9 +407,10 @@ def render_frame(
     time_s = frame_index / FPS
     variant = (frame_index // 5) % 3
     canvas = backgrounds[variant].copy()
-    global_opacity = 1.0 - established.smoothstep(
-        scene.duration - 1.85, scene.duration - 0.22, time_s
-    )
+    # The HTML presenter is now the primary delivery surface. A fully built
+    # page must remain visible while Sarah talks, so continuous masters hold
+    # their completed graphite rather than fading back to empty paper.
+    global_opacity = 1.0
     active, strength = active_group(scene, time_s)
 
     for spec in scene.pieces:
@@ -395,14 +430,275 @@ def render_frame(
         asset = revealed_asset(piece.variants[variant], piece.reveal_order, progress, global_opacity)
         canvas.alpha_composite(asset, piece.position)
 
-    if scene.key == "what_is_an_agent":
-        personality.what_is_agent_overlay(canvas, time_s, variant, global_opacity)
-    elif scene.key == "mcp_cli_api":
-        personality.mcp_cli_api_overlay(canvas, time_s, variant, global_opacity)
-    elif scene.key == "frontier_labs":
-        personality.frontier_overlay(canvas, time_s, variant, global_opacity)
+    add_personality(canvas, scene, time_s, variant, global_opacity)
 
     return canvas.convert("RGB")
+
+
+def interactive_piece_stages(
+    scene: SceneSpec, interactive: InteractiveSceneSpec
+) -> dict[str, int]:
+    stages: dict[str, int] = {}
+    for spec in scene.pieces:
+        matches = [
+            index for index, groups in enumerate(interactive.groups) if spec.group in groups
+        ]
+        if len(matches) != 1:
+            raise ValueError(
+                f"{scene.key}: piece {spec.name!r} in group {spec.group!r} "
+                f"must map to exactly one interactive stage"
+            )
+        stages[spec.name] = matches[0]
+    return stages
+
+
+def interactive_timing(
+    scene: SceneSpec,
+    interactive: InteractiveSceneSpec,
+    stage_index: int,
+) -> tuple[dict[str, tuple[float, float]], float, float]:
+    piece_stages = interactive_piece_stages(scene, interactive)
+    current = [spec for spec in scene.pieces if piece_stages[spec.name] == stage_index]
+    first_start = min(spec.start for spec in current)
+    timings = {
+        spec.name: (0.15 + spec.start - first_start, spec.reveal_duration)
+        for spec in current
+    }
+    draw_duration = max(start + duration for start, duration in timings.values()) + 0.18
+    return timings, max(1.20, draw_duration), 0.70
+
+
+def render_interactive_frame(
+    scene: SceneSpec,
+    interactive: InteractiveSceneSpec,
+    stage_index: int,
+    frame_index: int,
+    draw_duration: float,
+    timings: dict[str, tuple[float, float]],
+    backgrounds: tuple[Image.Image, Image.Image, Image.Image],
+    pieces: dict[str, PreparedPiece],
+) -> Image.Image:
+    local_time = frame_index / FPS
+    variant = (frame_index // 5) % 3
+    canvas = backgrounds[variant].copy()
+    piece_stages = interactive_piece_stages(scene, interactive)
+    stage_progress = min(local_time / draw_duration, 1.0)
+    personality_start, personality_end = interactive.personality_ranges[stage_index]
+    personality_time = personality_start + (personality_end - personality_start) * stage_progress
+    active, strength = active_group(scene, personality_time)
+
+    for spec in scene.pieces:
+        piece = pieces[spec.name]
+        piece_stage = piece_stages[spec.name]
+        if piece_stage < stage_index:
+            progress = 1.0
+        elif piece_stage > stage_index:
+            continue
+        else:
+            start, duration = timings[spec.name]
+            progress = float(np.clip((local_time - start) / duration, 0.0, 1.0))
+        if progress <= 0.0:
+            continue
+        if active == spec.group and strength > 0.01:
+            highlight = rough_highlight(piece.size, variant, strength)
+            canvas.alpha_composite(
+                highlight,
+                (
+                    round(spec.center[0] - highlight.width / 2),
+                    round(spec.center[1] - highlight.height / 2),
+                ),
+            )
+        asset = revealed_asset(piece.variants[variant], piece.reveal_order, progress, 1.0)
+        canvas.alpha_composite(asset, piece.position)
+
+    add_personality(canvas, scene, personality_time, variant)
+    return canvas.convert("RGB")
+
+
+def encode_frames(output: Path, frames: int, frame_builder) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    command = [
+        "ffmpeg", "-y", "-v", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24",
+        "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS), "-i", "-",
+        "-an", "-c:v", "libx264", "-preset", "medium", "-crf", "18",
+        "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output),
+    ]
+    process = subprocess.Popen(command, stdin=subprocess.PIPE)
+    assert process.stdin is not None
+    try:
+        for index in range(frames):
+            process.stdin.write(np.asarray(frame_builder(index), dtype=np.uint8).tobytes())
+    finally:
+        process.stdin.close()
+    if process.wait() != 0:
+        raise subprocess.CalledProcessError(process.returncode, command)
+
+
+def file_slug(label: str) -> str:
+    return "-".join(part for part in label.lower().replace("+", " ").split() if part)
+
+
+def render_interactive_clips(
+    scene: SceneSpec,
+    backgrounds: tuple[Image.Image, Image.Image, Image.Image],
+    pieces: dict[str, PreparedPiece],
+) -> list[Path]:
+    interactive = INTERACTIVE_SCENES[scene.key]
+    stage_dir = INTERACTIVE_ROOT / scene.key / "stages"
+    hold_dir = INTERACTIVE_ROOT / scene.key / "holds"
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    hold_dir.mkdir(parents=True, exist_ok=True)
+    outputs: list[Path] = []
+    for stage_index, label in enumerate(interactive.labels):
+        timings, draw_duration, hold_duration = interactive_timing(
+            scene, interactive, stage_index
+        )
+        frames = round((draw_duration + hold_duration) * FPS)
+        output = stage_dir / f"{stage_index + 1:02d}-{file_slug(label)}.mp4"
+
+        def frame_builder(index: int, current: int = stage_index) -> Image.Image:
+            return render_interactive_frame(
+                scene,
+                interactive,
+                current,
+                index,
+                draw_duration,
+                timings,
+                backgrounds,
+                pieces,
+            )
+
+        print(
+            f"{scene.key}: rendering interactive stage {stage_index + 1}/"
+            f"{len(interactive.labels)} ({label})",
+            flush=True,
+        )
+        encode_frames(output, frames, frame_builder)
+        hold_frames = max(2, round(0.52 * FPS))
+        hold_start = max(0, frames - hold_frames)
+        encode_frames(
+            hold_dir / output.name,
+            hold_frames,
+            lambda hold_index: frame_builder(hold_start + hold_index),
+        )
+        outputs.append(output)
+    return outputs
+
+
+def write_interactive_player(scene: SceneSpec, clips: list[Path]) -> None:
+    interactive = INTERACTIVE_SCENES[scene.key]
+    directory = INTERACTIVE_ROOT / scene.key
+    directory.mkdir(parents=True, exist_ok=True)
+    manifest = [
+        {
+            "label": label,
+            "src": f"stages/{clip.name}",
+            "hold": f"holds/{clip.name}",
+        }
+        for label, clip in zip(interactive.labels, clips, strict=True)
+    ]
+    title = scene.key.replace("_", " ").title()
+    html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{title} — presenter player</title>
+  <style>
+    :root {{ color-scheme: light; }}
+    * {{ box-sizing: border-box; }}
+    html, body {{ margin: 0; width: 100%; height: 100%; overflow: hidden; background: #111; }}
+    body {{ display: grid; place-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }}
+    .stage {{ position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; background: #faf7ef; cursor: pointer; }}
+    video {{ display: block; width: 100%; height: 100%; object-fit: contain; }}
+    .hud {{ position: absolute; right: 1.15rem; bottom: 1rem; display: grid; gap: .35rem; justify-items: end; color: #34323e; text-shadow: 0 1px rgba(250,247,239,.9); transition: opacity .18s; pointer-events: none; }}
+    .hud.hidden {{ opacity: 0; }}
+    .count {{ padding: .34rem .55rem; border: 1px solid rgba(52,50,62,.28); border-radius: 999px; background: rgba(250,247,239,.76); font-size: clamp(.66rem, 1.05vw, .94rem); }}
+    .hint {{ font-size: clamp(.58rem, .88vw, .80rem); opacity: .72; }}
+    .stage:focus-visible {{ outline: 4px solid #2ea79a; outline-offset: -4px; }}
+  </style>
+</head>
+<body>
+  <main class="stage" tabindex="0" role="button" aria-label="Advance {title} animation">
+    <video muted playsinline preload="auto"></video>
+    <div class="hud">
+      <div class="count" aria-live="polite"></div>
+      <div class="hint">click / space / → next · ← back · H hide</div>
+    </div>
+  </main>
+  <script>
+    const stages = {json.dumps(manifest)};
+    const shell = document.querySelector('.stage');
+    const video = document.querySelector('video');
+    const hud = document.querySelector('.hud');
+    const count = document.querySelector('.count');
+    let index = 0;
+    let holding = false;
+    let holdTimer = 0;
+
+    function label() {{
+      count.textContent = `${{index + 1}} / ${{stages.length}} · ${{stages[index].label}}`;
+    }}
+
+    function loadHold() {{
+      if (holding) return;
+      holding = true;
+      window.clearTimeout(holdTimer);
+      video.loop = true;
+      video.src = stages[index].hold;
+      video.load();
+      video.addEventListener('loadedmetadata', () => video.play().catch(() => {{}}), {{ once: true }});
+    }}
+
+    function loadStage(next, playFromStart = true) {{
+      index = Math.max(0, Math.min(stages.length - 1, next));
+      holding = false;
+      window.clearTimeout(holdTimer);
+      label();
+      if (!playFromStart) {{ loadHold(); return; }}
+      video.loop = false;
+      video.src = stages[index].src;
+      video.load();
+      const start = () => {{
+        holdTimer = window.setTimeout(loadHold, Math.max(0, (video.duration - 0.10) * 1000));
+        video.play().catch(() => {{}});
+      }};
+      video.addEventListener('loadedmetadata', start, {{ once: true }});
+    }}
+
+    function advance() {{ if (index < stages.length - 1) loadStage(index + 1); }}
+    function back() {{ if (index > 0) loadStage(index - 1, false); }}
+
+    video.addEventListener('timeupdate', () => {{
+      if (!holding && video.duration && video.currentTime >= video.duration - 0.12) loadHold();
+    }});
+    video.addEventListener('ended', loadHold);
+    shell.addEventListener('click', advance);
+    window.addEventListener('keydown', (event) => {{
+      if (event.key === ' ' || event.key === 'ArrowRight' || event.key === 'Enter') {{ event.preventDefault(); advance(); }}
+      if (event.key === 'ArrowLeft') {{ event.preventDefault(); back(); }}
+      if (event.key.toLowerCase() === 'h') hud.classList.toggle('hidden');
+      if (event.key.toLowerCase() === 'r') loadStage(0);
+    }});
+    loadStage(0);
+    shell.focus();
+  </script>
+</body>
+</html>
+"""
+    (directory / "index.html").write_text(html, encoding="utf-8")
+    (directory / "manifest.json").write_text(
+        json.dumps(
+            {
+                "stages": manifest,
+                "controls": ["click", "Space", "ArrowRight", "ArrowLeft", "H", "R"],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def render_mp4(
@@ -457,13 +753,17 @@ def render_gif(mp4: Path, output: Path) -> None:
     )
 
 
-def render_scene(scene: SceneSpec, prepare_only: bool, skip_gif: bool) -> None:
+def render_scene(
+    scene: SceneSpec, prepare_only: bool, skip_gif: bool, skip_interactive: bool
+) -> None:
     if scene.key == "harness_mind_map":
         command = [sys.executable, str(HERE / "render_harness_mind_map.py")]
         if prepare_only:
             command.append("--prepare-only")
         if skip_gif:
             command.append("--skip-gif")
+        if skip_interactive:
+            command.append("--skip-interactive")
         subprocess.run(command, check=True)
         return
 
@@ -483,6 +783,11 @@ def render_scene(scene: SceneSpec, prepare_only: bool, skip_gif: bool) -> None:
         gif = OUT_DIR / f"{scene.key}.gif"
         render_gif(mp4, gif)
         established.probe(gif)
+    if scene.key in INTERACTIVE_SCENES and not skip_interactive:
+        clips = render_interactive_clips(scene, backgrounds, pieces)
+        write_interactive_player(scene, clips)
+        for clip in clips:
+            established.probe(clip)
 
 
 def parse_args() -> argparse.Namespace:
@@ -490,6 +795,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scene", choices=("all", *SCENES), default="all")
     parser.add_argument("--prepare-only", action="store_true")
     parser.add_argument("--skip-gif", action="store_true")
+    parser.add_argument("--skip-interactive", action="store_true")
     return parser.parse_args()
 
 
@@ -497,7 +803,7 @@ def main() -> None:
     args = parse_args()
     scenes = SCENES.values() if args.scene == "all" else (SCENES[args.scene],)
     for scene in scenes:
-        render_scene(scene, args.prepare_only, args.skip_gif)
+        render_scene(scene, args.prepare_only, args.skip_gif, args.skip_interactive)
 
 
 if __name__ == "__main__":

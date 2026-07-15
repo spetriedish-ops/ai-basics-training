@@ -1,0 +1,27 @@
+{
+  "stages": [
+    {
+      "label": "MCP",
+      "src": "stages/01-mcp.mp4",
+      "hold": "holds/01-mcp.mp4"
+    },
+    {
+      "label": "CLI",
+      "src": "stages/02-cli.mp4",
+      "hold": "holds/02-cli.mp4"
+    },
+    {
+      "label": "API",
+      "src": "stages/03-api.mp4",
+      "hold": "holds/03-api.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H",
+    "R"
+  ]
+}

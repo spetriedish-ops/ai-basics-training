@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Assemble the slide-ready deliverables folder in run-of-show order.
+# Assemble the presentation-ready deliverables folder in run-of-show order.
 # Usage (from animations/):  ./scripts/package.sh
 # Output: animations/deliverables/  (gitignored — regenerate anywhere)
 set -euo pipefail
@@ -15,10 +15,13 @@ cp assets/sketches/01-llm-harness-agentic-loop.jpeg "$OUT/01b-brain-sketch-stati
 cp renders/final/paver.mp4                        "$OUT/02-paver.mp4"
 cp pencil-codex/out/agentic_loop.mp4              "$OUT/03-agentic-loop.mp4"
 cp pencil-codex/out/frontier_labs.mp4             "$OUT/04-frontier-labs.mp4"
+cp -R pencil-codex/interactive/frontier_labs      "$OUT/04-frontier-labs-player"
 cp pencil-codex/out/harness_mind_map.mp4          "$OUT/05-harness-mind-map-full.mp4"
 cp pencil-codex/interactive/harness_mind_map/stages/*.mp4 "$OUT/05-harness-stages/"
+cp -R pencil-codex/interactive/harness_mind_map   "$OUT/05-harness-player"
 cp renders/final/toolbox.mp4                      "$OUT/06-toolbox.mp4"
 cp pencil-codex/out/mcp_cli_api.mp4               "$OUT/07-mcp-cli-api.mp4"
+cp -R pencil-codex/interactive/mcp_cli_api        "$OUT/07-mcp-cli-api-player"
 cp renders/final/context_window.mp4               "$OUT/08-context-truck.mp4"
 cp renders/final/agent_anatomy.mp4                "$OUT/09-pop-the-hood.mp4"
 cp pencil-codex/out/what_is_an_agent.mp4          "$OUT/10-what-is-an-agent.mp4"
@@ -37,6 +40,9 @@ cat > "$OUT/INDEX.md" <<'EOF'
 
 Session: July 15, 2026 · fully remote · all MP4s silent, 1080p30.
 Regenerate this folder anytime: `./scripts/package.sh` from animations/.
+The HTML players are the primary live artifacts. Serve `deliverables/` over
+localhost (for example, `python3 -m http.server`) and open each player's
+`index.html`. Continuous MP4s are archival/take-home fallbacks.
 
 | File | Slot | Notes |
 |------|------|-------|
@@ -45,9 +51,12 @@ Regenerate this folder anytime: `./scripts/package.sh` from animations/.
 | 01-engine-factory.mp4 + 01b-brain-sketch-static.jpeg | Beat 1: LLM, lifecycle, inference | odometer beat = inference |
 | 02-paver.mp4 | Beat 2: prediction engine | |
 | 03-agentic-loop.mp4 | Beat 3 | pencil (Codex set) |
-| 04-frontier-labs.mp4 | Beat 4 | pencil |
-| 05-harness-mind-map-full.mp4 / 05-harness-stages/ | Beat 5 + 8 | stages = click-paced; or use interactive player from repo |
-| 06-toolbox.mp4 → 07-mcp-cli-api.mp4 | Beat 6: tools spoke detour | tools BEFORE context, per player order |
+| 04-frontier-labs-player/ | Beat 4 | primary; click-paced Labs → Models → Harnesses + API |
+| 04-frontier-labs.mp4 | Beat 4 | continuous fallback; complete drawing persists |
+| 05-harness-player/ | Beat 5 + 8 | primary eight-stage click-paced player |
+| 05-harness-mind-map-full.mp4 / 05-harness-stages/ | Beat 5 + 8 | continuous and per-stage fallbacks |
+| 06-toolbox.mp4 → 07-mcp-cli-api-player/ | Beat 6: tools spoke detour | primary MCP → CLI → API player; tools BEFORE context |
+| 07-mcp-cli-api.mp4 | Beat 6 | continuous fallback; complete drawing persists |
 | 08-context-truck.mp4 | Beat 7: context spoke | simulator demo optional (animations/simulator.html, serve repo) |
 | 09-pop-the-hood.mp4 | Beat 9: assembly payoff | ends on van tease |
 | 10-what-is-an-agent.mp4 | Beat 10 | pencil |
