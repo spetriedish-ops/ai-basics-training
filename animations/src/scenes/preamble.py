@@ -156,7 +156,10 @@ class Preamble01(Scene):
 
 # ---------------------------------------------------------------- P02 ----
 class Preamble02(Scene):
-    """Fraud detection: one card in the stream reads wrong."""
+    """Fraud detection: normal transactions load into the bed; the
+    abnormal one gets refused at the tailgate. (Sarah's note: cards are
+    cargo, labeled — the deck's own grammar, no floating abstractions.)
+    """
 
     def construct(self):
         stage_min(self)
@@ -165,34 +168,38 @@ class Preamble02(Scene):
         truck.shift(LEFT * 3.6)
         self.add(truck)
 
-        xs = [7.5, 9.0, 10.5, 12.0, 13.5]
-        colors = ["#FFFFFF"] * 5
-        cards = []
-        for i, (x, c) in enumerate(zip(xs, colors)):
-            card = crayonify(rrect(1.05, 0.62, c, radius=0.10, stroke_w=4),
-                             seed=60 + i)
-            squig = crayonify(VGroup(
-                Line([-0.3, 0.08, 0], [0.3, 0.08, 0], stroke_color=INK_SOFT,
-                     stroke_width=3),
-                Line([-0.3, -0.1, 0], [0.12, -0.1, 0], stroke_color=INK_SOFT,
-                     stroke_width=3)), amp=0.02, seed=70 + i)
-            g = VGroup(card, squig).move_to([x, GROUND_Y + 1.6, 0])
-            cards.append(g)
-            self.add(g)
-        stream = VGroup(*cards)
-        self.play(stream.animate.shift(LEFT * 9.0), run_time=2.6,
-                  rate_func=rate_functions.linear)
-        # the fourth card turns wrong; the crane plucks it
-        bad = cards[3]
-        self.play(bad[0][0].animate.set_fill(ALERT).set_stroke(ALERT),
-                  run_time=0.3)
-        bang = hand_label("!", size=60, color=ALERT)
-        bang.next_to(bad, UP, buff=0.15)
+        slots = [[-5.55, -1.19, 0], [-4.45, -1.19, 0],
+                 [-5.55, -0.50, 0], [-4.45, -0.50, 0]]
+        for i, slot in enumerate(slots):
+            c = scribble_cargo("NORMAL", CARGO_SAGE, seed=60 + i,
+                               w=1.05, h=0.60).set_z_index(2)
+            c.move_to([7.8, GROUND_Y + 0.9, 0])
+            self.add(c)
+            self.play(c.animate.move_to([slot[0], 0.9, 0]),
+                      run_time=0.55, rate_func=rate_functions.ease_in_out_sine)
+            self.play(c.animate.move_to(slot),
+                      run_time=0.35, rate_func=rate_functions.ease_out_bounce)
+        # the odd one out: refused at the tailgate
+        bad_box = crayonify(rrect(1.35, 0.62, "#FFFFFF", radius=0.10,
+                                  stroke=ALERT, stroke_w=5), seed=64)
+        bad_lbl = hand_label("ABNORMAL", size=24, scrawl=True, color=ALERT)
+        bad_lbl.scale_to_fit_width(1.1)
+        bad = VGroup(bad_box, bad_lbl)
+        bad_lbl.move_to([0, 0, 0])
+        bad.move_to([7.8, GROUND_Y + 0.9, 0])
+        self.add(bad)
+        self.play(bad.animate.move_to([-4.9, 0.9, 0]),
+                  run_time=0.55, rate_func=rate_functions.ease_in_out_sine)
+        bang = hand_label("!", size=64, color=ALERT)
+        bang.move_to([-4.9, 1.9, 0])
         self.play(FadeIn(bang, scale=0.5), run_time=0.3)
-        self.play(bad.animate.shift(UP * 1.6).rotate(8 * DEGREES),
-                  bang.animate.shift(UP * 1.6),
-                  *[c.animate.shift(LEFT * 1.2) for c in cards if c is not bad],
-                  run_time=0.8, rate_func=rate_functions.ease_out_sine)
+        for dx in (0.06, -0.06, 0.06, -0.06):
+            self.play(bad.animate.shift(RIGHT * dx), run_time=0.08)
+        # bounced off the tailgate: lands clear of the truck, flagged
+        self.play(bad.animate.move_to([0.75, GROUND_Y + 0.33, 0]
+                                      ).rotate(-10 * DEGREES),
+                  bang.animate.move_to([0.75, GROUND_Y + 1.2, 0]),
+                  run_time=0.7, rate_func=rate_functions.ease_out_quad)
         self.wait(HOLD)
 
 

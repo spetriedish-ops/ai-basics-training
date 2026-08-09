@@ -29,9 +29,10 @@ SCENES = {
         4.2: {"teal": 10112, "amber": 3710, "ink": 9692},
         7.1: {"teal": 10454, "amber": 3735, "ink": 9714},
     },
+    # v2: NORMAL cargo loads into the bed; ABNORMAL refused at tailgate
     "preamble02": {
-        3.5: {"teal": 38448, "alert": 3016, "ink": 20673},
-        5.9: {"teal": 39193, "alert": 3221, "ink": 20187},
+        4.0: {"teal": 33000, "sage": 7500, "ink": 20000},
+        7.9: {"alert": 1100, "sage": 7500},
     },
     "preamble03": {
         3.5: {"amber": 6290, "lilac": 6189, "ink": 9847},
