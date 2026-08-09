@@ -24,6 +24,51 @@ PALETTE = {
 
 # beat time (s) -> {color: min pixels at 1920x1080}
 SCENES = {
+    # Preamble clips P01-P11 (auto-calibrated 2026-07-15)
+    "preamble01": {
+        4.2: {"teal": 10112, "amber": 3710, "ink": 9692},
+        7.1: {"teal": 10454, "amber": 3735, "ink": 9714},
+    },
+    "preamble02": {
+        3.5: {"teal": 38448, "alert": 3016, "ink": 20673},
+        5.9: {"teal": 39193, "alert": 3221, "ink": 20187},
+    },
+    "preamble03": {
+        3.5: {"amber": 6290, "lilac": 6189, "ink": 9847},
+        5.8: {"lilac": 6060, "sage": 5736, "ink": 9825},
+    },
+    "preamble04": {
+        4.9: {"amber": 5280, "lilac": 2029, "ink": 10554},
+        8.6: {"amber": 5329, "teal": 2664, "ink": 10651},
+    },
+    "preamble05": {
+        3.2: {"teal": 18473, "lilac": 3170, "ink": 15926},
+        5.2: {"teal": 19335, "lilac": 3132, "ink": 16314},
+    },
+    "preamble06": {
+        4.5: {"teal": 28582, "lilac": 3239, "ink": 20974},
+        7.8: {"teal": 31601, "lilac": 3101, "ink": 22912},
+    },
+    "preamble07": {
+        3.3: {"lilac": 4208, "amber": 2579, "ink": 6660},
+        5.3: {"lilac": 4330, "amber": 2600, "ink": 6660},
+    },
+    "preamble08": {
+        2.9: {"teal": 25533, "lilac": 3259, "ink": 22736},
+        4.7: {"teal": 25547, "lilac": 3247, "ink": 22734},
+    },
+    "preamble09": {
+        4.1: {"coral": 5647, "amber": 4281, "ink": 9740},
+        6.9: {"coral": 5958, "amber": 4366, "ink": 9606},
+    },
+    "preamble10": {
+        2.8: {"teal": 20865, "amber": 3004, "ink": 13364},
+        4.4: {"teal": 20857, "amber": 3004, "ink": 13368},
+    },
+    "preamble11": {
+        2.5: {"teal": 24659, "amber": 15956, "ink": 29201},
+        3.7: {"teal": 24659, "amber": 15956, "ink": 29201},
+    },
     # Truck v2 (STORYBOARDS.md scene 3) — thresholds ≈ 40% of measured
     "context_window": {
         5.5: {"teal": 40000, "amber": 1800, "lilac": 4500, "sage": 8000,
