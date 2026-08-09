@@ -205,7 +205,21 @@ class Preamble02(Scene):
 
 # ---------------------------------------------------------------- P03 ----
 class Preamble03(Scene):
-    """Decades: the road was being laid the whole time."""
+    """Decades: the road was being laid the whole time.
+
+    Mile markers carry the receipts (researched 2026-07-15): spell check
+    reached home computers in 1980; fraud detection and spam filtering
+    went mainstream in the 90s; shopping recommendations arrived in the
+    late 90s and ruled the 2000s; Siri shipped 2011; generative AI 2020s.
+    """
+
+    DECADES = [
+        ("1980s", "SPELL CHECK"),
+        ("1990s", "FRAUD ALERTS"),
+        ("2000s", "SHOPPING RECS"),
+        ("2010s", "VOICE ASSISTANTS"),
+        ("2020s", "GENERATIVE AI"),
+    ]
 
     def construct(self):
         stage_min(self)
@@ -215,19 +229,25 @@ class Preamble03(Scene):
             crayonify(rrect(0.62, 0.30, colors[i % 4], radius=0.06,
                             stroke_w=4), seed=i
                       ).move_to([-8 + i * 0.66, BRICK_Y, 0])
-            for i in range(40)
+            for i in range(61)
         ])
         markers = VGroup()
-        for k, mx in enumerate([-6.0, 2.0, 10.0, 18.0]):
-            post = crayonify(VGroup(
-                Line([mx, GROUND_Y, 0], [mx, GROUND_Y + 1.0, 0],
-                     stroke_color=INK, stroke_width=4),
-                rrect(0.8, 0.5, "#FFFFFF", radius=0.08, stroke_w=3
-                      ).move_to([mx, GROUND_Y + 1.3, 0])), seed=30 + k)
-            markers.add(post)
+        for k, ((decade, example), mx) in enumerate(
+                zip(self.DECADES, [-5.5, 2.0, 9.5, 17.0, 24.5])):
+            panel = rrect(2.5, 1.05, "#FFFFFF", radius=0.10, stroke_w=4)
+            panel.move_to([mx, GROUND_Y + 2.0, 0])
+            pole = Line([mx, GROUND_Y + 0.3, 0], [mx, GROUND_Y + 1.47, 0],
+                        stroke_color=INK, stroke_width=4)
+            sign = crayonify(VGroup(pole, panel), seed=30 + k)
+            yr = hand_label(decade, size=30)
+            yr.move_to([mx, GROUND_Y + 2.22, 0])
+            ex = hand_label(example, size=22, scrawl=True, color=INK_SOFT)
+            ex.scale_to_fit_width(min(ex.width, 2.2))
+            ex.move_to([mx, GROUND_Y + 1.78, 0])
+            markers.add(VGroup(sign, yr, ex))
         world = VGroup(road, markers)
         self.add(world)
-        self.play(world.animate.shift(LEFT * 12.5), run_time=4.0,
+        self.play(world.animate.shift(LEFT * 23.0), run_time=6.0,
                   rate_func=rate_functions.ease_in_out_sine)
         self.wait(HOLD)
 

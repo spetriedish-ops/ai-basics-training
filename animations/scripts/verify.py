@@ -34,9 +34,10 @@ SCENES = {
         4.0: {"teal": 33000, "sage": 7500, "ink": 20000},
         7.9: {"alert": 1100, "sage": 7500},
     },
+    # v2: dated mile markers (1980s spell check ... 2020s generative AI)
     "preamble03": {
-        3.5: {"amber": 6290, "lilac": 6189, "ink": 9847},
-        5.8: {"lilac": 6060, "sage": 5736, "ink": 9825},
+        3.0: {"amber": 7000, "lilac": 8000, "ink": 13000},
+        7.8: {"coral": 5200, "sage": 7000, "ink": 13000},
     },
     "preamble04": {
         4.9: {"amber": 5280, "lilac": 2029, "ink": 10554},
