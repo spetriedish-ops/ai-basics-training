@@ -99,19 +99,32 @@ def white_card(text, seed, w=1.9, h=0.55, color=INK):
 
 # ---------------------------------------------------------------- P01 ----
 class Preamble01(Scene):
-    """The algorithm era: the van learns what you pick."""
+    """The algorithm era: the van learns what you pick.
+
+    Labeled per Sarah's note: the audience's first look at the world, so
+    the boxes say what they are (your usage data) and the van says what
+    it is (the algorithm).
+    """
 
     def construct(self):
         stage_min(self)
         vp = build_van(seed=70)
         van = vp["van"]
+        tag = hand_label("THE ALGORITHM", size=22, scrawl=True)
+        tag.scale_to_fit_width(1.38)
+        tag.move_to([-0.25, GROUND_Y + 0.95, 0])   # on the van body
+        van.add(tag)
         van.shift(RIGHT * 3.2)
         self.add(van)
 
-        picks = [parcel(CARGO_AMBER, 20), parcel(CARGO_CORAL, 21),
-                 parcel(CARGO_LILAC, 22)]
+        picks = [scribble_cargo("WATCHED", CARGO_AMBER, seed=20,
+                                w=1.05, h=0.68),
+                 scribble_cargo("CLICKED", CARGO_CORAL, seed=21,
+                                w=1.05, h=0.68),
+                 scribble_cargo("BOUGHT", CARGO_LILAC, seed=22,
+                                w=1.05, h=0.68)]
         for i, p in enumerate(picks):
-            p.move_to([-4.6 + i * 1.35, GROUND_Y + 0.28, 0])
+            p.move_to([-4.9 + i * 1.5, GROUND_Y + 0.36, 0])
             self.play(FadeIn(p, shift=UP * 0.25), run_time=0.4)
             self.wait(0.15)
         # the van looks: dotted sightline sweeps the row
@@ -123,8 +136,8 @@ class Preamble01(Scene):
         # it leaves... and returns already loaded with your next pick
         roll_van(self, vp, RIGHT * 5.5, 0.9,
                  rate_func=rate_functions.ease_in_sine)
-        nxt = parcel(CARGO_SAGE, 23, w=0.8)
-        nxt.move_to([3.0, GROUND_Y + 1.62, 0]).shift(RIGHT * 5.5)
+        nxt = scribble_cargo("NEXT", CARGO_SAGE, seed=23, w=0.9, h=0.6)
+        nxt.move_to([3.0, GROUND_Y + 1.75, 0]).shift(RIGHT * 5.5)
         self.add(nxt)
         for w in vp["wheels"]:
             w.add_updater(__import__("style").make_roller(w.width / 2))
