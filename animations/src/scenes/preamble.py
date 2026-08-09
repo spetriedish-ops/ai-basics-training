@@ -229,11 +229,11 @@ class Preamble03(Scene):
             crayonify(rrect(0.62, 0.30, colors[i % 4], radius=0.06,
                             stroke_w=4), seed=i
                       ).move_to([-8 + i * 0.66, BRICK_Y, 0])
-            for i in range(61)
+            for i in range(70)
         ])
         markers = VGroup()
         for k, ((decade, example), mx) in enumerate(
-                zip(self.DECADES, [-5.5, 2.0, 9.5, 17.0, 24.5])):
+                zip(self.DECADES, [0.0, 7.5, 15.0, 22.5, 30.0])):
             panel = rrect(2.5, 1.05, "#FFFFFF", radius=0.10, stroke_w=4)
             panel.move_to([mx, GROUND_Y + 2.0, 0])
             pole = Line([mx, GROUND_Y + 0.3, 0], [mx, GROUND_Y + 1.47, 0],
@@ -247,8 +247,13 @@ class Preamble03(Scene):
             markers.add(VGroup(sign, yr, ex))
         world = VGroup(road, markers)
         self.add(world)
-        self.play(world.animate.shift(LEFT * 23.0), run_time=6.0,
-                  rate_func=rate_functions.ease_in_out_sine)
+        # open centered on the 1980s, then hop sign to sign with a
+        # reading pause at each (Sarah: the drive-by was too fast)
+        self.wait(1.0)
+        for _ in range(4):
+            self.play(world.animate.shift(LEFT * 7.5), run_time=1.0,
+                      rate_func=rate_functions.ease_in_out_sine)
+            self.wait(0.9)
         self.wait(HOLD)
 
 
