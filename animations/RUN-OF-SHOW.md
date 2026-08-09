@@ -59,3 +59,13 @@ and were shelved rather than debugged on session day. The players and
 `scripts/stage_split.py` remain in `interactive/` for post-session
 forensics; do not wire them into a live session without a click-through
 on the actual presentation machine.
+
+## Preamble recording (added 2026-07-15, Sarah records 2026-07-16)
+
+Eleven silent clips for the recorded preamble narration, packaged in
+`deliverables/preamble/` (P01-the-algorithm-van ... P11-series-title).
+Treatment: no captions (voiceover owns the words), no vendor names in
+pixels, sincere register on the labor beats (P06, P08), every clip ends
+on a ~3 s boil-alive hold to stretch in the editor. Source:
+`src/scenes/preamble.py`; regenerate everything with
+`scripts/preamble_batch.sh`; per-clip specs in `scripts/verify.py`.
