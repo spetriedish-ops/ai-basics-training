@@ -392,7 +392,9 @@ class Preamble06(PacedScene):
         van = vp["van"]
         van.shift(RIGHT * 2.6)
         self.add(fig, van)
-        gift = parcel(CARGO_SAGE, 24, w=0.65)
+        # a topical recommendation, per Sarah — the fake sequel energy
+        gift = scribble_cargo("SPACE TRUCKS 4", CARGO_SAGE, seed=24,
+                              w=1.7, h=0.72)
         gift.move_to([1.6, GROUND_Y + 1.5, 0])
         self.play(FadeIn(gift, scale=0.6), run_time=0.4)
         self.play(gift.animate.move_to([-0.55, GROUND_Y + 1.35, 0]),
@@ -408,6 +410,12 @@ class Preamble06(PacedScene):
         for i, x in enumerate([-1.4, 0.4, 2.2, 4.0]):
             hook = Line([x, 1.7, 0], [x, 1.35, 0], stroke_color=INK,
                         stroke_width=3)
+            if i == 1:
+                # the contested one says what it is
+                jc = build_job_card("YOUR JOB", seed=80 + i, w=1.5, h=0.9)
+                jc.move_to([x, 0.85, 0])
+                cards.add(VGroup(crayonify(hook, amp=0.02, seed=95 + i), jc))
+                continue
             jc = build_job_card("", seed=80 + i, w=1.5, h=0.9)
             jc.move_to([x, 0.85, 0])
             squig = crayonify(VGroup(
@@ -424,21 +432,79 @@ class Preamble06(PacedScene):
         truck.shift(RIGHT * 11 + RIGHT * 0.0)
         truck.scale(0.85, about_point=[0, GROUND_Y, 0])
         self.add(truck)
-        roll(self, parts, LEFT * 6.4, 1.4,
+        roll(self, parts, LEFT * 6.0, 1.4,
              rate_func=rate_functions.ease_out_sine)
         crane = build_crane(seed=50)
         crane.scale(0.85, about_point=[0, GROUND_Y, 0])
-        crane.shift(RIGHT * 4.6)
+        crane.shift(RIGHT * 3.3)   # hook lands over the YOUR JOB card
         self.play(FadeIn(crane), run_time=0.4)
         # both reach toward the SAME card, freeze there
-        self.play(fig.animate.shift(RIGHT * 1.1),
+        fig.set_z_index(5)   # never lost behind the truck
+        self.play(fig.animate.shift(RIGHT * 1.6),
                   run_time=0.9, rate_func=rate_functions.ease_in_out_sine)
         self.wait(HOLD)
 
 
-# ---------------------------------------------------------------- P07 ----
-class Preamble07(PacedScene):
-    """The upside: tedium hauled away; time, and bigger work."""
+# ------------------------------------------------------- P07a/b/c ----
+# The upside, click-paced (Sarah 2026-08-10): three sub-clips the
+# presenter advances through. a) the labeled tedium drives away;
+# b) the family gardens instead; c) the breakthrough symbols arrive.
+# P07c opens on P07b's exact final tableau (same builders, same seeds)
+# so the click-through is seamless.
+
+def _garden(scene, animate=True):
+    """The gardening tableau shared by P07b (animated) and P07c (static)."""
+    adult = stickfig(seed=201, arm_up=True)
+    adult.shift(LEFT * 2.6)
+    kid = stickfig(seed=202, scale=0.58)
+    kid.shift(RIGHT * 3.4)
+    can = crayonify(VGroup(
+        rrect(0.55, 0.4, AI_TEAL_DARK, radius=0.08
+              ).move_to([-1.9, GROUND_Y + 1.0, 0]),
+        Line([-1.65, GROUND_Y + 1.1, 0], [-1.3, GROUND_Y + 0.9, 0],
+             stroke_color=INK, stroke_width=4)), seed=205)
+    can.rotate(-18 * DEGREES)
+    bed = crayonify(rrect(3.2, 0.35, "#D8CBB2", radius=0.08
+                          ).move_to([0.6, GROUND_Y + 0.18, 0]), seed=206)
+    petal_colors = [CARGO_CORAL, CARGO_LILAC, CARGO_AMBER]
+    flowers = []
+    for i, fx in enumerate([-0.4, 0.6, 1.6]):
+        stem = Line([fx, GROUND_Y + 0.35, 0], [fx, GROUND_Y + 1.05, 0],
+                    stroke_color=CARGO_SAGE, stroke_width=5)
+        stem = crayonify(stem, amp=0.02, seed=210 + i)
+        petals = crayonify(VGroup(
+            *[Circle(radius=0.13, fill_color=petal_colors[i],
+                     fill_opacity=1, stroke_color=INK, stroke_width=3
+                     ).move_to([fx + 0.16 * np.cos(a), GROUND_Y + 1.15
+                                + 0.16 * np.sin(a), 0])
+              for a in np.linspace(0, 2 * np.pi, 5, endpoint=False)],
+            Circle(radius=0.09, fill_color="#FFFFFF", fill_opacity=1,
+                   stroke_color=INK, stroke_width=3
+                   ).move_to([fx, GROUND_Y + 1.15, 0])), seed=215 + i)
+        flowers.append((stem, petals))
+    if animate:
+        scene.play(FadeIn(adult, shift=UP * 0.2),
+                   FadeIn(kid, shift=UP * 0.2),
+                   FadeIn(bed), run_time=0.7)
+        scene.play(FadeIn(can, scale=0.7), run_time=0.4)
+        drops = crayonify(VGroup(*[
+            Line([-0.85 + k * 0.14, GROUND_Y + 0.85, 0],
+                 [-0.9 + k * 0.14, GROUND_Y + 0.6, 0],
+                 stroke_color=INK_SOFT, stroke_width=3) for k in range(3)
+        ]), amp=0.015, seed=220)
+        scene.play(FadeIn(drops), run_time=0.35)
+        scene.play(FadeOut(drops), run_time=0.35)
+        for stem, petals in flowers:
+            scene.play(Create(stem), run_time=0.45)
+            scene.play(FadeIn(petals, scale=0.3), run_time=0.35)
+    else:
+        scene.add(adult, kid, bed, can)
+        for stem, petals in flowers:
+            scene.add(stem, petals)
+
+
+class Preamble07a(PacedScene):
+    """The labeled tedium drives away."""
 
     def construct(self):
         stage_min(self)
@@ -446,43 +512,59 @@ class Preamble07(PacedScene):
         truck = parts["truck"]
         truck.shift(LEFT * 2.0)
         self.add(truck)
+        labels = ["GRUNT WORK", "MENIAL TASKS", "TEDIUM"]
         crates = VGroup(*[
-            crayonify(rrect(0.9, 0.6, "#D8CBB2", radius=0.08), seed=30 + i
-                      ).set_z_index(2).move_to([-2.8 + i * 1.0, -0.55, 0])
-            for i in range(3)
+            scribble_cargo(lab, "#D8CBB2", seed=30 + i, w=1.5, h=0.78
+                           ).set_z_index(2)
+            for i, lab in enumerate(labels)
         ])
+        # stacked above the bed rim so every label reads
+        crates[0].move_to([-3.6, -0.5, 0])
+        crates[1].move_to([-1.95, -0.5, 0])
+        crates[2].move_to([-2.8, 0.32, 0])
         self.add(crates)
-        roll(self, parts, RIGHT * 12.5, 1.6,
+        self.wait(1.0)
+        roll(self, parts, RIGHT * 12.5, 1.8,
              rate_func=rate_functions.ease_in_sine, extra_mobs=[crates])
+        self.wait(HOLD)
 
-        fam = VGroup(stickfig(seed=201), stickfig(seed=202, scale=0.62),
-                     stickfig(seed=203, scale=0.5))
-        fam[0].shift(LEFT * 3.4)
-        fam[1].shift(LEFT * 2.5)
-        fam[2].shift(LEFT * 1.8)
-        self.play(FadeIn(fam, shift=UP * 0.2), run_time=0.7)
 
-        # bigger work: flask, energy, wheat — quick warm sketches
-        # a pill capsule — unambiguously medicine, no alarm-color needed
-        flask = crayonify(VGroup(
+class Preamble07b(PacedScene):
+    """What the people do instead: the garden."""
+
+    def construct(self):
+        stage_min(self)
+        _garden(self, animate=True)
+        self.wait(HOLD)
+
+
+class Preamble07c(PacedScene):
+    """The breakthroughs arrive: medicine, energy, crops (upper right)."""
+
+    def construct(self):
+        stage_min(self)
+        _garden(self, animate=False)   # P07b's final tableau, held
+        pill = crayonify(VGroup(
             rrect(0.55, 1.0, CARGO_LILAC, radius=0.28
-                  ).move_to([2.6, 0.75, 0]).rotate(28 * DEGREES),
-            Line([2.38, 0.62, 0], [2.85, 0.92, 0], stroke_color=INK,
+                  ).move_to([3.9, 2.55, 0]).rotate(28 * DEGREES),
+            Line([3.68, 2.42, 0], [4.15, 2.72, 0], stroke_color=INK,
                  stroke_width=4)), seed=60)
         bolt = crayonify(Polygon(
-            [4.2, 1.5, 0], [3.9, 0.7, 0], [4.15, 0.7, 0], [3.95, 0.1, 0],
-            [4.45, 0.95, 0], [4.2, 0.95, 0],
+            [5.15, 3.15, 0], [4.85, 2.35, 0], [5.1, 2.35, 0],
+            [4.9, 1.75, 0], [5.4, 2.6, 0], [5.15, 2.6, 0],
             fill_color=CARGO_AMBER, fill_opacity=1, stroke_color=INK,
             stroke_width=4), seed=61)
         wheat = crayonify(VGroup(
-            Line([5.6, 0.1, 0], [5.6, 1.3, 0], stroke_color=CARGO_SAGE,
+            Line([6.3, 1.85, 0], [6.3, 3.05, 0], stroke_color=CARGO_SAGE,
                  stroke_width=5),
-            *[Line([5.6, 0.5 + k * 0.25, 0],
-                   [5.6 + (0.3 if k % 2 else -0.3), 0.7 + k * 0.25, 0],
+            *[Line([6.3, 2.25 + k * 0.25, 0],
+                   [6.3 + (0.3 if k % 2 else -0.3), 2.45 + k * 0.25, 0],
                    stroke_color=CARGO_SAGE, stroke_width=4)
               for k in range(3)]), seed=62)
-        for m in (flask, bolt, wheat):
-            self.play(FadeIn(m, scale=0.6), run_time=0.4)
+        self.wait(0.5)
+        for m in (pill, bolt, wheat):
+            self.play(FadeIn(m, scale=0.5), run_time=0.5)
+            self.wait(0.3)
         self.wait(HOLD)
 
 

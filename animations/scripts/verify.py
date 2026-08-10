@@ -46,12 +46,20 @@ SCENES = {
         10.6: {"teal": 19335, "lilac": 3130, "ink": 16314},
     },
     "preamble06": {
-        8.1: {"teal": 31571, "lilac": 3210, "ink": 22939},
-        14.6: {"teal": 31617, "lilac": 3120, "ink": 22842},
+        8.1: {"teal": 32089, "lilac": 3210, "ink": 23127},
+        14.6: {"teal": 32174, "lilac": 3124, "ink": 23125},
     },
-    "preamble07": {
-        6.2: {"lilac": 4330, "amber": 2600, "ink": 6660},
-        10.8: {"lilac": 4330, "amber": 2600, "ink": 6660},
+    "preamble07a": {
+        1.0: {"teal": 30000, "ink": 21000},   # labeled tedium aboard
+        9.7: {"amber": 1700, "ink": 1400},    # empty stage hold (post-exit)
+    },
+    "preamble07b": {
+        6.7: {"amber": 2270, "lilac": 2148, "ink": 8872},
+        11.9: {"amber": 2270, "lilac": 2148, "ink": 8868},
+    },
+    "preamble07c": {
+        5.7: {"lilac": 5202, "amber": 3128, "ink": 10222},
+        9.9: {"lilac": 5202, "amber": 3128, "ink": 10222},
     },
     "preamble08": {
         5.6: {"teal": 25549, "lilac": 3249, "ink": 22734},
