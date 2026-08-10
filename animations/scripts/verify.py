@@ -24,52 +24,50 @@ PALETTE = {
 
 # beat time (s) -> {color: min pixels at 1920x1080}
 SCENES = {
-    # Preamble clips P01-P11 (auto-calibrated 2026-07-15)
+    # Preamble clips P01-P11 (recalibrated for 2026-08-10 pacing)
     "preamble01": {
-        4.2: {"teal": 10112, "amber": 3710, "ink": 9692},
-        7.1: {"teal": 10454, "amber": 3735, "ink": 9714},
+        7.4: {"teal": 9868, "amber": 5536, "ink": 10847},
+        13.4: {"teal": 10131, "amber": 5485, "ink": 10837},
     },
-    # v2: NORMAL cargo loads into the bed; ABNORMAL refused at tailgate
     "preamble02": {
-        4.0: {"teal": 33000, "sage": 7500, "ink": 20000},
-        7.9: {"alert": 1100, "sage": 7500},
+        7.7: {"teal": 31654, "sage": 7518, "ink": 19800},
+        13.8: {"teal": 33805, "sage": 7526, "ink": 19876},
     },
-    # v3: dated mile markers with a reading pause at each sign
     "preamble03": {
-        0.6: {"amber": 6300, "lilac": 8000, "ink": 12000},
-        10.6: {"coral": 4500, "sage": 7000, "ink": 12000},
+        10.2: {"amber": 7168, "lilac": 7061, "ink": 12468},
+        19.0: {"lilac": 7304, "sage": 7138, "ink": 11974},
     },
     "preamble04": {
-        4.9: {"amber": 5280, "lilac": 2029, "ink": 10554},
-        8.6: {"amber": 5329, "teal": 2664, "ink": 10651},
+        8.3: {"amber": 5282, "teal": 2692, "ink": 10513},
+        15.1: {"amber": 5329, "teal": 2664, "ink": 10651},
     },
     "preamble05": {
-        3.2: {"teal": 18473, "lilac": 3170, "ink": 15926},
-        5.2: {"teal": 19335, "lilac": 3132, "ink": 16314},
+        6.0: {"teal": 19335, "lilac": 3132, "ink": 16314},
+        10.6: {"teal": 19335, "lilac": 3130, "ink": 16314},
     },
     "preamble06": {
-        4.5: {"teal": 28582, "lilac": 3239, "ink": 20974},
-        7.8: {"teal": 31601, "lilac": 3101, "ink": 22912},
+        8.1: {"teal": 31571, "lilac": 3210, "ink": 22939},
+        14.6: {"teal": 31617, "lilac": 3120, "ink": 22842},
     },
     "preamble07": {
-        3.3: {"lilac": 4208, "amber": 2579, "ink": 6660},
-        5.3: {"lilac": 4330, "amber": 2600, "ink": 6660},
+        6.2: {"lilac": 4330, "amber": 2600, "ink": 6660},
+        10.8: {"lilac": 4330, "amber": 2600, "ink": 6660},
     },
     "preamble08": {
-        2.9: {"teal": 25533, "lilac": 3259, "ink": 22736},
-        4.7: {"teal": 25547, "lilac": 3247, "ink": 22734},
+        5.6: {"teal": 25549, "lilac": 3249, "ink": 22734},
+        9.8: {"teal": 25509, "lilac": 3249, "ink": 22745},
     },
     "preamble09": {
-        4.1: {"coral": 5647, "amber": 4281, "ink": 9740},
-        6.9: {"coral": 5958, "amber": 4366, "ink": 9606},
+        7.4: {"coral": 5916, "sage": 4356, "ink": 9252},
+        13.2: {"coral": 5958, "amber": 4366, "ink": 9606},
     },
     "preamble10": {
-        2.8: {"teal": 20865, "amber": 3004, "ink": 13364},
-        4.4: {"teal": 20857, "amber": 3004, "ink": 13368},
+        5.4: {"teal": 20806, "amber": 3004, "ink": 13316},
+        9.2: {"teal": 20806, "amber": 3004, "ink": 13316},
     },
     "preamble11": {
-        2.5: {"teal": 24659, "amber": 15956, "ink": 29201},
-        3.7: {"teal": 24659, "amber": 15956, "ink": 29201},
+        4.9: {"teal": 24659, "amber": 15956, "ink": 29210},
+        8.2: {"teal": 24659, "amber": 15956, "ink": 29210},
     },
     # Truck v2 (STORYBOARDS.md scene 3) — thresholds ≈ 40% of measured
     "context_window": {

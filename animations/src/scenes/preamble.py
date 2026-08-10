@@ -33,7 +33,29 @@ from style import (  # noqa: E402
     hand_label, puff, rrect,
 )
 
-HOLD = 3.0   # final boil-alive hold on every clip
+# Global tempo (Sarah, 2026-08-10: everything moved too fast and clips
+# ran short for the talk track). Movements play 1.5x slower, pauses sit
+# 1.7x longer, and the final hold lands around 7 s after pacing.
+PACE_PLAY = 1.5
+PACE_WAIT = 1.7
+HOLD = 4.0   # final boil-alive hold on every clip (~6.8 s after pacing)
+
+
+class PacedScene(Scene):
+    """Scene with the preamble's global tempo applied uniformly.
+
+    run_time uses a None sentinel: Scene.wait() internally calls
+    self.play(Wait(...)) with NO run_time kwarg, and a plain default
+    here would clobber every wait down to the default length.
+    """
+
+    def play(self, *args, run_time=None, **kwargs):
+        if run_time is not None:
+            kwargs["run_time"] = run_time * PACE_PLAY
+        super().play(*args, **kwargs)
+
+    def wait(self, duration=1.0, **kwargs):
+        super().wait(duration * PACE_WAIT, **kwargs)
 
 
 def stage_min(scene):
@@ -98,7 +120,7 @@ def white_card(text, seed, w=1.9, h=0.55, color=INK):
 
 
 # ---------------------------------------------------------------- P01 ----
-class Preamble01(Scene):
+class Preamble01(PacedScene):
     """The algorithm era: the van learns what you pick.
 
     Labeled per Sarah's note: the audience's first look at the world, so
@@ -155,7 +177,7 @@ class Preamble01(Scene):
 
 
 # ---------------------------------------------------------------- P02 ----
-class Preamble02(Scene):
+class Preamble02(PacedScene):
     """Fraud detection: normal transactions load into the bed; the
     abnormal one gets refused at the tailgate. (Sarah's note: cards are
     cargo, labeled — the deck's own grammar, no floating abstractions.)
@@ -204,7 +226,7 @@ class Preamble02(Scene):
 
 
 # ---------------------------------------------------------------- P03 ----
-class Preamble03(Scene):
+class Preamble03(PacedScene):
     """Decades: the road was being laid the whole time.
 
     Mile markers carry the receipts (researched 2026-07-15): spell check
@@ -258,7 +280,7 @@ class Preamble03(Scene):
 
 
 # ---------------------------------------------------------------- P04 ----
-class Preamble04(Scene):
+class Preamble04(PacedScene):
     """The factory runs hot; crates are stamped at the gate."""
 
     def construct(self):
@@ -313,7 +335,7 @@ class Preamble04(Scene):
 
 
 # ---------------------------------------------------------------- P05 ----
-class Preamble05(Scene):
+class Preamble05(PacedScene):
     """The poster stops being a joke: the dashes fill in."""
 
     def construct(self):
@@ -359,7 +381,7 @@ class Preamble05(Scene):
 
 
 # ---------------------------------------------------------------- P06 ----
-class Preamble06(Scene):
+class Preamble06(PacedScene):
     """Recommending a movie vs reaching for your job card. No gags."""
 
     def construct(self):
@@ -415,7 +437,7 @@ class Preamble06(Scene):
 
 
 # ---------------------------------------------------------------- P07 ----
-class Preamble07(Scene):
+class Preamble07(PacedScene):
     """The upside: tedium hauled away; time, and bigger work."""
 
     def construct(self):
@@ -465,7 +487,7 @@ class Preamble07(Scene):
 
 
 # ---------------------------------------------------------------- P08 ----
-class Preamble08(Scene):
+class Preamble08(PacedScene):
     """The ledger: what a human costs vs what the truck costs. Factual."""
 
     def construct(self):
@@ -492,7 +514,7 @@ class Preamble08(Scene):
 
 
 # ---------------------------------------------------------------- P09 ----
-class Preamble09(Scene):
+class Preamble09(PacedScene):
     """Seat pricing wobbles; then a shed built from a sentence."""
 
     def construct(self):
@@ -553,7 +575,7 @@ class Preamble09(Scene):
 
 
 # ---------------------------------------------------------------- P10 ----
-class Preamble10(Scene):
+class Preamble10(PacedScene):
     """Specialists everywhere: the parade of badged trucks."""
 
     def construct(self):
@@ -610,7 +632,7 @@ class Preamble10(Scene):
 
 
 # ---------------------------------------------------------------- P11 ----
-class Preamble11(Scene):
+class Preamble11(PacedScene):
     """The series handoff: the whole jobsite, then the title."""
 
     def construct(self):
