@@ -568,30 +568,76 @@ class Preamble07c(PacedScene):
         self.wait(HOLD)
 
 
-# ---------------------------------------------------------------- P08 ----
-class Preamble08(PacedScene):
-    """The ledger: what a human costs vs what the truck costs. Factual."""
+# ------------------------------------------------------- P08a/b/c ----
+# The ledger, click-paced (Sarah 2026-08-10): a) the worker alone;
+# b) the benefit cards pile above them; c) the truck arrives with its
+# one-card ledger. Deterministic shared layout = seamless click-through.
+
+FIG_X = -4.2
+LEDGER = ["SALARY", "HEALTHCARE", "401K", "PTO", "MANAGERS"]
+
+
+def _ledger_fig():
+    fig = stickfig(seed=200)
+    fig.shift(LEFT * 4.2)
+    return fig
+
+
+def _ledger_cards():
+    cards = []
+    for i, lab in enumerate(LEDGER):
+        c = white_card(lab, seed=30 + i)
+        c.move_to([FIG_X, GROUND_Y + 1.9 + i * 0.62, 0])
+        cards.append(c)
+    return cards
+
+
+class Preamble08a(PacedScene):
+    """The worker, alone. Humans are expensive — meet the human."""
 
     def construct(self):
         stage_min(self)
-        fig = stickfig(seed=200)
-        fig.shift(LEFT * 4.2)
+        fig = _ledger_fig()
+        self.play(FadeIn(fig, shift=UP * 0.2), run_time=0.7)
+        self.wait(HOLD)
+
+
+class Preamble08b(PacedScene):
+    """The benefit cards stack up over the worker."""
+
+    def construct(self):
+        stage_min(self)
+        self.add(_ledger_fig())
+        self.wait(0.4)
+        for c in _ledger_cards():
+            target = c.get_center()
+            c.move_to([FIG_X, 3.9, 0])
+            self.add(c)
+            self.play(c.animate.move_to(target),
+                      run_time=0.5, rate_func=rate_functions.ease_out_quad)
+            self.wait(0.1)
+        self.wait(HOLD)
+
+
+class Preamble08c(PacedScene):
+    """The truck rolls in; its whole ledger is one card: FUEL."""
+
+    def construct(self):
+        stage_min(self)
+        self.add(_ledger_fig())
+        for c in _ledger_cards():
+            self.add(c)
         parts = build_truck(seed=0)
         truck = parts["truck"]
         truck.scale(0.8, about_point=[0, GROUND_Y, 0])
-        truck.shift(RIGHT * 3.6)
-        self.add(fig, truck)
-
-        labels = ["SALARY", "HEALTHCARE", "401K", "PTO", "MANAGERS"]
-        for i, lab in enumerate(labels):
-            c = white_card(lab, seed=30 + i)
-            c.move_to([-4.2, 3.6, 0])
-            self.play(c.animate.move_to([-4.2, GROUND_Y + 1.9 + i * 0.62, 0]),
-                      run_time=0.45, rate_func=rate_functions.ease_out_quad)
+        truck.shift(RIGHT * 11)
+        self.add(truck)
+        roll(self, parts, LEFT * 7.4, 1.5,
+             rate_func=rate_functions.ease_out_sine)
         fuel = white_card("FUEL", seed=40, color=AI_TEAL_DARK)
-        fuel.move_to([3.0, 3.6, 0])
+        fuel.move_to([3.0, 3.9, 0])
         self.play(fuel.animate.move_to([3.0, GROUND_Y + 3.0, 0]),
-                  run_time=0.5, rate_func=rate_functions.ease_out_quad)
+                  run_time=0.6, rate_func=rate_functions.ease_out_quad)
         self.wait(HOLD)
 
 

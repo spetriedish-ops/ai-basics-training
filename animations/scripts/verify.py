@@ -61,9 +61,17 @@ SCENES = {
         5.7: {"lilac": 5202, "amber": 3128, "ink": 10222},
         9.9: {"lilac": 5202, "amber": 3128, "ink": 10222},
     },
-    "preamble08": {
-        5.6: {"teal": 25549, "lilac": 3249, "ink": 22734},
-        9.8: {"teal": 25509, "lilac": 3249, "ink": 22745},
+    "preamble08a": {
+        3.9: {"amber": 1782, "lilac": 983, "ink": 4540},
+        6.4: {"amber": 1782, "lilac": 983, "ink": 4540},
+    },
+    "preamble08b": {
+        6.1: {"lilac": 2656, "amber": 1782, "ink": 11096},
+        10.6: {"lilac": 2656, "amber": 1782, "ink": 11096},
+    },
+    "preamble08c": {
+        5.0: {"teal": 25553, "lilac": 3206, "ink": 22676},
+        8.5: {"teal": 25513, "lilac": 3204, "ink": 22686},
     },
     "preamble09": {
         7.4: {"coral": 5916, "sage": 4356, "ink": 9252},

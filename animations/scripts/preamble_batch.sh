@@ -11,7 +11,9 @@ PAIRS=(
   "preamble07a:Preamble07a:P07a-tedium-hauled-away"
   "preamble07b:Preamble07b:P07b-the-garden"
   "preamble07c:Preamble07c:P07c-breakthroughs"
-  "preamble08:Preamble08:P08-the-ledger"
+  "preamble08a:Preamble08a:P08a-the-worker"
+  "preamble08b:Preamble08b:P08b-the-benefits-stack"
+  "preamble08c:Preamble08c:P08c-fuel-lozenge"
   "preamble09:Preamble09:P09-seat-and-vibe-shed"
   "preamble10:Preamble10:P10-specialist-parade"
   "preamble11:Preamble11:P11-series-title"
@@ -23,7 +25,7 @@ for s in 1 2 3; do
     --media_dir "renders/boil_s$s" src/scenes/preamble.py $CLASSES
 done
 mkdir -p deliverables/preamble
-rm -f deliverables/preamble/P07-the-upside.mp4
+rm -f deliverables/preamble/P07-the-upside.mp4 deliverables/preamble/P08-the-ledger.mp4
 for pair in "${PAIRS[@]}"; do
   IFS=: read -r stem cls name <<< "$pair"
   python3 scripts/interleave.py "$stem" "$cls"
