@@ -14,8 +14,9 @@ brain reference. `render_sketch_set.py` is the
 shared, scene-configured renderer for sketches 02–05, delegating the staged
 Harness page to `render_harness_mind_map.py`. The motion-rich sixth sketch is
 handled by `render_multi_agent_orchestration.py`.
-`render_rovo_architecture.py` handles the two Rovo architecture flows while
-keeping their complete photographed composition and original connectors intact.
+`render_rovo_architecture.py` handles the Rovo architecture flows and Agentic
+Spectrum while keeping each complete photographed composition and its original
+connectors intact.
 Together they:
 
 1. applies EXIF rotation and a measured perspective correction;
@@ -106,6 +107,7 @@ Outputs:
 - `interactive/rovo_cli_flow/` — four-stage click-paced Rovo CLI architecture player
 - `out/rovo_chat_agents_flow.{mp4,gif}` — two-lane Rovo Chat and Agents architecture
 - `interactive/rovo_chat_agents_flow/` — five-stage click-paced Rovo Chat/Agents player
+- `out/agentic_spectrum.{mp4,gif}` — single-pass least-to-most-agentic spectrum
 
 ## Revision ergonomics
 
