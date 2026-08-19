@@ -21,7 +21,7 @@ later personality and timing pass.
 
 The delivery format has changed: the full-screen HTML click-through is the
 presentation, not a Google Slides deck. Use these presenter players for the
-four teaching visuals that need narration-controlled pacing:
+six teaching visuals that need narration-controlled pacing:
 
 | Presentation concept | Presenter player | Stages |
 |---|---|---:|
@@ -29,9 +29,11 @@ four teaching visuals that need narration-controlled pacing:
 | Frontier labs, models, harnesses, APIs | `pencil-codex/interactive/frontier_labs/index.html` | 3 |
 | Harness mind map | `pencil-codex/interactive/harness_mind_map/index.html` | 8 |
 | MCP vs CLI vs API | `pencil-codex/interactive/mcp_cli_api/index.html` | 3 |
+| Rovo CLI architecture | `pencil-codex/interactive/rovo_cli_flow/index.html` | 4 |
+| Rovo Chat + Agents architecture | `pencil-codex/interactive/rovo_chat_agents_flow/index.html` | 5 |
 
 Serve `pencil-codex/` over localhost and open the relevant `index.html`.
-Controls are consistent across all four players:
+Controls are consistent across all six players:
 
 - click, Space, Enter, or Right Arrow: draw the next stage;
 - Left Arrow: return to the previous completed stage;
@@ -83,6 +85,8 @@ to empty notebook paper. The GIFs are smaller wiki previews.
 | MCP vs CLI vs API | `pencil-codex/out/mcp_cli_api.mp4` | 24.0 s |
 | What is an agent? | `pencil-codex/out/what_is_an_agent.mp4` | 21.5 s |
 | Multi-agent orchestration | `pencil-codex/out/multi_agent_orchestration.mp4` | 23.0 s |
+| Rovo CLI architecture | `pencil-codex/out/rovo_cli_flow.mp4` | 17.0 s |
+| Rovo Chat + Agents architecture | `pencil-codex/out/rovo_chat_agents_flow.mp4` | 22.0 s |
 
 All corresponding `.gif` files are in `pencil-codex/out/`. All passed the
 repository's visual/format checks and are below the 10 MB wiki ceiling.
@@ -151,6 +155,7 @@ The reproducible implementation is in `pencil-codex/`:
 - `render_sketch_set.py` — Frontier Labs, MCP/CLI/API, What Is an Agent
 - `render_harness_mind_map.py` — Harness master and interactive stage clips
 - `render_multi_agent_orchestration.py` — Multi-agent Orchestration
+- `render_rovo_architecture.py` — staged Rovo CLI and Rovo Chat/Agents diagrams
 - `personality_motifs.py` — shared characters, props, and visual gags
 - `source/` — cleanup, crop, layout, stage, and personality audit images
 
@@ -172,6 +177,43 @@ when the scene is Frontier or MCP):
 See `pencil-codex/README.md` for environment setup and revision details.
 When changing timing or visuals, regenerate the corresponding MP4/GIF and
 audit images, then rerun both verifiers before committing.
+
+## Rovo architecture presenter sequences (added 2026-08-19)
+
+The two newest photographed diagrams preserve Sarah's complete original
+composition: wording, spacing, containers, connectors, arrowheads, and pencil
+weight. Nothing in the diagram is redrawn or rearranged. Each completed stage
+switches to a dedicated 0.52-second boiling hold loop and waits indefinitely.
+
+This preservation rule is especially important: an earlier experiment that
+recomposed the nodes, strengthened the graphite, and substituted freshly drawn
+arrows/containers was rejected during visual review because it changed the
+meaning and made some lettering harder to read. Do not restore that approach.
+The authoritative source images are `assets/sketches/07-rovo-cli-flow.png` and
+`assets/sketches/08-rovo-chat-agents-flow.png`; every visible diagram pixel in
+the finished players is extracted from those photographs.
+
+The source-coordinate stage masks in `render_rovo_architecture.py` were refined
+after frame-by-frame review so no dash, dot, connector stub, or partial box from
+the following stage appears early. When changing a mask, inspect every
+`source/rovo_*/stage_*.jpg` audit image before rendering. At a boundary where a
+connector physically shares a pencil pixel with a node outline, preserve the
+node outline rather than shaving it away.
+
+Rovo CLI has four presenter stages:
+
+1. User, arrow, and RovoCLI surface
+2. Arrow and local Nemo agent runtime
+3. Arrow, `deval-axis`, arrow, and AI gateway
+4. Branch arrows and the two model choices
+
+Rovo Chat + Agents has five presenter stages:
+
+1. Rovo Chat and Rovo Agents
+2. Arrows, Chat Interfaces, and Other Surfaces
+3. Merge arrows, Conversational API, arrow, and ConvoAI
+4. Branch arrows and the Rovo Chat / Rovo Agent harnesses
+5. Merge arrows, AI Gateway, branch arrows, and the two model choices
 
 ## Run-of-show integration guidance
 

@@ -32,6 +32,10 @@ cp renders/final/fleet.mp4                        "$OUT/11-fleet.mp4"
 cp pencil-codex/out/multi_agent_orchestration.mp4 "$OUT/12-multi-agent-orchestration.mp4"
 cp renders/final/lost_card_wireframe.png          "$OUT/13-lost-card-wireframe.png"
 cp renders/final/sdlc_wireframe.png               "$OUT/14-sdlc-wireframe.png"
+cp pencil-codex/out/rovo_cli_flow.mp4              "$OUT/extras/rovo-cli-flow.mp4"
+cp -R pencil-codex/interactive/rovo_cli_flow       "$OUT/extras/rovo-cli-flow-player"
+cp pencil-codex/out/rovo_chat_agents_flow.mp4      "$OUT/extras/rovo-chat-agents-flow.mp4"
+cp -R pencil-codex/interactive/rovo_chat_agents_flow "$OUT/extras/rovo-chat-agents-flow-player"
 
 # wiki-sized GIFs and alternates, kept out of the main sequence
 cp renders/final/*_small.gif "$OUT/extras/" 2>/dev/null || true
@@ -67,7 +71,7 @@ localhost (for example, `python3 -m http.server`) and open each player's
 | 10-what-is-an-agent.mp4 | Beat 10 | pencil |
 | 11-fleet.mp4 → 12-multi-agent-orchestration.mp4 | Beat 11: finale | Fleet = delegation; pencil page closes it |
 | 13/14 wireframes (PNG) | optional orchestration slides | lost card = hub, SDLC = relay |
-| extras/ | wiki GIFs + alternates | includes Claude's alternate agentic loop |
+| extras/ | wiki GIFs + alternates | includes both Rovo architecture players and Claude's alternate agentic loop |
 EOF
 
 echo "Packaged $(ls "$OUT" | wc -l | tr -d ' ') entries into animations/$OUT/"

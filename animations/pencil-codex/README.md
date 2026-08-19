@@ -13,7 +13,10 @@ combines Sarah's giant-headed figure with a graphite redraw of her supplied
 brain reference. `render_sketch_set.py` is the
 shared, scene-configured renderer for sketches 02–05, delegating the staged
 Harness page to `render_harness_mind_map.py`. The motion-rich sixth sketch is
-handled by `render_multi_agent_orchestration.py`. Together they:
+handled by `render_multi_agent_orchestration.py`.
+`render_rovo_architecture.py` handles the two Rovo architecture flows while
+keeping their complete photographed composition and original connectors intact.
+Together they:
 
 1. applies EXIF rotation and a measured perspective correction;
 2. divides away glare and broad shadows, then isolates the real graphite as a
@@ -71,8 +74,9 @@ For a faster single-page revision:
 .venv/bin/python render_sketch_set.py --scene harness_mind_map
 ```
 
-Brain in Harness, Frontier Labs, MCP/CLI/API, and the Harness page have presenter-controlled
-players under `interactive/<scene>/index.html`. Serve the `pencil-codex`
+Brain in Harness, Frontier Labs, MCP/CLI/API, the Harness page, and both Rovo
+architecture diagrams have presenter-controlled players under
+`interactive/<scene>/index.html`. Serve the `pencil-codex`
 directory over localhost, open the desired page, and use click, Space, or Right
 Arrow to draw the next teaching stage. Left Arrow moves back, `H` hides the
 small presenter overlay, and `R` restarts. Each completed stage holds
@@ -98,6 +102,10 @@ Outputs:
 - `interactive/harness_mind_map/` — click-paced Harness player and eight stage clips
 - `out/what_is_an_agent.{mp4,gif}` — sketch 05 definition and examples
 - `out/multi_agent_orchestration.{mp4,gif}` — sketch 06 delegation, synthesis, and cleanup story
+- `out/rovo_cli_flow.{mp4,gif}` — User → RovoCLI → Nemo runtime → gateway → models
+- `interactive/rovo_cli_flow/` — four-stage click-paced Rovo CLI architecture player
+- `out/rovo_chat_agents_flow.{mp4,gif}` — two-lane Rovo Chat and Agents architecture
+- `interactive/rovo_chat_agents_flow/` — five-stage click-paced Rovo Chat/Agents player
 
 ## Revision ergonomics
 

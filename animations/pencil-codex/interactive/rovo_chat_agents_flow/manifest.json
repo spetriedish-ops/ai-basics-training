@@ -1,0 +1,37 @@
+{
+  "stages": [
+    {
+      "label": "Rovo Chat + Rovo Agents",
+      "src": "stages/01-rovo-chat-rovo-agents.mp4",
+      "hold": "holds/01-rovo-chat-rovo-agents.mp4"
+    },
+    {
+      "label": "Chat interfaces + other surfaces",
+      "src": "stages/02-chat-interfaces-other-surfaces.mp4",
+      "hold": "holds/02-chat-interfaces-other-surfaces.mp4"
+    },
+    {
+      "label": "Conversational API + ConvoAI",
+      "src": "stages/03-conversational-api-convoai.mp4",
+      "hold": "holds/03-conversational-api-convoai.mp4"
+    },
+    {
+      "label": "Rovo Chat + Rovo Agent harnesses",
+      "src": "stages/04-rovo-chat-rovo-agent-harnesses.mp4",
+      "hold": "holds/04-rovo-chat-rovo-agent-harnesses.mp4"
+    },
+    {
+      "label": "AI gateway + models",
+      "src": "stages/05-ai-gateway-models.mp4",
+      "hold": "holds/05-ai-gateway-models.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H",
+    "R"
+  ]
+}

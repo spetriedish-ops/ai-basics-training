@@ -24,6 +24,8 @@ CHECKS = {
     "harness_mind_map": (0.60, 1.40, 22.80, 20.00),
     "what_is_an_agent": (0.65, 9.10, 9.65, 10.75),
     "multi_agent_orchestration": (2.20, 6.65, 20.65, 19.35),
+    "rovo_cli_flow": (0.45, 1.90, 15.50, 14.50),
+    "rovo_chat_agents_flow": (0.50, 1.80, 20.50, 19.50),
 }
 
 PLAYERS = {
@@ -40,6 +42,19 @@ PLAYERS = {
     ),
     "frontier_labs": ("Labs", "Models", "Harnesses + API"),
     "mcp_cli_api": ("MCP", "CLI", "API"),
+    "rovo_cli_flow": (
+        "User + Rovo CLI surface",
+        "Local Nemo agent runtime",
+        "AI gateway",
+        "Model choices",
+    ),
+    "rovo_chat_agents_flow": (
+        "Rovo Chat + Rovo Agents",
+        "Chat interfaces + other surfaces",
+        "Conversational API + ConvoAI",
+        "Rovo Chat + Rovo Agent harnesses",
+        "AI gateway + models",
+    ),
 }
 
 
@@ -127,7 +142,12 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
         full_ink = int((full.mean(axis=2) < 155).sum())
         require(full_ink > minimum_ink, f"{stem}: final composition has strong contrast ({full_ink} dark pixels)")
 
-        if stem not in ("harness_mind_map", "brain_in_harness"):
+        if stem not in (
+            "harness_mind_map",
+            "brain_in_harness",
+            "rovo_cli_flow",
+            "rovo_chat_agents_flow",
+        ):
             teal = np.array([46, 167, 154], dtype=np.int16)
             teal_pixels = int((np.abs(active - teal).sum(axis=2) < 125).sum())
             require(teal_pixels > 900, f"{stem}: active teaching cue is visible ({teal_pixels} teal pixels)")

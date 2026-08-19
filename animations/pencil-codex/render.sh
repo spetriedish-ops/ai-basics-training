@@ -15,3 +15,4 @@ fi
 "$PYTHON" render_brain_in_harness.py
 "$PYTHON" render_sketch_set.py
 "$PYTHON" render_multi_agent_orchestration.py
+"$PYTHON" render_rovo_architecture.py

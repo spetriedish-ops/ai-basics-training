@@ -1,0 +1,32 @@
+{
+  "stages": [
+    {
+      "label": "User + Rovo CLI surface",
+      "src": "stages/01-user-rovo-cli-surface.mp4",
+      "hold": "holds/01-user-rovo-cli-surface.mp4"
+    },
+    {
+      "label": "Local Nemo agent runtime",
+      "src": "stages/02-local-nemo-agent-runtime.mp4",
+      "hold": "holds/02-local-nemo-agent-runtime.mp4"
+    },
+    {
+      "label": "AI gateway",
+      "src": "stages/03-ai-gateway.mp4",
+      "hold": "holds/03-ai-gateway.mp4"
+    },
+    {
+      "label": "Model choices",
+      "src": "stages/04-model-choices.mp4",
+      "hold": "holds/04-model-choices.mp4"
+    }
+  ],
+  "controls": [
+    "click",
+    "Space",
+    "ArrowRight",
+    "ArrowLeft",
+    "H",
+    "R"
+  ]
+}
