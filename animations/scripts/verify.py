@@ -52,7 +52,8 @@ SCENES = {
     },
     "mcp_cli_overlap": {
         2.0: {"mall_red": 7000, "mall_pink": 4000, "mall_cream": 12000},
-        10.0: {"mall_pink": 4500, "mall_cyan": 6500, "sage": 14000},
+        # One shared service door replaces the old four-door capability map.
+        10.0: {"mall_pink": 4500, "mall_cyan": 6500, "sage": 4000},
         24.0: {"mall_pink": 4500, "mall_cyan": 6500, "mall_cream": 14500},
     },
     "agency_guardrails": {

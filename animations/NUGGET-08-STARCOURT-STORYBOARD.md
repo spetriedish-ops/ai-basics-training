@@ -310,17 +310,23 @@ The player now contains eight scenes with per-beat holds and matching
 downloads. A 13-second secret-elevator interlude starts in an ordinary service
 hallway, descends to B27, and reveals an original underground-lab gag.
 
-Clip 8 is a 26-second MCP/CLI capability map. The interfaces enter on separate
-lanes, retain exclusive actions, and meet only at the shared READ ISSUE and
-SEARCH DOCS doors. This keeps overlap distinct from an implementation claim.
+Clip 8 is a 26-second MCP/CLI capability map. Both independent lanes reach the
+same shared Teamwork Graph tool door. The graphic avoids assigning unverified
+exclusive actions to either product or implying that MCP invokes the CLI.
 
 Clip 9 runs 31 seconds. It contrasts one fixed request with an agentic goal,
-then shows several approved choices, persistent audit cameras, a denied
-out-of-bounds door, a brief explosion of unsafe routes, and restored gates.
+then shows several approved choices, persistent audit cameras, a denied door
+outside the notched boundary, a brief explosion of unsafe routes, and restored
+gates. The fixed response returns to its origin and the agent produces a draft.
 
 Clip 10 runs 15 seconds. The task, tool descriptions, recent results, and route
 notes fill the courier's context backpack before it lands on a scale labeled
-`NEXT: CONTEXT`.
+`NEXT: CONTEXT`. Large source labels remain legible throughout, and the scale's
+side display leaves the full context meter visible.
+
+The presenter view now includes script cues for all scenes. The elevator
+descent belongs precisely on “complete with a secret, underground Russian
+lab,” with its final hold on “Consider that part of your AI upskilling.”
 
 Sarah chose to skip the standalone scoped-credentials/endpoint clip for this
 recording set. The existing route-comparison scene still shows an access check

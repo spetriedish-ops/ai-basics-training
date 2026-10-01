@@ -467,10 +467,8 @@ def entry_terminal(a,x,y,label,color,subtitle,active=True):
     a.text((x+190,y+119),'AGENT ACCESS POINT',16,MUTED,'ma')
 
 
-MCP_SHARED=[(472,423),(560,423),(690,423),(845,468),(1210,468),(1265,468)]
-CLI_SHARED=[(472,688),(560,688),(690,688),(845,578),(1210,578),(1265,578)]
-MCP_ONLY=[(472,423),(525,423),(525,300),(1265,300),(1265,358)]
-CLI_ONLY=[(472,688),(525,688),(525,825),(1265,825),(1265,688)]
+MCP_SHARED=[(470,423),(650,423),(750,535),(1390,535)]
+CLI_SHARED=[(470,688),(650,688),(750,590),(1390,590)]
 
 
 def compose_overlap(t,ambient_t=None):
@@ -479,36 +477,27 @@ def compose_overlap(t,ambient_t=None):
     a.rect((746,237,1788,269),(9,17,26),(61,66,81),1,2)
     a.text((1267,238),'ROVO MCP + TEAMWORK GRAPH CLI',22,CREAM,'ma')
     mcp_on=prog(t,1,3);cli_on=prog(t,3.4,5.7)
-    shared=prog(t,7.5,11.2);both=prog(t,16.4,19.5)
+    shared=prog(t,7.5,11.2)
+    a.rect((750,325,1785,780),(12,23,36),(66,68,91),2,9)
+    a.text((1267,352),'SHARED TEAMWORK GRAPH TOOLS',32,CREAM,'ma')
+    a.text((1267,403),'Some tools are available through either entrance.',25,MUTED,'ma')
     entry_terminal(a,90,346,'ROVO MCP',PINK,'Choose a described tool',mcp_on>.2)
     entry_terminal(a,90,611,'TEAMWORK GRAPH CLI',CYAN,'Run a command',cli_on>.2)
-    # Two independent lanes reach shared doors. They do not feed each other.
-    for path,col,on in [(MCP_SHARED,PINK,max(mcp_on,shared)),(CLI_SHARED,CYAN,max(cli_on,shared)),
-                        (MCP_ONLY,PINK,mcp_on*.45),(CLI_ONLY,CYAN,cli_on*.45)]:
+    # Both lanes visibly reach the SAME door. No invented exclusive actions.
+    for path,col,on in [(MCP_SHARED,PINK,mcp_on),(CLI_SHARED,CYAN,cli_on)]:
         tube(a,path,mix(col,BLACK,.72*(1-on)),3 if on>.5 else 1)
-    # The map sits over the conduits so the two entry lanes remain visually
-    # separate and never look as though one interface routes through the other.
-    a.rect((560,325,1210,805),(12,23,36),(66,68,91),2,9)
-    a.text((885,343),'CAPABILITY MAP',29,CREAM,'ma')
-    tube(a,[(560,423),(690,423),(845,468),(1210,468)],mix(PINK,BLACK,.72*(1-max(mcp_on,shared))),3)
-    tube(a,[(560,688),(690,688),(845,578),(1210,578)],mix(CYAN,BLACK,.72*(1-max(cli_on,shared))),3)
-    a.rect((723,440,1047,607),(20,35,48),(91,103,119),2,8)
-    a.text((885,452),'SHARED',23,GREEN,'ma')
-    a.text((885,493),'READ ISSUE',25,CREAM,'ma')
-    a.text((885,534),'SEARCH DOCS',25,CREAM,'ma')
-    a.text((885,574),'Availability varies by setup.',17,MUTED,'ma')
-    capability_door(a,1340,305,'CREATE ISSUE','MCP',mcp_on>.8 and t<16)
-    capability_door(a,1340,430,'READ ISSUE','MCP  +  CLI',shared>.5 or both>.2)
-    capability_door(a,1340,555,'SEARCH DOCS','MCP  +  CLI',shared>.5 or both>.2)
-    capability_door(a,1340,680,'GRAPH QUERY','CLI',cli_on>.8 and t<16)
-    if 16<t<21:
-        packet(a,MCP_SHARED,prog(t,16.2,19.8),'M',PINK)
-    if 18<t<23:
-        packet(a,CLI_SHARED,prog(t,18.3,22.1),'C',CYAN)
+    a.text((1060,481),'MCP TOOL',24,PINK,'ma')
+    a.text((1060,627),'CLI COMMAND',24,CYAN,'ma')
+    capability_door(a,1390,515,'SHARED TOOL','MCP  +  CLI',shared>.5)
+    a.text((1267,715),'Two interfaces. An overlapping set of capabilities.',24,CREAM,'ma')
+    if 16.2<t<19.5:
+        packet(a,MCP_SHARED,prog(t,16.2,19.5),'M',PINK)
+    if 19.7<t<23:
+        packet(a,CLI_SHARED,prog(t,19.7,23),'C',CYAN)
     if t>=21:
-        a.rect((603,838,1167,909),(18,31,43),GREEN,2,7)
-        a.text((885,847),'ONE · THE OTHER · OR BOTH',29,CREAM,'ma')
-    robot(a,505,709,'point' if t<16 else 'read',.6)
+        a.rect((800,822,1735,909),(18,31,43),GREEN,2,7)
+        a.text((1267,841),'ONE · THE OTHER · OR BOTH',34,CREAM,'ma')
+    robot(a,625,797,'point' if t<16 else 'read',.46)
     if t<7:title,sub,step='Two entrances to platform capabilities.','An agent may be set up with either route.',0
     elif t<16:title,sub,step='Some capabilities overlap.','The entrances stay independent.',1
     else:title,sub,step='Use one, the other, or both.','The agent’s setup determines what is available.',2
@@ -539,7 +528,7 @@ def compose_agency(t,ambient_t=None):
     im=service_set('ROOM TO ACT','WITHIN BOUNDS').copy();a=Art(im)
     a.line([(900,315),(900,898)],(72,51,65),2)
     a.text((465,323),'PREDICTABLE REQUEST',24,MUTED,'ma')
-    a.text((1355,323),'AGENTIC GOAL',24,MUTED,'ma')
+    a.text((1355,315),'AGENTIC GOAL',21,MUTED,'ma')
     # Fixed path: one request, one door, one response.
     a.rect((112,384,416,470),(18,31,43),GOLD,2,8)
     a.text((264,394),'ONE APPROVED ACTION',24,GOLD,'ma')
@@ -547,29 +536,34 @@ def compose_agency(t,ambient_t=None):
     fixed=[(255,492),(255,620),(668,620),(668,492)]
     tube(a,fixed,GOLD,4)
     goal_door(a,550,350,'READ ISSUE',True,t<8)
-    fixed_p=prog(t,1.2,5.7)
-    if t<7.5:packet(a,fixed,fixed_p if t<5.7 else 2-fixed_p,'24',GOLD,t>5.7)
+    fixed_p=prog(t,1.2,3.6) if t<4 else 1-prog(t,4,6.8)
+    packet(a,fixed,fixed_p,'24',GOLD,t>=4)
     a.rect((137,735,793,830),(17,29,41),(73,81,96),2,7)
     a.text((465,747),'FIXED ROUTE',27,CREAM,'ma')
     a.text((465,790),'Highly predictable · automation-like',20,MUTED,'ma')
     # Goal side: choices appear, but the security boundary stays explicit.
-    a.rect((953,344,1759,848),(11,25,35),GREEN,3,13)
+    # The notched boundary leaves the denied door physically OUTSIDE the zone.
+    a.poly([(953,344),(1759,344),(1759,700),(1388,700),
+            (1388,848),(953,848)],(11,25,35),GREEN,3)
     a.text((1356,352),'APPROVED ZONE',21,GREEN,'ma')
     a.rect((1003,392,1327,492),(37,28,48),PINK,2,7)
-    a.text((1165,401),'GOAL',18,PINK,'ma')
+    a.text((1165,401),'UPDATE READY' if t>=22 else 'GOAL',18,GREEN if t>=22 else PINK,'ma')
     a.text((1165,434),'PREPARE PROJECT UPDATE',22,CREAM,'ma')
     goal_door(a,1430,388,'READ ISSUES',True,10<t<14)
     goal_door(a,1430,548,'SEARCH DOCS',True,14<=t<19)
-    goal_door(a,1010,663,'POST UPDATE',True,19<=t<25)
+    goal_door(a,1010,663,'DRAFT UPDATE',True,19<=t<25)
     goal_door(a,1430,708,'DELETE PROJECT',False,False)
     choice1=[(1278,540),(1370,540),(1370,459),(1430,459)]
     choice2=[(1278,540),(1364,540),(1364,619),(1430,619)]
     choice3=[(1278,540),(1278,734),(1248,734)]
     for path,on in [(choice1,t>=9),(choice2,t>=12),(choice3,t>=17)]:tube(a,path,GREEN if on else (48,62,70),3 if on else 1)
-    # The agent chooses a route in sequence; audit cameras remain on.
-    q=prog(t,9,22)
-    route=choice1 if q<.34 else choice2 if q<.68 else choice3
-    robot(a,*mall.on_path(route,(q%(.34 if q<.68 else .32))/(.34 if q<.68 else .32)),pose='point',scale=.42)
+    # The agent stays at its decision point; requests return before the next
+    # choice. This avoids teleporting the character between service doors.
+    for route,start,end in [(choice1,9,13),(choice2,14,18),(choice3,19,22)]:
+        if start<=t<end:
+            p=prog(t,start,end)
+            packet(a,route,2*p if p<.5 else 2-2*p,'✓' if p>=.5 else '?',GREEN,p>=.5)
+    robot(a,1190,568,pose='point',scale=.35)
     audit_camera(a,961,541,True);audit_camera(a,1692,541,True)
     # Unsafe counterfactual: every branch lights briefly, then the gates return.
     risk=prog(t,25.2,27)*(1-prog(t,28.2,30.2))
@@ -585,7 +579,7 @@ def compose_agency(t,ambient_t=None):
             a.rect((x,yy,x+18,yy+h),(99,40,52),RED,1,2)
     if t<8:title,sub,step='One request. One approved action.','Predictable enough to resemble automation.',0
     elif t<18:title,sub,step='A goal creates choices.','The agent uses judgment to plan the work.',1
-    elif t<25:title,sub,step='Agency stays inside boundaries.','Approved tools and audit records define the zone.',2
+    elif t<25:title,sub,step='Agency stays inside boundaries.','Permissions limit actions. Audit records show what happened.',2
     else:title,sub,step='More freedom needs stronger guardrails.','Keep the gates, permissions, and audit trail.',3
     footer(im,title,sub,step,4)
     return im.convert('RGB')
@@ -613,28 +607,37 @@ def compose_context(t,ambient_t=None):
     amb=t if ambient_t is None else ambient_t
     im=service_set('WHAT THE AGENT','CARRIES').copy();a=Art(im)
     fill=.18+.75*prog(t,.8,7.2)
-    bag_y=650+prog(t,8.3,10.2)*75
+    bag_y=635+prog(t,8.3,10.2)*20
     context_bag(a,960,bag_y,fill,1.1)
-    cards=[('TASK',PINK,(238,425),.7),('TOOL DESCRIPTIONS',CYAN,(486,531),1.8),
-           ('RECENT RESULTS',GREEN,(1434,530),3.0),('ROUTE NOTES',GOLD,(1680,425),4.2)]
+    cards=[('TASK',PINK,(400,395),.7),('TOOL DESCRIPTIONS',CYAN,(770,395),1.8),
+           ('RECENT RESULTS',GREEN,(1140,395),3.0),('ROUTE NOTES',GOLD,(1510,395),4.2)]
     for i,(label,col,startpos,start) in enumerate(cards):
         q=prog(t,start,start+2.4)
-        x=lerp(startpos[0],960,ease(q));y=lerp(startpos[1],bag_y-135,ease(q))-math.sin(q*math.pi)*85
-        if q<.98:context_card(a,x,y,label,col,.86)
-        else:
-            xx=770+i*125;yy=bag_y-163-(i%2)*17
-            context_card(a,xx,yy,label,col,.55)
+        # Keep readable labels as a legend while a copy moves into the bag.
+        a.rect((startpos[0]-156,350,startpos[0]+156,439),(24,35,48),col,2,7)
+        a.text((startpos[0],367),label,25,CREAM,'ma')
+        a.text((startpos[0],402),'LOADED' if q>=.98 else 'READY TO LOAD',18,col,'ma')
+        if 0<q<.98:
+            x=lerp(startpos[0],960,ease(q));y=lerp(466,bag_y-135,ease(q))
+            a.rect((x-37,y-22,x+37,y+22),(24,35,48),col,2,4)
+            for offset in [-8,0,8]:a.line([(x-22,y+offset),(x+22,y+offset)],col,2)
+        elif q>=.98:
+            xx=840+i*80;yy=bag_y-145-(i%2)*10
+            a.rect((xx-35,yy-22,xx+35,yy+22),(24,35,48),col,2,4)
     # Luggage scale enters for the next-nugget handoff.
     show=prog(t,8.2,10.5)
     if show>.02:
-        y=858
-        a.rect((600,y,1320,y+56),(42,49,60),(107,112,124),2,9)
-        a.rect((746,y-76,1174,y),(21,31,43),CYAN,2,8)
-        a.text((960,y-65),'NEXT: CONTEXT',33,CYAN,'ma')
-        a.line([(812,y-22),(1108,y-22)],(80,91,103),7)
-        needle=lerp(834,1085,show)
-        a.line([(960,y-22),(needle,y-45)],GOLD,5)
-        a.text((960,y+12),'Everything loaded takes room.',19,MUTED,'ma')
+        y=825
+        a.rect((660,y,1260,y+69),(42,49,60),(107,112,124),2,9)
+        a.text((960,y+20),'Everything loaded takes room.',24,CREAM,'ma')
+        # A separate scale display leaves the context meter fully visible.
+        a.line([(1260,858),(1565,858),(1565,781)],(80,91,103),8)
+        a.rect((1380,644,1750,799),(21,31,43),CYAN,2,8)
+        a.text((1565,661),'NEXT: CONTEXT',33,CYAN,'ma')
+        a.line([(1420,760),(1710,760)],(80,91,103),7)
+        for x in range(1420,1711,29):a.line([(x,749),(x,765)],MUTED,2)
+        needle=lerp(1440,1690,show)
+        a.line([(1565,776),(needle,727)],GOLD,5)
     robot(a,348,703,'confused' if fill>.75 else 'point',.64)
     if t<8:title,sub,step='Every loaded item takes room.','Task, tools, history, results, and route notes.',0
     else:title,sub,step='Next stop: context.','What fits can shape what the agent remembers.',1

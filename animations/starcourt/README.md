@@ -27,6 +27,11 @@ Scene tabs select any of the eight films.
 **Play whole scene** is an explicit continuous preview of the selected film,
 including its transitions. MP4 and Still download links follow the selection.
 R replays the current beat; F enters fullscreen. Left/right also work there.
+Left from the first beat returns to the preceding scene's final beat.
+Narration cues below the controls match the draft script and stay outside the
+fullscreen recording. For the elevator, cue the descent at “complete with a
+secret, underground Russian lab” and hold the reveal for “Consider that part
+of your AI upskilling.”
 
 The generated masters, GIFs, and stills use their scene IDs in `out/`. Their
 chapter and hold clips are under `interactive/stages/<name>/` and
@@ -64,12 +69,16 @@ the successful read returns data. The checklist/status beat shows that a
 completed checklist need not mean a completed issue. The caption says CLI
 *can* be lighter on context, not that every CLI always is.
 
-The overlap film gives MCP and CLI separate entrances and separate exclusive
-capabilities. Their colored routes meet only at capability doors available
-through both interfaces; the picture does not imply that MCP invokes the CLI.
+The overlap film gives MCP and CLI separate entrances with both colored routes
+reaching the same shared tool door. It depicts the script's shared Teamwork
+Graph tools without inventing exclusive product capabilities or implying that
+MCP invokes the CLI executable.
 The agency film contrasts one fixed request with a goal that permits several
-approved choices. Its unsafe counterfactual stops before an action and restores
-the security gates. The context handoff carries the narration into the next
+approved choices. The fixed response returns to its origin; the agent prepares
+a draft update. The denied door lies outside the notched approved boundary.
+Its unsafe counterfactual stops before an action and restores the security
+gates. The context handoff retains readable labels and a visible fullness
+meter beside a separate luggage-scale display, carrying the narration into the next
 nugget. The secret elevator is a visual joke and makes no architecture claim.
 
 Checks cover video formats, every chapter-to-hold seam, neutral branding before
