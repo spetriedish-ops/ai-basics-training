@@ -17,6 +17,10 @@ import numpy as np
 from PIL import Image
 
 PALETTE = {
+    "mall_pink": (245, 118, 156), "mall_cyan": (94, 208, 211),
+    "mall_gold": (233, 184, 109), "mall_cream": (235, 222, 207),
+    "mall_red": (235, 45, 58),
+    "mall_day_ink": (38, 58, 67), "mall_day_paper": (247, 244, 234),
     "teal": (46, 167, 154), "amber": (255, 201, 77), "coral": (255, 138, 92),
     "lilac": (195, 177, 225), "sage": (168, 213, 162), "alert": (228, 87, 46),
     "ink": (51, 50, 62),
@@ -24,6 +28,46 @@ PALETTE = {
 
 # beat time (s) -> {color: min pixels at 1920x1080}
 SCENES = {
+    "mall_opener": {
+        3.0: {"mall_day_paper": 1500000, "mall_day_ink": 14000},
+        11.0: {"mall_day_paper": 1350000, "mall_day_ink": 17000},
+        18.0: {"mall_red": 7500, "mall_cyan": 3500, "mall_cream": 6000},
+    },
+    "mcp_directory": {
+        2.0: {"mall_red": 6500, "mall_pink": 8500, "mall_cream": 8500, "teal": 4000},
+        12.0: {"mall_pink": 10000, "mall_cream": 14000, "teal": 4000},
+        22.0: {"mall_gold": 8500, "mall_cream": 11000},
+        33.0: {"mall_pink": 11500, "mall_cream": 11500},
+    },
+    "cli_terminal": {
+        2.0: {"mall_red": 7000, "mall_cream": 7000, "teal": 2000},
+        11.0: {"mall_cyan": 1700, "mall_cream": 125000},
+        23.0: {"mall_cream": 7000, "teal": 1800},
+        34.0: {"mall_cyan": 1700, "mall_cream": 110000},
+    },
+    "mall_routes": {
+        2.8: {"mall_red": 7500, "mall_cyan": 3000, "mall_cream": 5500},
+        17.6: {"mall_pink": 7000, "mall_cream": 6500},
+        25.6: {"mall_cyan": 7000, "mall_cream": 6500},
+        33.6: {"mall_gold": 4000, "mall_cream": 6000},
+        41.3: {"mall_red": 7500, "mall_pink": 6000, "mall_cyan": 6000, "mall_gold": 3500},
+        45.8: {"mall_red": 7500, "mall_cream": 4500},
+    },
+    # Computer-control bonus: new pencil drawings with the established palette.
+    "computer_control": {
+        1.0: {"ink": 6500, "teal": 250},
+        7.0: {"ink": 12000, "teal": 250},
+        10.5: {"ink": 12000, "teal": 250},
+        12.5: {"ink": 12000, "teal": 250},
+        22.5: {"ink": 12000, "teal": 250},
+    },
+    "saloon_doors": {
+        2.0: {"ink": 9000, "teal": 100},
+        7.4: {"ink": 9000},
+        15.7: {"ink": 12000},
+        22.8: {"ink": 12000, "teal": 100},
+        28.0: {"ink": 12000, "teal": 100},
+    },
     # Preamble clips P01-P11 (recalibrated for 2026-08-10 pacing)
     "preamble01": {
         7.4: {"teal": 9868, "amber": 5536, "ink": 10847},
