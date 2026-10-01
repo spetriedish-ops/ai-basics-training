@@ -45,6 +45,27 @@ SCENES = {
         23.0: {"mall_cream": 7000, "teal": 1800},
         34.0: {"mall_cyan": 1700, "mall_cream": 110000},
     },
+    "secret_elevator": {
+        2.0: {"mall_red": 6000, "mall_cream": 4000, "teal": 900},
+        10.0: {"mall_red": 7000, "mall_cyan": 1200, "teal": 3500},
+        12.5: {"mall_red": 7000, "mall_cream": 4500, "teal": 3500},
+    },
+    "mcp_cli_overlap": {
+        2.0: {"mall_red": 7000, "mall_pink": 4000, "mall_cream": 12000},
+        10.0: {"mall_pink": 4500, "mall_cyan": 6500, "sage": 14000},
+        24.0: {"mall_pink": 4500, "mall_cyan": 6500, "mall_cream": 14500},
+    },
+    "agency_guardrails": {
+        3.0: {"mall_red": 7800, "mall_gold": 4500, "sage": 11000},
+        12.0: {"mall_red": 7800, "mall_cream": 9500, "sage": 11500},
+        21.0: {"mall_red": 7800, "mall_gold": 4300, "sage": 12000},
+        29.0: {"mall_red": 9000, "mall_cream": 11500, "sage": 10000},
+    },
+    "context_handoff": {
+        3.0: {"mall_red": 7600, "mall_cyan": 2800, "mall_cream": 8500},
+        12.0: {"mall_red": 7600, "mall_cyan": 3500, "mall_gold": 700},
+        14.5: {"mall_red": 7600, "mall_cream": 6200, "teal": 3300},
+    },
     "mall_routes": {
         2.8: {"mall_red": 7500, "mall_cyan": 3000, "mall_cream": 5500},
         17.6: {"mall_pink": 7000, "mall_cream": 6500},

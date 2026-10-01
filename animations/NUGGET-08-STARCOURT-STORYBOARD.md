@@ -290,7 +290,7 @@ concepts pending feedback on this visual treatment. The bright first cut's
 source and still are preserved in `starcourt/source/v1/`. Its frontend-crossing
 routes are superseded by the revised topology.
 
-## Opener, directory, and terminal built — 2026-10-01
+## Presenter collection built — 2026-10-01
 
 The same player now opens with a 19-second, three-beat mall introduction:
 daylight public view, daylight corridor cutaway, and a separately cued spooky
@@ -306,6 +306,22 @@ hidden pipe, and prints the returned data. It demonstrates confusing checklist
 completion with issue status, then a separate command typo that never reaches
 the service. The final beat corrects the command and receives the issue.
 
-The player contains all four scenes with per-beat holds and matching downloads.
-The separate endpoint-permissions, overlapping-capabilities, autonomy, and
-context-handoff clips remain storyboard ideas rather than rendered films.
+The player now contains eight scenes with per-beat holds and matching
+downloads. A 13-second secret-elevator interlude starts in an ordinary service
+hallway, descends to B27, and reveals an original underground-lab gag.
+
+Clip 8 is a 26-second MCP/CLI capability map. The interfaces enter on separate
+lanes, retain exclusive actions, and meet only at the shared READ ISSUE and
+SEARCH DOCS doors. This keeps overlap distinct from an implementation claim.
+
+Clip 9 runs 31 seconds. It contrasts one fixed request with an agentic goal,
+then shows several approved choices, persistent audit cameras, a denied
+out-of-bounds door, a brief explosion of unsafe routes, and restored gates.
+
+Clip 10 runs 15 seconds. The task, tool descriptions, recent results, and route
+notes fill the courier's context backpack before it lands on a scale labeled
+`NEXT: CONTEXT`.
+
+Sarah chose to skip the standalone scoped-credentials/endpoint clip for this
+recording set. The existing route-comparison scene still shows an access check
+before the hidden service door opens.

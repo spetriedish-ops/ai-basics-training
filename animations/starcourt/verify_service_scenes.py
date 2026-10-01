@@ -73,5 +73,47 @@ def main():
     for name,path in [('MCP',scenes.MCP_PATH),('CLI',scenes.CLI_PATH)]:
         require(all(300<y<925 and 80<x<1840 for x,y in path),f'{name} request stays in the backstage set')
 
+    elevator=scenes.OUT/'secret_elevator.mp4'
+    upper,lower=frame(elevator,2),frame(elevator,10.5)
+    require(float(np.abs(upper[286:902,645:1275]-lower[286:902,645:1275]).mean())>8,
+            'Secret elevator visibly descends through the service levels')
+    require(count(upper[588:884,1350:1787],scenes.CYAN)<300 and
+            count(lower[588:884,1350:1787],scenes.CYAN)>1000,
+            'Underground lab gag appears only after the descent')
+
+    overlap=scenes.OUT/'mcp_cli_overlap.mp4'
+    mcp_only,shared,final=frame(overlap,2),frame(overlap,10),frame(overlap,24)
+    require(scenes.MCP_SHARED[0][1] != scenes.CLI_SHARED[0][1] and
+            scenes.MCP_ONLY[-1] != scenes.CLI_ONLY[-1],
+            'MCP and CLI use independent entrances and retain distinct capabilities')
+    require(count(shared[325:805,560:1210],scenes.PINK)>500 and
+            count(shared[325:805,560:1210],scenes.CYAN)>750,
+            'Both independent lanes are visible inside the shared capability map')
+    require(count(mcp_only[580:790,80:500],scenes.CYAN)<500 and
+            count(shared[580:790,80:500],scenes.CYAN)>2500,
+            'CLI entrance activates separately after the MCP entrance')
+    require(count(final[838:910,603:1167],scenes.GREEN)>700,
+            'Overlap film ends on the one, the other, or both caption')
+
+    agency=scenes.OUT/'agency_guardrails.mp4'
+    fixed,choices,risk,restored=frame(agency,3),frame(agency,12),frame(agency,27),frame(agency,30.5)
+    require(float(np.abs(fixed[344:848,953:1759]-choices[344:848,953:1759]).mean())>3,
+            'Agency beat opens multiple approved choices after the fixed action')
+    denied=np.s_[708:848,1430:1668,:]
+    require(count(choices[denied],(122,59,67))>800 and count(restored[denied],(122,59,67))>800,
+            'Out-of-bounds action remains visibly denied')
+    left_gate=np.s_[374:848,940:965,:]
+    require(count(restored[left_gate],(99,40,52))>count(risk[left_gate],(99,40,52))+4000,
+            'Guardrails return after the unsafe counterfactual')
+
+    context=scenes.OUT/'context_handoff.mp4'
+    light,loaded=frame(context,3),frame(context,12)
+    meter=np.s_[650:850,780:1140,:]
+    require(count(loaded[meter],scenes.GOLD)>count(light[meter],scenes.GOLD)+250,
+            'Context meter approaches full as task, tools, results, and notes arrive')
+    scale=np.s_[780:930,600:1320,:]
+    require(float(np.abs(light[scale]-loaded[scale]).mean())>15,
+            'Context handoff ends with the NEXT: CONTEXT luggage scale')
+
 
 if __name__=='__main__':main()

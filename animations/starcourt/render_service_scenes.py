@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Presenter-paced mall opener, MCP directory, and CLI terminal films.
+"""Presenter-paced films for the mall/service-route training nugget.
 
 The opener is unbranded daylight until the separately cued third beat. The
 tool and terminal sequences are entirely in the hidden service corridor.
@@ -23,12 +23,24 @@ SCENES={
     'mall_opener':{'label':'Mall opener','duration':19,'poster':3,
         'beats':[('A familiar mall',0,6),('Behind the storefronts',6,12),('Make it spooky',12,19)],
         'samples':[3,8,11,13.8,16.5,18.8]},
+    'secret_elevator':{'label':'Secret elevator','duration':13,'poster':11.5,
+        'beats':[('A normal service elevator',0,5),('Going suspiciously far down',5,13)],
+        'samples':[1.5,4.5,6.5,8.5,10.5,12.5]},
     'mcp_directory':{'label':'MCP directory','duration':34,'poster':12,
         'beats':[('A useful menu',0,7),('The menu grows',7,15),('The wrong tool',15,24),('Choose again',24,34)],
         'samples':[2,6,9,12,16,19.5,22,25.5,29,33]},
     'cli_terminal':{'label':'CLI terminal','duration':35,'poster':11,
         'beats':[('Type a command',0,9),('Read the result',9,17),('A command mistake',17,25),('Correct and retry',25,35)],
         'samples':[1.5,4.8,8.8,11,13.5,16,20,23,27,30,34]},
+    'mcp_cli_overlap':{'label':'MCP + CLI overlap','duration':26,'poster':22,
+        'beats':[('Two entrances',0,7),('Shared capabilities',7,16),('One, the other, or both',16,26)],
+        'samples':[1.5,5.8,8.5,12,15.5,17.5,21.5,25.5]},
+    'agency_guardrails':{'label':'Agency + guardrails','duration':31,'poster':23,
+        'beats':[('One approved action',0,8),('A goal with choices',8,18),('Choices inside boundaries',18,25),('Keep the gates',25,31)],
+        'samples':[1.5,5.5,8.5,12,17.5,19,23.5,26,28,30.5]},
+    'context_handoff':{'label':'Next: context','duration':15,'poster':13,
+        'beats':[('What the agent carries',0,8),('Next: context',8,15)],
+        'samples':[1,3.5,7.5,9,12,14.5]},
 }
 
 
@@ -434,7 +446,253 @@ def compose_cli(t,ambient_t=None):
     return im.convert('RGB')
 
 
-COMPOSERS={'mall_opener':compose_opener,'mcp_directory':compose_mcp,'cli_terminal':compose_cli}
+def capability_door(a,x,y,label,access,active=False):
+    col=GREEN if active else (82,94,108)
+    a.rect((x,y,x+350,y+110),(15,27,39),col,3 if active else 1,7)
+    a.rect((x+16,y+15,x+82,y+94),(35,47,59),(94,104,112),2,4)
+    for yy in range(y+24,y+90,13):a.line([(x+19,yy),(x+79,yy)],(20,30,42),2)
+    a.text((x+104,y+16),label,27,CREAM)
+    a.text((x+105,y+56),access,19,col)
+    if active:
+        a.oval((x+315,y+14,x+337,y+36),GREEN)
+        a.line([(x+321,y+25),(x+326,y+30),(x+334,y+19)],(10,39,35),2)
+
+
+def entry_terminal(a,x,y,label,color,subtitle,active=True):
+    col=color if active else mix(color,BLACK,.68)
+    a.rect((x,y,x+380,y+154),(17,28,42),col,3 if active else 1,10)
+    a.rect((x+17,y+18,x+363,y+72),(36,31,52),col,2,5)
+    a.text((x+190,y+24),label,31,col,'ma')
+    a.text((x+190,y+89),subtitle,21,CREAM if active else MUTED,'ma')
+    a.text((x+190,y+119),'AGENT ACCESS POINT',16,MUTED,'ma')
+
+
+MCP_SHARED=[(472,423),(560,423),(690,423),(845,468),(1210,468),(1265,468)]
+CLI_SHARED=[(472,688),(560,688),(690,688),(845,578),(1210,578),(1265,578)]
+MCP_ONLY=[(472,423),(525,423),(525,300),(1265,300),(1265,358)]
+CLI_ONLY=[(472,688),(525,688),(525,825),(1265,825),(1265,688)]
+
+
+def compose_overlap(t,ambient_t=None):
+    amb=t if ambient_t is None else ambient_t
+    im=service_set('TWO WAYS','ONE PLATFORM').copy();a=Art(im)
+    a.rect((746,237,1788,269),(9,17,26),(61,66,81),1,2)
+    a.text((1267,238),'ROVO MCP + TEAMWORK GRAPH CLI',22,CREAM,'ma')
+    mcp_on=prog(t,1,3);cli_on=prog(t,3.4,5.7)
+    shared=prog(t,7.5,11.2);both=prog(t,16.4,19.5)
+    entry_terminal(a,90,346,'ROVO MCP',PINK,'Choose a described tool',mcp_on>.2)
+    entry_terminal(a,90,611,'TEAMWORK GRAPH CLI',CYAN,'Run a command',cli_on>.2)
+    # Two independent lanes reach shared doors. They do not feed each other.
+    for path,col,on in [(MCP_SHARED,PINK,max(mcp_on,shared)),(CLI_SHARED,CYAN,max(cli_on,shared)),
+                        (MCP_ONLY,PINK,mcp_on*.45),(CLI_ONLY,CYAN,cli_on*.45)]:
+        tube(a,path,mix(col,BLACK,.72*(1-on)),3 if on>.5 else 1)
+    # The map sits over the conduits so the two entry lanes remain visually
+    # separate and never look as though one interface routes through the other.
+    a.rect((560,325,1210,805),(12,23,36),(66,68,91),2,9)
+    a.text((885,343),'CAPABILITY MAP',29,CREAM,'ma')
+    tube(a,[(560,423),(690,423),(845,468),(1210,468)],mix(PINK,BLACK,.72*(1-max(mcp_on,shared))),3)
+    tube(a,[(560,688),(690,688),(845,578),(1210,578)],mix(CYAN,BLACK,.72*(1-max(cli_on,shared))),3)
+    a.rect((723,440,1047,607),(20,35,48),(91,103,119),2,8)
+    a.text((885,452),'SHARED',23,GREEN,'ma')
+    a.text((885,493),'READ ISSUE',25,CREAM,'ma')
+    a.text((885,534),'SEARCH DOCS',25,CREAM,'ma')
+    a.text((885,574),'Availability varies by setup.',17,MUTED,'ma')
+    capability_door(a,1340,305,'CREATE ISSUE','MCP',mcp_on>.8 and t<16)
+    capability_door(a,1340,430,'READ ISSUE','MCP  +  CLI',shared>.5 or both>.2)
+    capability_door(a,1340,555,'SEARCH DOCS','MCP  +  CLI',shared>.5 or both>.2)
+    capability_door(a,1340,680,'GRAPH QUERY','CLI',cli_on>.8 and t<16)
+    if 16<t<21:
+        packet(a,MCP_SHARED,prog(t,16.2,19.8),'M',PINK)
+    if 18<t<23:
+        packet(a,CLI_SHARED,prog(t,18.3,22.1),'C',CYAN)
+    if t>=21:
+        a.rect((603,838,1167,909),(18,31,43),GREEN,2,7)
+        a.text((885,847),'ONE · THE OTHER · OR BOTH',29,CREAM,'ma')
+    robot(a,505,709,'point' if t<16 else 'read',.6)
+    if t<7:title,sub,step='Two entrances to platform capabilities.','An agent may be set up with either route.',0
+    elif t<16:title,sub,step='Some capabilities overlap.','The entrances stay independent.',1
+    else:title,sub,step='Use one, the other, or both.','The agent’s setup determines what is available.',2
+    footer(im,title,sub,step,3)
+    return im.convert('RGB')
+
+
+def audit_camera(a,x,y,active=True):
+    col=GREEN if active else MUTED
+    a.rect((x,y,x+74,y+45),(38,48,59),col,2,6)
+    a.oval((x+22,y+9,x+55,y+40),(10,21,29),col,2)
+    a.oval((x+33,y+19,x+44,y+30),col)
+    a.line([(x+37,y+45),(x+37,y+64)],col,3)
+    a.text((x+37,y+69),'AUDIT',15,col,'ma')
+
+
+def goal_door(a,x,y,label,allowed=True,active=False):
+    col=GREEN if active else CYAN if allowed else (122,59,67)
+    a.rect((x,y,x+238,y+143),(14,25,37),col,3 if active else 1,6)
+    a.rect((x+18,y+18,x+220,y+56),(25,39,50),(74,89,100),1,3)
+    a.text((x+119,y+22),label,22,CREAM,'ma')
+    a.text((x+119,y+82),'APPROVED' if allowed else 'OUT OF BOUNDS',18,col,'ma')
+    a.rect((x+185,y+102,x+211,y+130),(26,38,47),MUTED,1,3)
+
+
+def compose_agency(t,ambient_t=None):
+    amb=t if ambient_t is None else ambient_t
+    im=service_set('ROOM TO ACT','WITHIN BOUNDS').copy();a=Art(im)
+    a.line([(900,315),(900,898)],(72,51,65),2)
+    a.text((465,323),'PREDICTABLE REQUEST',24,MUTED,'ma')
+    a.text((1355,323),'AGENTIC GOAL',24,MUTED,'ma')
+    # Fixed path: one request, one door, one response.
+    a.rect((112,384,416,470),(18,31,43),GOLD,2,8)
+    a.text((264,394),'ONE APPROVED ACTION',24,GOLD,'ma')
+    a.text((264,431),'GET ISSUE TEAM-24',20,CREAM,'ma')
+    fixed=[(255,492),(255,620),(668,620),(668,492)]
+    tube(a,fixed,GOLD,4)
+    goal_door(a,550,350,'READ ISSUE',True,t<8)
+    fixed_p=prog(t,1.2,5.7)
+    if t<7.5:packet(a,fixed,fixed_p if t<5.7 else 2-fixed_p,'24',GOLD,t>5.7)
+    a.rect((137,735,793,830),(17,29,41),(73,81,96),2,7)
+    a.text((465,747),'FIXED ROUTE',27,CREAM,'ma')
+    a.text((465,790),'Highly predictable · automation-like',20,MUTED,'ma')
+    # Goal side: choices appear, but the security boundary stays explicit.
+    a.rect((953,344,1759,848),(11,25,35),GREEN,3,13)
+    a.text((1356,352),'APPROVED ZONE',21,GREEN,'ma')
+    a.rect((1003,392,1327,492),(37,28,48),PINK,2,7)
+    a.text((1165,401),'GOAL',18,PINK,'ma')
+    a.text((1165,434),'PREPARE PROJECT UPDATE',22,CREAM,'ma')
+    goal_door(a,1430,388,'READ ISSUES',True,10<t<14)
+    goal_door(a,1430,548,'SEARCH DOCS',True,14<=t<19)
+    goal_door(a,1010,663,'POST UPDATE',True,19<=t<25)
+    goal_door(a,1430,708,'DELETE PROJECT',False,False)
+    choice1=[(1278,540),(1370,540),(1370,459),(1430,459)]
+    choice2=[(1278,540),(1364,540),(1364,619),(1430,619)]
+    choice3=[(1278,540),(1278,734),(1248,734)]
+    for path,on in [(choice1,t>=9),(choice2,t>=12),(choice3,t>=17)]:tube(a,path,GREEN if on else (48,62,70),3 if on else 1)
+    # The agent chooses a route in sequence; audit cameras remain on.
+    q=prog(t,9,22)
+    route=choice1 if q<.34 else choice2 if q<.68 else choice3
+    robot(a,*mall.on_path(route,(q%(.34 if q<.68 else .32))/(.34 if q<.68 else .32)),pose='point',scale=.42)
+    audit_camera(a,961,541,True);audit_camera(a,1692,541,True)
+    # Unsafe counterfactual: every branch lights briefly, then the gates return.
+    risk=prog(t,25.2,27)*(1-prog(t,28.2,30.2))
+    if risk>.01:
+        for end in [(1782,370),(1810,500),(1805,666),(1772,810)]:
+            a.line([(1350,540),end],mix(RED,BLACK,1-risk),max(2,round(7*risk)))
+        a.text((1355,864),'TOO MANY UNBOUNDED OPTIONS',24,RED,'ma')
+    gate=1-risk
+    for x in [942,1768]:
+        for i in range(6):
+            yy=374+i*74
+            h=52*gate
+            a.rect((x,yy,x+18,yy+h),(99,40,52),RED,1,2)
+    if t<8:title,sub,step='One request. One approved action.','Predictable enough to resemble automation.',0
+    elif t<18:title,sub,step='A goal creates choices.','The agent uses judgment to plan the work.',1
+    elif t<25:title,sub,step='Agency stays inside boundaries.','Approved tools and audit records define the zone.',2
+    else:title,sub,step='More freedom needs stronger guardrails.','Keep the gates, permissions, and audit trail.',3
+    footer(im,title,sub,step,4)
+    return im.convert('RGB')
+
+
+def context_bag(a,x,y,fill,scale=1):
+    a.line([(x-88*scale,y-104*scale),(x-88*scale,y-137*scale),(x+88*scale,y-137*scale),(x+88*scale,y-104*scale)],(82,120,123),round(13*scale))
+    a.rect((x-205*scale,y-111*scale,x+205*scale,y+154*scale),(24,58,65),TEAL,3,round(35*scale))
+    a.rect((x-190*scale,y-114*scale,x+190*scale,y-31*scale),(32,79,83),TEAL,2,round(25*scale))
+    a.text((x,y-99*scale),'AGENT’S CONTEXT',round(31*scale),CREAM,'ma')
+    a.rect((x-154*scale,y+17*scale,x+154*scale,y+119*scale),(17,42,52),(80,135,138),2,round(12*scale))
+    a.text((x,y+28*scale),'ROOM USED',round(20*scale),MUTED,'ma')
+    a.rect((x-126*scale,y+72*scale,x+126*scale,y+96*scale),(8,25,35),(65,113,121),1,4)
+    a.rect((x-123*scale,y+75*scale,x-123*scale+246*scale*fill,y+93*scale),GOLD if fill>.78 else CYAN,None,1,3)
+
+
+def context_card(a,x,y,label,color,scale=1,angle=0):
+    w,h=215*scale,72*scale
+    a.rect((x-w/2,y-h/2,x+w/2,y+h/2),(24,35,48),color,2,5)
+    a.text((x,y-14*scale),label,round(22*scale),CREAM,'ma')
+    a.line([(x-w*.38,y+h*.2),(x+w*.38,y+h*.2)],mix(color,BLACK,.38),2)
+
+
+def compose_context(t,ambient_t=None):
+    amb=t if ambient_t is None else ambient_t
+    im=service_set('WHAT THE AGENT','CARRIES').copy();a=Art(im)
+    fill=.18+.75*prog(t,.8,7.2)
+    bag_y=650+prog(t,8.3,10.2)*75
+    context_bag(a,960,bag_y,fill,1.1)
+    cards=[('TASK',PINK,(238,425),.7),('TOOL DESCRIPTIONS',CYAN,(486,531),1.8),
+           ('RECENT RESULTS',GREEN,(1434,530),3.0),('ROUTE NOTES',GOLD,(1680,425),4.2)]
+    for i,(label,col,startpos,start) in enumerate(cards):
+        q=prog(t,start,start+2.4)
+        x=lerp(startpos[0],960,ease(q));y=lerp(startpos[1],bag_y-135,ease(q))-math.sin(q*math.pi)*85
+        if q<.98:context_card(a,x,y,label,col,.86)
+        else:
+            xx=770+i*125;yy=bag_y-163-(i%2)*17
+            context_card(a,xx,yy,label,col,.55)
+    # Luggage scale enters for the next-nugget handoff.
+    show=prog(t,8.2,10.5)
+    if show>.02:
+        y=858
+        a.rect((600,y,1320,y+56),(42,49,60),(107,112,124),2,9)
+        a.rect((746,y-76,1174,y),(21,31,43),CYAN,2,8)
+        a.text((960,y-65),'NEXT: CONTEXT',33,CYAN,'ma')
+        a.line([(812,y-22),(1108,y-22)],(80,91,103),7)
+        needle=lerp(834,1085,show)
+        a.line([(960,y-22),(needle,y-45)],GOLD,5)
+        a.text((960,y+12),'Everything loaded takes room.',19,MUTED,'ma')
+    robot(a,348,703,'confused' if fill>.75 else 'point',.64)
+    if t<8:title,sub,step='Every loaded item takes room.','Task, tools, history, results, and route notes.',0
+    else:title,sub,step='Next stop: context.','What fits can shape what the agent remembers.',1
+    footer(im,title,sub,step,2)
+    return im.convert('RGB')
+
+
+def compose_elevator(t,ambient_t=None):
+    amb=t if ambient_t is None else ambient_t
+    im=mall.background('SERVICE','ELEVATOR').copy();a=Art(im)
+    a.rect((80,235,1840,928),(10,18,28),(59,58,73),2)
+    # Cutaway shaft with floor markers and a surprisingly deep basement.
+    a.rect((645,286,1275,902),(5,11,20),(84,76,87),4)
+    for x in [690,1230]:a.line([(x,286),(x,902)],(72,82,93),7)
+    for y,label in [(338,'SERVICE'),(468,'LOADING'),(598,'B1'),(728,'B2'),(858,'???')]:
+        a.line([(645,y),(1275,y)],(47,52,67),2)
+        a.text((1305,y-16),label,20,RED if label=='???' else MUTED)
+    a.rect((105,324,515,621),(14,25,37),(66,75,88),2,8)
+    a.text((310,345),'SERVICE LEVEL',25,CREAM,'ma')
+    a.text((310,397),'A perfectly ordinary',22,MUTED,'ma')
+    a.text((310,430),'back hallway elevator.',22,MUTED,'ma')
+    a.rect((245,488,375,585),(25,36,46),(88,99,110),2,6)
+    a.text((310,500),'↓',53,CYAN,'ma')
+    a.oval((294,553,326,585),RED)
+    a.text((310,554),'B',20,CREAM,'ma')
+    q=prog(t,5.2,10.4);cab_y=300+q*492
+    a.rect((720,cab_y,1200,cab_y+106),(33,43,55),(133,119,126),3,5)
+    a.rect((743,cab_y+15,1177,cab_y+91),(13,26,37),(74,89,100),2,3)
+    a.line([(960,cab_y+16),(960,cab_y+90)],(79,87,99),4)
+    robot(a,885,cab_y+60,'confused' if q>.7 else 'read',.28)
+    a.rect((880,cab_y-35,1040,cab_y-4),(12,21,31),RED if q>.8 else CYAN,1,3)
+    a.text((960,cab_y-32),f'B{round(q*27):02}',18,CREAM,'ma',kind='mono')
+    # Original cartoon lab: consoles, glowing chamber, suspicious inventory.
+    glow=prog(t,9.3,11.3)
+    if glow>.01:
+        col=mix((42,31,49),RED,.35*glow)
+        a.rect((1350,588,1787,884),(17,22,35),col,2,8)
+        a.text((1568,607),'SECRET LAB?',28,RED,'ma')
+        a.rect((1400,674,1508,830),(10,30,38),CYAN,2,24)
+        a.oval((1426,703,1482,791),mix(CYAN,BLACK,.3),CYAN,2)
+        for x in [1538,1640]:
+            a.rect((x,700,x+82,816),(29,39,51),(83,91,105),2,4)
+            a.rect((x+10,713,x+72,758),(11,35,43),GREEN,1,3)
+            for k in range(3):a.line([(x+16,773+k*11),(x+66,773+k*11)],RED if k==1 else MUTED,2)
+        for x in [1365,1515,1670]:
+            a.rect((x,838,x+88,878),(91,66,56),(151,108,76),2)
+            a.line([(x+44,840),(x+44,876)],GOLD,3)
+        a.text((1568,648),'Definitely extra credit.',20,MUTED,'ma')
+    if t<5:title,sub,step='A normal mall service elevator.','Probably.',0
+    else:title,sub,step='Starcourt goes much farther down.','The secret lab is extra credit.',1
+    footer(im,title,sub,step,2)
+    return im.convert('RGB')
+
+
+COMPOSERS={'mall_opener':compose_opener,'secret_elevator':compose_elevator,
+           'mcp_directory':compose_mcp,'cli_terminal':compose_cli,
+           'mcp_cli_overlap':compose_overlap,'agency_guardrails':compose_agency,
+           'context_handoff':compose_context}
 
 
 def audits(key):
@@ -481,7 +739,7 @@ def write_player():
             'src':f'../out/{key}.mp4','poster':f'../out/{key}_still.png',
             'beats':[{'label':label,'start':start,'end':end,'src':f'stages/{key}/{i+1:02}.mp4',
                       'hold':f'holds/{key}/{i+1:02}.mp4'} for i,(label,start,end) in enumerate(s['beats'])]})
-    manifest.append({'id':'mall_routes','label':'Route comparison','duration':46,
+    manifest.insert(2,{'id':'mall_routes','label':'Route comparison','duration':46,
         'src':'../out/mall_routes.mp4','poster':'../out/mall_routes_still.png',
         'beats':[{'label':label,'start':start,'end':end,'src':f'stages/{i+1:02}.mp4','hold':f'holds/{i+1:02}.mp4'}
                  for i,(label,start,end) in enumerate(mall.STAGES)]})
