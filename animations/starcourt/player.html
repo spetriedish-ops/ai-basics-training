@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The mall behind the mall · AI Basics 08</title>
+<style>
+@font-face{font-family:Fredoka;src:url('../../assets/fonts/Fredoka[wdth,wght].ttf')}
+*{box-sizing:border-box}body{--bg:#f7f4ea;--fg:#263a43;--muted:#647d83;--panel:#eeeee5;--line:#b2c6c2;--accent:#21717b;margin:0;background:var(--bg);color:var(--fg);font:14px system-ui,sans-serif;transition:background 1.8s,color 1.8s}
+body[data-mood=night]{--bg:#070910;--fg:#ebdecf;--muted:#a3acbb;--panel:#171620;--line:#493541;--accent:#eb2d3a}
+header,main{max-width:1440px;margin:auto;padding:14px 25px}header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:12px}
+.eyebrow{color:var(--muted);font-size:10px;letter-spacing:.18em;text-transform:uppercase}h1{font:30px Fredoka,system-ui;margin:5px 0 0}body[data-mood=night] h1{font:bold 28px Georgia,serif;color:#080910;-webkit-text-stroke:1px #eb2d3a;text-shadow:0 0 18px #e2293f55;text-transform:uppercase}
+.edition{color:var(--muted);font-size:12px}main{padding-top:0}.scenes,.beats,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.scenes{padding:0 0 12px}.scenes button{font-size:13px;padding:8px 13px}.screen{width:min(100%,calc((100dvh - 281px)*16/9));margin:auto;border:1px solid var(--line);box-shadow:0 14px 50px #0002;background:var(--bg)}
+video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain}.bar{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:12px 0}.status{font:22px Fredoka;margin-bottom:4px}.hint{font-size:11px;color:var(--muted)}
+button,a{font:inherit}button{border:1px solid var(--line);border-radius:5px;padding:9px 12px;background:var(--panel);color:var(--fg);cursor:pointer}button:hover{border-color:var(--accent)}button[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 -2px var(--accent)}button:disabled{opacity:.4;cursor:default}button:focus-visible,a:focus-visible{outline:3px solid #5ed0d3;outline-offset:3px}a{color:var(--muted);font-size:12px}.primary{background:var(--accent);border-color:var(--accent);color:white}.beats{padding-top:0}.beats button{font-size:13px}.screen:fullscreen{width:100%;display:grid;place-items:center;background:var(--bg)}.screen:fullscreen video{max-height:100vh}
+@media(max-width:850px){header,.bar{flex-direction:column;align-items:flex-start}header,main{padding-left:16px;padding-right:16px}.screen{width:100%}.edition{display:none}.scenes{margin-top:4px}h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){body{transition:none}}
+</style></head><body data-mood="day">
+<header><div><div class="eyebrow">AI Basics · Nugget 08</div><h1>The mall behind the mall</h1></div><div class="edition">Presenter preview · Silent 1080p</div></header>
+<main><nav class="scenes" aria-label="Narration sections"></nav>
+<div class="screen"><video aria-label="Mall animation preview" controls muted playsinline preload="metadata"></video></div>
+<div class="bar"><div><div class="status" aria-live="polite"></div><div class="hint">Each beat holds until you advance. ← → beats · R replay · F fullscreen</div></div>
+<div class="actions"><a id="download" download>MP4</a><a id="still" download>Still</a><button id="play-all">Play section</button><button id="fullscreen">Fullscreen</button><button class="primary" id="next">Next beat →</button></div></div>
+<nav class="beats" aria-label="Teaching beats"></nav></main>
+<div style="max-width:1440px;margin:0 auto;padding:0 25px 20px;color:var(--muted);font-size:13px;line-height:1.5" id="narration-cue" aria-live="polite"></div>
+<script>
+const scenes=/* SCENES */ [];
+// Opening this source file directly should launch the generated player.
+if(!scenes.length)window.location.replace('interactive/index.html');
+const video=document.querySelector('video'),status=document.querySelector('.status'),beatNav=document.querySelector('.beats'),sceneNav=document.querySelector('.scenes');
+let sceneIndex=0,beatIndex=0,holding=false,generation=0,previewSection=false;
+const scene=()=>scenes[sceneIndex];
+function currentBeat(){if(beatIndex>=0)return beatIndex;const t=video.currentTime;const i=scene().beats.findIndex(b=>t<b.end);return i<0?scene().beats.length-1:i;}
+const cues={mall_opener:'Start at “Picture our platform like a giant indoor shopping mall.” Cue the spooky reveal at “go home and watch Stranger Things season 3.”',secret_elevator:'Cue the descent at “complete with a secret, underground Russian lab.” Hold the reveal for “Consider that part of your AI upskilling.” Then: “Back to APIs.”',mall_routes:'Use the visible route for “With computer use, the agent approaches the mall through the same storefronts we do.” The later MCP, CLI, and API beats can be revisited at “Same destination, different way of getting there.”',mcp_directory:'“One option is MCP…” Advance as the menu grows, the agent chooses the wrong tool, and retries.',cli_terminal:'“Another option is a CLI…” Follow with reading the result, the mistake, and the correction.',mcp_cli_overlap:'“Rovo MCP and Teamwork Graph CLI aren’t an either-or choice…” Hold on “one, the other, or both.”',agency_guardrails:'“One final note. The term agentic gets thrown around a lot…” Compare the fixed call with judgment, then discuss guardrails.',context_handoff:'“In the next nugget, we’ll dig into context.”'};
+Object.assign(cues,{
+  routes_intro:'“With computer use, the agent approaches the mall through the same storefronts we do.” Reveal the service routes for the more specific request and permission check. Next introduces MCP on this map.',
+  route_mcp:'“So the agent knows there’s a way into the service. How does it actually get to one of those doors? One option is MCP…” Next opens the directory close-up.',
+  mcp_directory:'“The agent gets a menu of tools, with descriptions of what each one does.” Advance through the growing menu, wrong choice, and retry. Next returns to the map for CLI.',
+  route_cli:'“Another option is a CLI.” Introduce its route on the map; Next opens the terminal close-up.',
+  cli_terminal:'“If you’ve ever watched someone type a command into a terminal…” Follow the command, result, mistake, and correction. Next returns to the map for direct API.',
+  route_api:'“The agent could also send an API request directly…” Advance to the comparison for “But often, the API call is happening behind one of the other two routes” and “Same destination, different way of getting there.”'
+});
+function mood(){const t=holding?scene().beats[beatIndex].end-.034:beatIndex<0?video.currentTime:scene().beats[beatIndex].start+video.currentTime;document.body.dataset.mood=scene().id==='mall_opener'&&t<13.9?'day':'night';}
+function label(){const active=currentBeat();status.textContent=scene().label+' · '+scene().beats[active].label+(holding?' · holding':previewSection||beatIndex<0?' · preview':'');document.querySelectorAll('[data-beat]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.beat)===active));document.querySelectorAll('[data-scene]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.scene)===sceneIndex));const last=active===scene().beats.length-1;document.querySelector('#next').disabled=last&&sceneIndex===scenes.length-1;document.querySelector('#next').textContent=last?(sceneIndex<scenes.length-1?'Next: '+scenes[sceneIndex+1].label+' →':'Finished'):'Next: '+scene().beats[active+1].label+' →';}
+function play(){const stamp=generation;video.play().catch(error=>{if(stamp===generation&&error.name!=='AbortError')status.textContent+=' · press Play';});}
+function load(src,auto=false,loop=false){const stamp=++generation;video.pause();video.loop=loop;video.onloadedmetadata=()=>{if(stamp===generation){mood();label();if(auto)play();}};const b=scene().beats[Math.max(0,beatIndex)];video.poster=holding?b.holdPoster:b.poster;video.src=src;video.load();}
+function beat(i,auto=true){previewSection=false;beatIndex=Math.max(0,Math.min(scene().beats.length-1,i));holding=false;label();document.body.dataset.mood=scene().id==='mall_opener'&&scene().beats[beatIndex].start<13.9?'day':'night';load(scene().beats[beatIndex].src,auto);}
+function full(){if(scene().section){beat(0);previewSection=true;label();return;}beatIndex=-1;holding=false;previewSection=false;label();document.body.dataset.mood=scene().id==='mall_opener'?'day':'night';load(scene().src,true);}
+function selectScene(i,auto=true,initialBeat=0){sceneIndex=i;beatNav.replaceChildren();scene().beats.forEach((s,k)=>{const b=document.createElement('button');b.dataset.beat=k;b.textContent=(k+1)+'. '+s.label;b.onclick=()=>beat(k);beatNav.append(b);});if(i<scenes.length-1){const b=document.createElement('button');b.className='primary';b.textContent=(scene().beats.length+1)+'. '+scenes[i+1].label+' →';b.onclick=()=>selectScene(i+1);beatNav.append(b);}document.querySelector('#download').href=scene().src;document.querySelector('#download').textContent=scene().section?'Full route film MP4':'MP4';document.querySelector('#still').href=scene().poster;document.querySelector('#narration-cue').textContent='Narration cue: '+cues[scene().id];beat(initialBeat,auto);}
+function hold(){if(holding)return;if(previewSection&&beatIndex<scene().beats.length-1){beat(beatIndex+1);previewSection=true;label();return;}previewSection=false;if(beatIndex<0)beatIndex=scene().beats.length-1;holding=true;label();load(scene().beats[beatIndex].hold,true,true);}
+function next(){const active=currentBeat();if(active>=scene().beats.length-1){if(sceneIndex<scenes.length-1)selectScene(sceneIndex+1);}else beat(active+1);}
+function fullscreen(){if(document.fullscreenElement)document.exitFullscreen();else document.querySelector('.screen').requestFullscreen().catch(()=>{});}
+scenes.forEach((s,i)=>{const b=document.createElement('button');b.dataset.scene=i;b.textContent=String(i+1).padStart(2,'0')+' · '+s.label;b.onclick=()=>selectScene(i);sceneNav.append(b);});
+video.addEventListener('ended',hold);video.addEventListener('timeupdate',()=>{mood();if(beatIndex<0)label();});video.addEventListener('error',()=>{status.textContent='Unable to load this clip. Reload the preview.';});
+document.querySelector('#play-all').onclick=full;document.querySelector('#fullscreen').onclick=fullscreen;document.querySelector('#next').onclick=next;
+window.addEventListener('keydown',e=>{if(e.key===' '&&!e.target.closest('button,a')){e.preventDefault();video.paused?play():video.pause();}if(e.key==='ArrowRight'){e.preventDefault();next();}if(e.key==='ArrowLeft'){e.preventDefault();const active=currentBeat();if(active===0&&sceneIndex>0)selectScene(sceneIndex-1,true,scenes[sceneIndex-1].beats.length-1);else beat(active-1);}if(e.key.toLowerCase()==='r')beat(currentBeat());if(e.key.toLowerCase()==='f')fullscreen();});
+if(scenes.length)selectScene(0,false);
+</script></body></html>

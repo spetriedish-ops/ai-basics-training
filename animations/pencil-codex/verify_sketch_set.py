@@ -26,6 +26,7 @@ CHECKS = {
     "multi_agent_orchestration": (2.20, 6.65, 20.65, 19.35),
     "rovo_cli_flow": (0.45, 1.90, 15.50, 14.50),
     "rovo_chat_agents_flow": (0.50, 1.80, 20.50, 19.50),
+    "agentic_spectrum": (0.80, 4.90, 9.80, 9.00),
 }
 
 PLAYERS = {
@@ -122,7 +123,7 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
 
         # The brain scene is deliberately a sparse stick figure, and its brain
         # uses a finer pencil weight to match Sarah's portrait linework.
-        minimum_ink = 11_000 if stem == "brain_in_harness" else 18_000
+        minimum_ink = 11_000 if stem in ("brain_in_harness", "agentic_spectrum") else 18_000
         ending_ink = int((ending.mean(axis=2) < 155).sum())
         require(
             ending_ink > minimum_ink,
@@ -147,6 +148,7 @@ def verify_scene(stem: str, times: tuple[float, float, float, float]) -> None:
             "brain_in_harness",
             "rovo_cli_flow",
             "rovo_chat_agents_flow",
+            "agentic_spectrum",
         ):
             teal = np.array([46, 167, 154], dtype=np.int16)
             teal_pixels = int((np.abs(active - teal).sum(axis=2) < 125).sum())

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the two Rovo sketches without redrawing or rearranging their ink.
+"""Render the Rovo sketches without redrawing or rearranging their ink.
 
 Every visible diagram element comes from Sarah's photographed page: lettering,
 containers, connectors, and arrowheads. The renderer only isolates the pencil,
@@ -47,6 +47,8 @@ class FlowSpec:
     stage_starts: tuple[float, ...]
     duration: float
     stages: tuple[StageSpec, ...]
+    interactive: bool = True
+    position_x: int | None = None
 
 
 @dataclass
@@ -134,7 +136,29 @@ CHAT_FLOW = FlowSpec(
 )
 
 
-FLOWS = {flow.key: flow for flow in (CLI_FLOW, CHAT_FLOW)}
+AGENTIC_SPECTRUM = FlowSpec(
+    key="agentic_spectrum",
+    source="09-agentic-spectrum.jpeg",
+    content_box=(6, 58, 816, 188),
+    max_size=(1700, 430),
+    stage_starts=(0.0,),
+    duration=10.5,
+    stages=(
+        StageSpec(
+            "Agentic spectrum",
+            0.25,
+            4.50,
+            ((0, 0, 822, 210),),
+        ),
+    ),
+    interactive=False,
+    position_x=150,
+)
+
+
+FLOWS = {
+    flow.key: flow for flow in (CLI_FLOW, CHAT_FLOW, AGENTIC_SPECTRUM)
+}
 
 
 def stage_asset(
@@ -171,7 +195,9 @@ def prepare_flow(flow: FlowSpec) -> tuple[
     scale = min(flow.max_size[0] / content_width, flow.max_size[1] / content_height)
     output_size = (round(content_width * scale), round(content_height * scale))
     position = (
-        round((WIDTH - output_size[0]) / 2),
+        flow.position_x
+        if flow.position_x is not None
+        else round((WIDTH - output_size[0]) / 2),
         round((HEIGHT - output_size[1]) / 2),
     )
 
@@ -367,10 +393,11 @@ def render_flow(flow: FlowSpec, prepare_only: bool, skip_gif: bool) -> None:
         gif = OUT_DIR / f"{flow.key}.gif"
         shared.render_gif(mp4, gif)
         established.probe(gif)
-    clips = render_interactive(flow, prepared, backgrounds, position)
-    write_player(flow, clips)
-    for clip in clips:
-        established.probe(clip)
+    if flow.interactive:
+        clips = render_interactive(flow, prepared, backgrounds, position)
+        write_player(flow, clips)
+        for clip in clips:
+            established.probe(clip)
 
 
 def parse_args() -> argparse.Namespace:

@@ -87,6 +87,7 @@ to empty notebook paper. The GIFs are smaller wiki previews.
 | Multi-agent orchestration | `pencil-codex/out/multi_agent_orchestration.mp4` | 23.0 s |
 | Rovo CLI architecture | `pencil-codex/out/rovo_cli_flow.mp4` | 17.0 s |
 | Rovo Chat + Agents architecture | `pencil-codex/out/rovo_chat_agents_flow.mp4` | 22.0 s |
+| Agentic Spectrum | `pencil-codex/out/agentic_spectrum.mp4` | 10.5 s |
 
 All corresponding `.gif` files are in `pencil-codex/out/`. All passed the
 repository's visual/format checks and are below the 10 MB wiki ceiling.
@@ -155,7 +156,7 @@ The reproducible implementation is in `pencil-codex/`:
 - `render_sketch_set.py` — Frontier Labs, MCP/CLI/API, What Is an Agent
 - `render_harness_mind_map.py` — Harness master and interactive stage clips
 - `render_multi_agent_orchestration.py` — Multi-agent Orchestration
-- `render_rovo_architecture.py` — staged Rovo CLI and Rovo Chat/Agents diagrams
+- `render_rovo_architecture.py` — Rovo architecture diagrams and Agentic Spectrum
 - `personality_motifs.py` — shared characters, props, and visual gags
 - `source/` — cleanup, crop, layout, stage, and personality audit images
 
@@ -214,6 +215,13 @@ Rovo Chat + Agents has five presenter stages:
 3. Merge arrows, Conversational API, arrow, and ConvoAI
 4. Branch arrows and the Rovo Chat / Rovo Agent harnesses
 5. Merge arrows, AI Gateway, branch arrows, and the two model choices
+
+The Agentic Spectrum is intentionally not staged or click-gated. Its complete
+original ink layer draws once from left to right in 4.5 seconds, then remains
+fully visible on the boiling notebook paper through the end of the 10.5-second
+master. The source is `assets/sketches/09-agentic-spectrum.jpeg`. Preserve the
+handwritten labels, bidirectional spectrum arrow, relative spacing, and pencil
+weight exactly; do not replace the axis or typography with generated shapes.
 
 ## Run-of-show integration guidance
 

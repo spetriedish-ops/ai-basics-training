@@ -14,8 +14,9 @@ brain reference. `render_sketch_set.py` is the
 shared, scene-configured renderer for sketches 02–05, delegating the staged
 Harness page to `render_harness_mind_map.py`. The motion-rich sixth sketch is
 handled by `render_multi_agent_orchestration.py`.
-`render_rovo_architecture.py` handles the two Rovo architecture flows while
-keeping their complete photographed composition and original connectors intact.
+`render_rovo_architecture.py` handles the Rovo architecture flows and Agentic
+Spectrum while keeping each complete photographed composition and its original
+connectors intact.
 Together they:
 
 1. applies EXIF rotation and a measured perspective correction;
@@ -106,8 +107,46 @@ Outputs:
 - `interactive/rovo_cli_flow/` — four-stage click-paced Rovo CLI architecture player
 - `out/rovo_chat_agents_flow.{mp4,gif}` — two-lane Rovo Chat and Agents architecture
 - `interactive/rovo_chat_agents_flow/` — five-stage click-paced Rovo Chat/Agents player
+- `out/agentic_spectrum.{mp4,gif}` — single-pass least-to-most-agentic spectrum
 
 ## Revision ergonomics
+
+### Computer-control bonus nugget (2026-10-01)
+
+Two new silent sketch cutaways are ready for visual review:
+
+- `out/computer_control.mp4` (25 seconds): an agent opens a browser, moves an
+  onboarding ticket to Done, then visits documents and a calendar in the same
+  signed-in session. The illustrated desktop contains fictional work data.
+- `out/saloon_doors.mp4` (31 seconds): a tipsy cowboy walks through swinging
+  doors, three boards close the entrance, and his next attempt ends in a
+  recoil, airborne hat, and seated recovery outside the intact boards.
+
+Both also have GIF previews. `interactive/computer_control_bonus/index.html`
+offers full clips and three separate teaching beats per scene. Each beat ends
+in a native half-second pencil-boil hold. Right/Left Arrow changes beats,
+R replays, and F enters fullscreen; native video controls allow scrubbing.
+Serve `animations/` over localhost and open
+`/pencil-codex/interactive/computer_control_bonus/index.html`.
+
+The new art uses code-drawn pencil paths, bundled Patrick Hand lettering, and
+the existing notebook-paper generator. Existing photographed artwork is
+unchanged. Edit timing and paths in `render_computer_control_bonus.py`; the
+player template is `computer_control_bonus_player.html`. Review checkpoints
+and contact sheets live in `source/computer_control_bonus/`.
+
+```bash
+# From animations/pencil-codex:
+../.venv/bin/python render_computer_control_bonus.py --prepare-only
+../.venv/bin/python render_computer_control_bonus.py
+../.venv/bin/python ../scripts/verify.py out/computer_control.mp4
+../.venv/bin/python ../scripts/verify.py out/saloon_doors.mp4
+../.venv/bin/python verify_computer_control_bonus.py
+```
+
+Use `--scene computer_control` or `--scene saloon_doors` for a single scene.
+
+### Existing photographed sketch set
 
 All crop boxes, layout positions, teaching-beat times, and motion settings are
 near the top of the two renderer files. A spacing, timing, paper, or contrast
