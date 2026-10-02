@@ -37,6 +37,10 @@ MP4 links provide the selected film; Still links match the selected section.
 R replays the current beat; F enters fullscreen. Left/right also work there.
 Left from the first beat returns to the preceding scene's final beat.
 At section boundaries, the Next button names the upcoming section.
+The numbered beat controls also include a final button for the next section:
+MCP map → directory → CLI map → terminal → API map. During a full-section
+preview, Next and the arrows advance from the beat currently on screen instead
+of restarting the section. R replays that visible beat.
 Narration cues below the controls match the draft script and stay outside the
 fullscreen recording. For the elevator, cue the descent at “complete with a
 secret, underground Russian lab” and hold the reveal for “Consider that part
@@ -64,6 +68,7 @@ animations/.venv/bin/python animations/scripts/verify.py animations/starcourt/ou
 animations/.venv/bin/python animations/scripts/verify.py animations/starcourt/out/agency_guardrails.mp4
 animations/.venv/bin/python animations/scripts/verify.py animations/starcourt/out/context_handoff.mp4
 animations/.venv/bin/python animations/starcourt/verify_service_scenes.py
+node animations/starcourt/verify_player.cjs
 ```
 
 The MCP backpack depicts the agent's context. It fills as descriptions are
