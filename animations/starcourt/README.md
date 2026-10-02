@@ -143,7 +143,9 @@ Typography uses locally installed Baskerville Bold and Menlo plus the bundled
 Fredoka font. System fonts are read at render time and are not redistributed;
 the renderer falls back to the bundled font if they are unavailable. No remote
 images, footage, or browser recording are needed. `player.html` is the preview
-template. `source/v1/` preserves the first proof's source and still for reference.
+template and redirects to `interactive/index.html` when opened directly,
+including from a local file. `source/v1/` preserves the first proof's source
+and still for reference.
 
 From the repository root:
 

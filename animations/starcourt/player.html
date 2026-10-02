@@ -21,7 +21,9 @@ button,a{font:inherit}button{border:1px solid var(--line);border-radius:5px;padd
 <nav class="beats" aria-label="Teaching beats"></nav></main>
 <div style="max-width:1440px;margin:0 auto;padding:0 25px 20px;color:var(--muted);font-size:13px;line-height:1.5" id="narration-cue" aria-live="polite"></div>
 <script>
-const scenes=/* SCENES */;
+const scenes=/* SCENES */ [];
+// Opening this source file directly should launch the generated player.
+if(!scenes.length)window.location.replace('interactive/index.html');
 const video=document.querySelector('video'),status=document.querySelector('.status'),beatNav=document.querySelector('.beats'),sceneNav=document.querySelector('.scenes');
 let sceneIndex=0,beatIndex=0,holding=false,generation=0,previewSection=false;
 const scene=()=>scenes[sceneIndex];
@@ -49,5 +51,5 @@ scenes.forEach((s,i)=>{const b=document.createElement('button');b.dataset.scene=
 video.addEventListener('ended',hold);video.addEventListener('timeupdate',()=>{mood();if(beatIndex<0)label();});video.addEventListener('error',()=>{status.textContent='Unable to load this clip. Reload the preview.';});
 document.querySelector('#play-all').onclick=full;document.querySelector('#fullscreen').onclick=fullscreen;document.querySelector('#next').onclick=next;
 window.addEventListener('keydown',e=>{if(e.key===' '&&!e.target.closest('button,a')){e.preventDefault();video.paused?play():video.pause();}if(e.key==='ArrowRight'){e.preventDefault();next();}if(e.key==='ArrowLeft'){e.preventDefault();const active=currentBeat();if(active===0&&sceneIndex>0)selectScene(sceneIndex-1,true,scenes[sceneIndex-1].beats.length-1);else beat(active-1);}if(e.key.toLowerCase()==='r')beat(currentBeat());if(e.key.toLowerCase()==='f')fullscreen();});
-selectScene(0,false);
+if(scenes.length)selectScene(0,false);
 </script></body></html>

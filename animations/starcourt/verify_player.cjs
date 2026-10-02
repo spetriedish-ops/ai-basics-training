@@ -41,3 +41,10 @@ run("selectScene(scenes.findIndex(s=>s.id==='route_mcp'));full();hold()");
 assert.equal(nodes.video.src,'holds/03.mp4');assert.equal(nodes.video.loop,true);
 run('next()');expect('mcp_directory',0);
 console.log('PASS: Next, mid-preview advancement, numbered pivots, and bounded map holds.');
+// The source template must also be valid JS and launch the playable entry point.
+const template=fs.readFileSync('animations/starcourt/player.html','utf8');
+let redirect;
+const sourceContext=vm.createContext({document,window:{addEventListener(){},location:{replace(url){redirect=url;}}},console});
+vm.runInContext(template.match(/<script>([\s\S]*?)<\/script>/)[1],sourceContext);
+assert.equal(redirect,'interactive/index.html');
+console.log('PASS: opening player.html directly redirects to the generated preview.');

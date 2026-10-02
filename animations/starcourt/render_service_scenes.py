@@ -769,7 +769,7 @@ def write_player():
         route_section('route_cli','Map: CLI route',3,4),films['cli_terminal'],
         route_section('route_api','Map: API + comparison',4,6),
         films['mcp_cli_overlap'],films['agency_guardrails'],films['context_handoff']]
-    (PLAYER/'index.html').write_text((HERE/'player.html').read_text().replace('/* SCENES */',json.dumps(playlist)))
+    (PLAYER/'index.html').write_text((HERE/'player.html').read_text().replace('/* SCENES */ []',json.dumps(playlist)))
 
 
 if __name__=='__main__':main()
