@@ -331,3 +331,14 @@ lab,” with its final hold on “Consider that part of your AI upskilling.”
 Sarah chose to skip the standalone scoped-credentials/endpoint clip for this
 recording set. The existing route-comparison scene still shows an access check
 before the hidden service door opens.
+
+## Narration playback order — 2026-10-02
+
+The player interleaves the route map with the close-up films:
+mall opener → elevator gag → storefronts and service-route reveal → MCP on
+the map → MCP directory → CLI on the map → CLI terminal → direct API and
+the three-route comparison → MCP/CLI overlap → agency → context handoff.
+
+The four map appearances reuse the existing six route chapters. Next and the
+right arrow follow this sequence, and Play section stops at the selected
+section's final hold. The original complete route film remains downloadable.

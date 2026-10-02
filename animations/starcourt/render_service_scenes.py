@@ -755,7 +755,21 @@ def write_player():
             for field,suffix,t in [('poster','start',b['start']),('holdPoster','end',b['end']-1/FPS)]:
                 b[field]=f'posters/{s["id"]}/{i:02}-{suffix}.png'
                 compose(t).save(PLAYER/b[field])
-    (PLAYER/'index.html').write_text((HERE/'player.html').read_text().replace('/* SCENES */',json.dumps(manifest)))
+    # Present in narration order, returning to the same map between close-ups.
+    # Reuse the existing chapter/hold files rather than duplicating renders.
+    films={s['id']:s for s in manifest}
+    def route_section(key,label,first,last):
+        source=films['mall_routes'];beats=source['beats'][first:last]
+        return {**source,'id':key,'label':label,'section':True,'beats':beats,
+                'duration':sum(b['end']-b['start'] for b in beats),
+                'poster':beats[-1]['holdPoster']}
+    playlist=[films['mall_opener'],films['secret_elevator'],
+        route_section('routes_intro','Storefronts + service routes',0,2),
+        route_section('route_mcp','Map: MCP route',2,3),films['mcp_directory'],
+        route_section('route_cli','Map: CLI route',3,4),films['cli_terminal'],
+        route_section('route_api','Map: API + comparison',4,6),
+        films['mcp_cli_overlap'],films['agency_guardrails'],films['context_handoff']]
+    (PLAYER/'index.html').write_text((HERE/'player.html').read_text().replace('/* SCENES */',json.dumps(playlist)))
 
 
 if __name__=='__main__':main()

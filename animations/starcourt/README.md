@@ -1,14 +1,19 @@
 # The mall behind the mall — animation collection
 
-The presenter player contains eight independently playable scenes:
+The presenter player arranges eight films into eleven narration sections.
+The route map returns between the MCP and CLI close-ups, so advancing with the
+right arrow follows the script without manually searching for another clip:
 
 | Scene | Duration | Teaching beats |
 |---|---:|---|
 | Mall opener | 19s | Ordinary mall; hidden corridors; click-cued spooky reveal |
 | Secret elevator | 13s | Ordinary service level; suspicious descent; underground-lab gag |
-| Route comparison | 46s | Visible computer control; hidden MCP/CLI/API routes |
+| Storefronts + service routes | 16s | Computer control; reveal the hidden route map |
+| Map: MCP route | 8s | Introduce MCP on the map |
 | MCP directory | 34s | Useful tool menu; expanding descriptions/context; wrong tool; retry |
+| Map: CLI route | 8s | Return to the map to introduce CLI |
 | CLI terminal | 35s | Type command; interpret response; typo; correct and retry |
+| Map: API + comparison | 14s | Return for direct API, then compare all three routes |
 | MCP + CLI overlap | 26s | Separate entrances; shared capabilities; either or both |
 | Agency + guardrails | 31s | Fixed action; goal choices; approved zone; gates restored |
 | Next: context | 15s | Task, tools, results, and notes fill the context backpack |
@@ -23,11 +28,15 @@ spooky** when the narration introduces Stranger Things: the lights dim, then
 the red outlined title and Starcourt shop names appear. The player changes
 color with the film. The reveal is silent; “click” is a presenter action.
 
-Scene tabs select any of the eight films.
-**Play whole scene** is an explicit continuous preview of the selected film,
-including its transitions. MP4 and Still download links follow the selection.
+Section tabs follow the narration order.
+**Play section** previews only the selected section, then holds on its final
+beat. Map sections reuse the existing route chapters and hold clips; they do
+not automatically play the other routes. The download labeled **Full route
+film MP4** still provides the original complete 46-second comparison. Other
+MP4 links provide the selected film; Still links match the selected section.
 R replays the current beat; F enters fullscreen. Left/right also work there.
 Left from the first beat returns to the preceding scene's final beat.
+At section boundaries, the Next button names the upcoming section.
 Narration cues below the controls match the draft script and stay outside the
 fullscreen recording. For the elevator, cue the descent at “complete with a
 secret, underground Russian lab” and hold the reveal for “Consider that part
