@@ -1,0 +1,277 @@
+const sequence = {
+  "title": "Context · full narration walkthrough",
+  "version": "context-sequence-1",
+  "ready": "assets/ready.jpg",
+  "beats": [
+    {
+      "id": "recap",
+      "section": "Opening",
+      "label": "The harness so far",
+      "src": "assets/mind-map-recap.mp4",
+      "hold": "../harness_mind_map/holds/05-tools.mp4",
+      "cue": "“So far in this series…” Recap intelligence, the harness, and ways to interact with the world.",
+      "poster": null,
+      "note": null
+    },
+    {
+      "id": "context",
+      "section": "Opening",
+      "label": "Reveal Context",
+      "src": "../harness_mind_map/stages/06-context.mp4",
+      "hold": "../harness_mind_map/holds/06-context.mp4",
+      "cue": "“For months now, AI agents have been marketed as teammates…” Hold here through “the next component of the harness: Context.”",
+      "poster": null,
+      "note": null
+    },
+    {
+      "id": "crumple",
+      "section": "Opening",
+      "label": "Crumple and toss",
+      "src": "../../out/paper_crumple.mp4",
+      "hold": null,
+      "cue": "Turn the page before “Are you surprised that context is part of the harness…?”",
+      "poster": "../paper_transition/fresh.jpg",
+      "note": null
+    },
+    {
+      "id": "factory-1",
+      "section": "Training recap",
+      "label": "Pre-training",
+      "src": "../../../interactive/engine_factory/stages/01-pretraining.mp4",
+      "hold": "assets/factory-1-hold.mp4",
+      "cue": "“In nugget 3, we talked about the model lifecycle…” Pre-training gives the model its general capabilities.",
+      "poster": "assets/factory-1.png",
+      "note": null
+    },
+    {
+      "id": "factory-2",
+      "section": "Training recap",
+      "label": "Post-training",
+      "src": "../../../interactive/engine_factory/stages/02-posttraining.mp4",
+      "hold": "assets/factory-2-hold.mp4",
+      "cue": "“Some labs post-train models before release…” Specialized training remains different from this conversation’s context.",
+      "poster": "assets/factory-2.png",
+      "note": null
+    },
+    {
+      "id": "factory-3",
+      "section": "Training recap",
+      "label": "Release day",
+      "src": "../../../interactive/engine_factory/stages/03-release-day.mp4",
+      "hold": "assets/factory-3-hold.mp4",
+      "cue": "“On day one…” The trained model is released.",
+      "poster": "assets/factory-3.png",
+      "note": null
+    },
+    {
+      "id": "factory-4",
+      "section": "Training recap",
+      "label": "To work; the factory closes",
+      "src": "../../../interactive/engine_factory/stages/04-to-work-the-factory-closes.mp4",
+      "hold": "assets/factory-4-hold.mp4",
+      "cue": "“The rest is up to the harness.” The finished engine goes to work; its training factory closes.",
+      "poster": "assets/factory-4.png",
+      "note": null
+    },
+    {
+      "id": "chat-1",
+      "section": "Agent identity",
+      "label": "Open the agent chat",
+      "src": "../agent_chat/beat-01.mp4",
+      "hold": "../agent_chat/hold-01.mp4",
+      "cue": "“Context shows up in a couple different forms.” Introduce the familiar chat surface.",
+      "poster": "../agent_chat/hold-01.jpg",
+      "note": null
+    },
+    {
+      "id": "chat-2",
+      "section": "Agent identity",
+      "label": "Say hello",
+      "src": "../agent_chat/beat-02.mp4",
+      "hold": "../agent_chat/hold-02.mp4",
+      "cue": "“The harness generally has a baseline amount of context baked in…” The user asks who the agent is.",
+      "poster": "../agent_chat/hold-02.jpg",
+      "note": null
+    },
+    {
+      "id": "chat-3",
+      "section": "Agent identity",
+      "label": "The agent knows its role",
+      "src": "../agent_chat/beat-03.mp4",
+      "hold": "../agent_chat/hold-03.mp4",
+      "cue": "The agent introduces itself, then asks who you are. Hold through the explanation of separate conversation windows.",
+      "poster": "../agent_chat/hold-03.jpg",
+      "note": null
+    },
+    {
+      "id": "room-1",
+      "section": "The context room",
+      "label": "Sketch the classroom",
+      "src": "../context_room/beat-01.mp4",
+      "hold": "../context_room/hold-01.mp4",
+      "cue": "“Imagine you’re in a room with your agent…” Draw the edges of the context window.",
+      "poster": "../context_room/hold-01.jpg",
+      "note": null
+    },
+    {
+      "id": "room-2",
+      "section": "The context room",
+      "label": "Paint in the room",
+      "src": "../context_room/beat-02.mp4",
+      "hold": "../context_room/hold-02.mp4",
+      "cue": "The room has a fixed size. Hold through the explanation of adding information and using up space.",
+      "poster": "../context_room/hold-02.jpg",
+      "note": null
+    },
+    {
+      "id": "entry",
+      "section": "The context room",
+      "label": "The user and agent walk in",
+      "src": "../context_entry/beat-01.mp4",
+      "hold": "../context_entry/hold-01.mp4",
+      "cue": "“The room is your context window. You and your agent walk in…” The agent carries its role-instruction pamphlet.",
+      "poster": "../context_entry/hold-01.jpg",
+      "note": null
+    },
+    {
+      "id": "fill-1",
+      "section": "Building context",
+      "label": "Introduce yourself",
+      "src": "../context_fill/beat-01.mp4",
+      "hold": "../context_fill/hold-01.mp4",
+      "cue": "“So the first thing you might do is introduce yourself…” Role, team, work, and preferences become small cubes.",
+      "poster": "../context_fill/hold-01.jpg",
+      "note": null
+    },
+    {
+      "id": "fill-2",
+      "section": "Building context",
+      "label": "Ask the agent to research you",
+      "src": "../context_fill/beat-02.mp4",
+      "hold": "../context_fill/hold-02.mp4",
+      "cue": "“A different way for the agent to learn about you…” Include the Confluence link; the prompt also takes space.",
+      "poster": "../context_fill/hold-02.jpg",
+      "note": null
+    },
+    {
+      "id": "fill-3",
+      "section": "Building context",
+      "label": "MCP tools take up space",
+      "src": "../context_fill/beat-03.mp4",
+      "hold": "../context_fill/hold-03.mp4",
+      "cue": "“It calls the Rovo MCP server…” Rovo, Gmail, and Calendar tool definitions enter before retrieved information.",
+      "poster": "../context_fill/hold-03.jpg",
+      "note": null
+    },
+    {
+      "id": "fill-4",
+      "section": "Building context",
+      "label": "Research results arrive",
+      "src": "../context_fill/beat-04.mp4",
+      "hold": "../context_fill/hold-04.mp4",
+      "cue": "“Then comes the actual information it pulls back in.” Pages, email, and calendar information enter the room.",
+      "poster": "../context_fill/hold-04.jpg",
+      "note": null
+    },
+    {
+      "id": "fill-5",
+      "section": "Building context",
+      "label": "The initial context is assembled",
+      "src": "../context_fill/beat-05.mp4",
+      "hold": "../context_fill/hold-05.mp4",
+      "cue": "“All of a sudden, your room is filling up…” The approved small pile leaves space for later work.",
+      "poster": "../context_fill/hold-05.jpg",
+      "note": null
+    },
+    {
+      "id": "unc",
+      "section": "Put context to work",
+      "label": "The UNC work request",
+      "src": null,
+      "hold": "../context_fill/hold-05.mp4",
+      "cue": "“But we persevere…” Read two weeks of UNC Slack activity, identify workstreams, and create a Confluence tracking page.",
+      "poster": "../context_fill/hold-05.jpg",
+      "note": "Narration pause on the filled room. A dedicated UNC Slack-to-Confluence visual has not been built."
+    },
+    {
+      "id": "transport-1",
+      "section": "Each model call",
+      "label": "Load copies into the mine cart",
+      "src": "../context_transport/train/beat-01.mp4",
+      "hold": "../context_transport/train/hold-01.mp4",
+      "cue": "“You give your agent the prompt…” The harness gathers the relevant context and loads copies with the prompt.",
+      "poster": "../context_transport/train/hold-01.jpg",
+      "note": null
+    },
+    {
+      "id": "transport-2",
+      "section": "Each model call",
+      "label": "Take context to the model",
+      "src": "../context_transport/train/beat-02.mp4",
+      "hold": "../context_transport/train/hold-02.mp4",
+      "cue": "“This is one of the key areas where the model as a brain analogy falls apart…” Reveal the separate model and continuous track.",
+      "poster": "../context_transport/train/hold-02.jpg",
+      "note": null
+    },
+    {
+      "id": "transport-3",
+      "section": "Each model call",
+      "label": "The model works and replies",
+      "src": "../context_transport/train/beat-03.mp4",
+      "hold": "../context_transport/train/hold-03.mp4",
+      "cue": "“The model is sitting in its own little world…” The machine processes the load; its reply returns to the room.",
+      "poster": "../context_transport/train/hold-03.jpg",
+      "note": null
+    },
+    {
+      "id": "transport-4",
+      "section": "Each model call",
+      "label": "Send context again on the next turn",
+      "src": "../context_transport/train/beat-04.mp4",
+      "hold": "../context_transport/train/hold-04.mp4",
+      "cue": "“The harness has to send all the relevant context… with each prompt.” Include the earlier reply in the next load.",
+      "poster": "../context_transport/train/hold-04.jpg",
+      "note": null
+    },
+    {
+      "id": "dory",
+      "section": "Memory and cost",
+      "label": "Hi, I’m Dory",
+      "src": "../context_transport/train/dory.mp4",
+      "hold": "../context_transport/train/dory-hold.mp4",
+      "cue": "“It might as well be Dory from Finding Nemo…” Reintroduce yourself and resend what the model needs.",
+      "poster": "../context_transport/train/dory-hold.jpg",
+      "note": null
+    },
+    {
+      "id": "coins",
+      "section": "Memory and cost",
+      "label": "Inference costs tokens",
+      "src": "../context_transport/train/dory-coins.mp4",
+      "hold": "../context_transport/train/dory-hold.mp4",
+      "cue": "“Going back to the model lifecycle… inference costs tokens.” Trigger coins here, after Dory.",
+      "poster": "../context_transport/train/dory-hold.jpg",
+      "note": null
+    },
+    {
+      "id": "tradeoff",
+      "section": "Wrap-up",
+      "label": "Context versus cost",
+      "src": null,
+      "hold": "../context_transport/train/dory-hold.mp4",
+      "cue": "“Seems like you’re stuck between a rock and a hard place…” Balance useful context with cost and the risk of an unhelpful answer.",
+      "poster": "../context_transport/train/dory-hold.jpg",
+      "note": "Narration pause on the final view; no separate cost-versus-quality visual has been built."
+    },
+    {
+      "id": "next-nugget",
+      "section": "Wrap-up",
+      "label": "Next nugget",
+      "src": null,
+      "hold": "../context_transport/train/dory-hold.mp4",
+      "cue": "“In the next nugget…” Tease growing context and the mechanisms for managing it.",
+      "poster": "../context_transport/train/dory-hold.jpg",
+      "note": "Closing hold. Context overflow is reserved for the next nugget."
+    }
+  ]
+};
