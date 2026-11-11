@@ -1,0 +1,18 @@
+{
+  "incident": "Summer Yue\u2019s reported OpenClaw inbox incident, publicly discussed February 23, 2026",
+  "source": "https://simonwillison.net/2026/Feb/23/summer-yue/",
+  "original_post_unavailable_to_browser": "https://x.com/summeryue0/status/2025774069124399363",
+  "supported_account": [
+    "Toy inbox, then real inbox.",
+    "Reported deletions despite an approval instruction.",
+    "Reported phone stop requests failed; she intervened at her Mac mini.",
+    "Compaction was her explanation, not an independently established cause."
+  ],
+  "not_established": [
+    "Work inbox.",
+    "Complete or permanent erasure.",
+    "Specific message counts."
+  ],
+  "visual_treatment": "Illustrated account with paraphrased phone messages, fictional email subjects, messages moving to Trash, and a generic local Stop agent control. Some mail remains. The control is symbolic, not a reconstruction of her actual interface.",
+  "suggested_narration": "Meta researcher Summer Yue reported that her OpenClaw agent started deleting emails despite instructions to wait for approval. She attributed the failure to compaction and said she had to go to her computer to stop it."
+}

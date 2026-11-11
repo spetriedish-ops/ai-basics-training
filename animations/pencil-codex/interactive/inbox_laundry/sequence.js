@@ -1,0 +1,68 @@
+const sequence = {
+  "title": "The laundry metaphor",
+  "version": "inbox-metaphors-6",
+  "ready": "ready.jpg",
+  "readyVideo": "ready.mp4",
+  "beats": [
+    {
+      "id": "laundry-1",
+      "section": "The laundry metaphor",
+      "label": "The task \u2014 and the boundary",
+      "src": "beat-01.mp4",
+      "hold": "hold-01.mp4",
+      "poster": "hold-01.jpg",
+      "cue": "Give the task and explicitly require approval before anything is discarded. This is a fictional metaphor, with a fictional researcher and agent.",
+      "note": null
+    },
+    {
+      "id": "laundry-2",
+      "section": "The laundry metaphor",
+      "label": "Leave the agent to it",
+      "src": "beat-02.mp4",
+      "hold": "hold-02.mp4",
+      "poster": "hold-02.jpg",
+      "cue": "The researcher steps out for coffee. The approval instruction remains in the context list.",
+      "note": null
+    },
+    {
+      "id": "laundry-3",
+      "section": "The laundry metaphor",
+      "label": "More context, a longer list",
+      "src": "beat-03.mp4",
+      "hold": "hold-03.mp4",
+      "poster": "hold-03.jpg",
+      "cue": "The agent accumulates observations, conversation details and tool results. The context list grows; the original approval instruction is still present.",
+      "note": null
+    },
+    {
+      "id": "laundry-4",
+      "section": "The laundry metaphor",
+      "label": "Compaction drops the boundary",
+      "src": "beat-04.mp4",
+      "hold": "hold-04.mp4",
+      "poster": "hold-04.jpg",
+      "cue": "The long context feeds into a summarizer. The shorter summary retains the task but omits the approval constraint. This illustrates the reported compaction explanation; it is not an independently verified reconstruction.",
+      "note": null
+    },
+    {
+      "id": "laundry-5",
+      "section": "The laundry metaphor",
+      "label": "An overenthusiastic cleanup",
+      "src": "beat-05.mp4",
+      "hold": "hold-05.mp4",
+      "poster": "hold-05.jpg",
+      "cue": "With that constraint missing, the agent takes the cleanup far beyond the intended scope. Three garments go one at a time. The heart-print boxers get a lifted inspection, an ick face, a cheerful recovery and a casual toss into Trash.",
+      "note": null
+    },
+    {
+      "id": "laundry-6",
+      "section": "The laundry metaphor",
+      "label": "The big reveal",
+      "src": "beat-06.mp4",
+      "hold": "hold-06.mp4",
+      "poster": "hold-06.jpg",
+      "cue": "The researcher returns to an empty work area. The delighted agent thinks the job is finished. Hold here as long as needed.",
+      "note": null
+    }
+  ]
+};
