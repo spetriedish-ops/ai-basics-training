@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Computer control — AI Basics sketch previews</title>
+<style>
+@font-face{font-family:Hand;src:url('../../../assets/fonts/PatrickHand-Regular.ttf')}
+*{box-sizing:border-box}body{margin:0;background:#eeece4;color:#33323e;font-family:system-ui,sans-serif}
+header{max-width:1320px;margin:0 auto;padding:24px 28px 16px;display:flex;gap:20px;align-items:center;justify-content:space-between}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#63726c}h1{font:36px Hand;margin:3px 0 0}
+.scene-tabs{display:flex;gap:8px}button,a{font:inherit}button{cursor:pointer;border:1px solid #b3bbb4;background:#faf7ef;border-radius:7px;padding:9px 16px;color:inherit}
+button[aria-pressed=true]{background:#d3ede7;border-color:#2ea79a}button:focus-visible,a:focus-visible,video:focus-visible{outline:3px solid #2ea79a;outline-offset:3px}
+main{max-width:1320px;margin:auto;padding:0 28px 26px}.screen{width:min(100%,calc((100dvh - 250px)*16/9));margin:auto;background:#faf7ef;position:relative;box-shadow:0 12px 44px #34323e1b;border:1px solid #d9d5c9}
+video{display:block;width:100%;aspect-ratio:16/9}.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}
+.chapters{display:flex;gap:7px;flex-wrap:wrap}.hint{font-size:13px;color:#65746d}.downloads{display:flex;gap:18px;font-size:13px}a{color:#247d73}
+.status{font:25px Hand;margin:6px 0}.hidden{display:none}body.fullscreen{background:#111}.screen:fullscreen{width:100%;display:grid;place-items:center;background:#111}.screen:fullscreen video{max-height:100vh}
+@media(max-width:800px){header,.bar{align-items:flex-start;flex-direction:column}header,main{padding-left:14px;padding-right:14px}.hint{font-size:12px}.screen{width:100%}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">AI Basics · bonus nugget</div><h1>Computer control & the saloon doors</h1></div>
+<nav class="scene-tabs" aria-label="Choose scene"><button data-scene="computer_control" aria-pressed="true">Computer control</button><button data-scene="saloon_doors" aria-pressed="false">Saloon doors</button></nav></header>
+<main><div class="screen"><video controls muted playsinline preload="metadata" aria-label="Animation preview"></video></div>
+<div class="bar"><div><div class="status" aria-live="polite"></div><div class="hint">Space: play / pause · → next beat · ← previous beat · R: replay · F: fullscreen</div></div>
+<div class="downloads"><a class="download" download>Download MP4</a><button id="full">Play full clip</button><button id="fullscreen">Fullscreen</button></div></div>
+<nav class="chapters" aria-label="Preview a teaching beat"></nav></main>
+<script>
+const scenes={"computer_control": {"title": "Computer control", "master": "../../out/computer_control.mp4", "poster": "../../source/computer_control_bonus/computer_control_001.0.jpg", "stages": [{"label": "Open the browser", "src": "computer_control/stages/01.mp4", "hold": "computer_control/holds/01.mp4"}, {"label": "Complete the task", "src": "computer_control/stages/02.mp4", "hold": "computer_control/holds/02.mp4"}, {"label": "Already signed in", "src": "computer_control/stages/03.mp4", "hold": "computer_control/holds/03.mp4"}]}, "saloon_doors": {"title": "The saloon doors", "master": "../../out/saloon_doors.mp4", "poster": "../../source/computer_control_bonus/saloon_doors_002.0.jpg", "stages": [{"label": "An easy entrance", "src": "saloon_doors/stages/01.mp4", "hold": "saloon_doors/holds/01.mp4"}, {"label": "Board it up", "src": "saloon_doors/stages/02.mp4", "hold": "saloon_doors/holds/02.mp4"}, {"label": "Try that again", "src": "saloon_doors/stages/03.mp4", "hold": "saloon_doors/holds/03.mp4"}]}};
+const video=document.querySelector('video'),status=document.querySelector('.status'),chapters=document.querySelector('.chapters');
+let scene='computer_control',stage=-1,holding=false,generation=0;
+function play(){return video.play().catch(()=>{status.textContent+=' · press Play';});}
+function load(src,auto=false,loop=false){const g=++generation;video.pause();video.loop=loop;video.src=src;video.load();if(auto)video.addEventListener('loadedmetadata',()=>{if(g===generation)play();},{once:true});}
+function label(){status.textContent=scenes[scene].title+' · '+(stage<0?'Full clip':scenes[scene].stages[stage].label+(holding?' · holding':''));document.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',Number(b.dataset.stage)===stage));}
+function showStage(index){stage=Math.max(0,Math.min(scenes[scene].stages.length-1,index));holding=false;label();load(scenes[scene].stages[stage].src,true);}
+function full(auto=true){stage=-1;holding=false;label();load(scenes[scene].master,auto);}
+function choose(name){scene=name;document.querySelectorAll('[data-scene]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scene===name));document.querySelector('.download').href=scenes[name].master;video.poster=scenes[name].poster;chapters.replaceChildren();scenes[name].stages.forEach((s,i)=>{const b=document.createElement('button');b.dataset.stage=i;b.textContent=(i+1)+'. '+s.label;b.setAttribute('aria-pressed','false');b.onclick=()=>showStage(i);chapters.append(b);});full(false);}
+video.addEventListener('ended',()=>{if(stage>=0&&!holding){holding=true;label();load(scenes[scene].stages[stage].hold,true,true);}});
+document.querySelectorAll('[data-scene]').forEach(b=>b.onclick=()=>choose(b.dataset.scene));document.querySelector('#full').onclick=()=>full();
+function fullscreen(){if(document.fullscreenElement)document.exitFullscreen();else document.querySelector('.screen').requestFullscreen().catch(()=>{});}
+document.querySelector('#fullscreen').onclick=fullscreen;
+window.addEventListener('keydown',e=>{if(e.key===' '&&!e.target.closest('button,a')){e.preventDefault();video.paused?play():video.pause();}if(e.key==='ArrowRight'){e.preventDefault();showStage(stage+1);}if(e.key==='ArrowLeft'){e.preventDefault();showStage(stage-1);}if(e.key.toLowerCase()==='r')stage<0?full():showStage(stage);if(e.key.toLowerCase()==='f')fullscreen();});
+choose(scene);
+</script></body></html>

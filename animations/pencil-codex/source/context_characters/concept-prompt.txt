@@ -1,0 +1,21 @@
+Generated with the built-in image_gen tool. Concept exploration only; no character selection or animation is implied.
+
+Use case: illustration-story.
+Asset type: a polished character concept sheet for an educational cartoon, NOT animation frames.
+Create one wide landscape concept board, approximately 1536x1024, with THREE clearly separated columns on warm ivory paper (#FAF7EF). Each column contains one ORIGINAL adult human office colleague and one ORIGINAL AI robot companion, both full body, facing slightly toward each other in friendly, readable three-quarter standing poses. Exactly six main figures total. Plenty of breathing room. Feet fully visible. No furniture, scenery, background props, extra characters, or company logos.
+
+Style: the classic hand-inked television cel animation look of the original Scooby-Doo Where Are You!, The Jetsons and The Flintstones: appealing economical linework, elongated adult human proportions, expressive brows and hands, graphic silhouettes, flat muted colors with just one restrained shadow tone. Original designs, not copies of those shows' characters. Slightly imperfect warm charcoal pencil/ink edges, softly painted paper texture. This belongs with a vintage cream CRT monitor and a warm empty cartoon classroom with green chalkboard. Avoid 3D, glossy rendering, gradients on characters, anime eyes, modern corporate vector illustration, stick figures, and ultra-cute infant proportions.
+
+Only text on the sheet: three legible hand-lettered headings:
+"A · Little robot"
+"B · Walking monitor"
+"C · Robot coworker"
+Place each above its respective pair. No other labels or annotations.
+
+A: adult woman user with shoulder-length chestnut hair swept into a loose outward flip, a cream collared shirt, warm muted coral sleeveless sweater, navy gently flared trousers, brown low shoes. Friendly, capable, curious expression and an open-handed gesture; no glasses. Beside her a compact teal robot about 55 percent of her height: rounded-square head, a tiny single antenna, two simple dark dot eyes and a small friendly mouth, cream inset face, rounded teal body, clear little mitten hands and two walking legs with broad feet. Its silhouette evokes the simple teal rounded-square robot avatar from a generic chat screen. The robot holds ONE small folded ivory leaflet in its left hand, as its role instructions. No words on the leaflet. Pair feels like approachable colleagues.
+
+B: adult woman user with warm brown skin and a short softly curly hairstyle, mustard collared blouse, cream straight-leg trousers and rust shoes. An observant, friendly expression, one hand at hip, one small conversational gesture. Beside her an amusing teal-and-cream WALKING VINTAGE MONITOR robot about 60 percent of her height: cream rounded CRT-shaped head with visible side depth, a teal screen showing two eyes and an expressive simple eyebrow, a small compact teal torso, long bendy arms and clearly articulated walking legs. Two feet; no wheels. The whole robot is predominantly teal. It holds ONE small folded ivory leaflet with no writing. Keep it endearing rather than goofy or toy-like.
+
+C: adult man user with warm medium skin, short dark hair with a gray streak, a simple rust cardigan over cream shirt, charcoal trousers and brown shoes. Easygoing, competent face and a relaxed open-hand gesture. Beside him a lankier teal robot about 85 percent of his height, shaped like an original retro-futuristic assistant: oval head, cream face with expressive narrow oval eyes, segmented teal torso, rounded shoulder joints, long arms and two legs, gentle slightly forward attentive posture. No exposed brain, no wheels, no skirt, no bow tie. Distinctly mechanical but sociable. It holds ONE small folded ivory leaflet with no writing.
+
+Across all columns the HUMAN uses warm clothes, the AGENT is clearly TEAL (#2EA79A and darker teal). Robot designs must be visibly different across A/B/C. Human users have no bags or other props. This is a comparison of possible designs before we select one to animate walking into the classroom.

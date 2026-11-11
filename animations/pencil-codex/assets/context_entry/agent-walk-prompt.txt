@@ -1,0 +1,15 @@
+Use case: identity-preserve
+Asset type: transparent 2D animation sprite sheet, 1536 x 1536 pixels.
+Reference image: approved character concepts. Reproduce ONLY the short wide TEAL ROBOT in the MIDDLE pair B. Exact identity: squat barrel-shaped teal face/body, huge dark brown HANDLEBAR MUSTACHE with two lobes and curled tips, small cream eyes and thick black brows, backward mustard baseball cap with two quirky thin teal antennas, cropped charcoal fleece zip vest and blank cream conference badge, long segmented arms, large teal mitten hands, tiny legs, white socks, cream chunky sneakers. Holds a SMALL ivory folded instruction leaflet in the forward hand close to chest at all times. No human, no other characters.
+Create NINE full-body animation cels in precise 3-column x 3-row equal-cell grid on genuine transparent alpha. No text, labels, lines, shadows, floor, background. Each cell 512 x 512 with generous transparent gutters. Same character scale camera proportions costume across cels. Full silhouette including antennas and shoes in every cell. Faces LEFT in a three-quarter side view, both eyes and whole gorgeous mustache visible. Feet baseline 475 within cell, top antenna around80, body center at x256. Very short legs, round broad body.
+Cels 1–8 reading left-to-right top-to-bottom form one seamless TWO-STEP WALK CYCLE: brisk tiny officious steps, funny barrel body wobbling slightly from side to side, free long arm swings gently, paper arm stays folded at chest, mustache tips and antennas gently lag. Sequential DIFFERENT poses.
+1 left foot forward LEFT heel contact, right foot back toe contact.
+2 down compression, front knee bends, trailing foot lifts.
+3 passing, trailing foot passes planted foot.
+4 up reach with raised foot extending ahead.
+5 opposite contact: right foot forward LEFT heel contact and left foot back, reverse arm swing.
+6 opposite down.
+7 opposite passing.
+8 opposite up leading into cel1.
+Cel9 REST: stopped feet planted together, upright stocky posture, forward hand holds small instruction leaflet near chest, free arm relaxed, face looks up-left toward tall human companion.
+Style: faithfully match the middle robot in reference, 1960s/70s Hanna-Barbera cartoon cel with irregular dark hand-inked outlines, muted watercolor textured fills INSIDE shape. Funny original goofy proportions. Huge mustache unmistakable across all frames. Fully opaque fills, genuinely transparent background. No blur, motion marks, redesign, additional props or extra limbs.

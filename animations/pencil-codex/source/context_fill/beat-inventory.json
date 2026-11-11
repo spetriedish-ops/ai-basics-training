@@ -1,0 +1,107 @@
+[
+  {
+    "label": "Introduce yourself",
+    "start": 0,
+    "end": 10.5,
+    "contents": [
+      "trophy",
+      "team",
+      "briefcase",
+      "keyboard"
+    ]
+  },
+  {
+    "label": "Ask for research",
+    "start": 10.5,
+    "end": 14.5,
+    "contents": [
+      "trophy",
+      "team",
+      "briefcase",
+      "keyboard",
+      "prompt"
+    ]
+  },
+  {
+    "label": "Bring in MCP tools",
+    "start": 14.5,
+    "end": 22.5,
+    "contents": [
+      "trophy",
+      "team",
+      "briefcase",
+      "keyboard",
+      "prompt",
+      "tools-rovo",
+      "tools-mail",
+      "tools-calendar"
+    ]
+  },
+  {
+    "label": "Retrieve information",
+    "start": 22.5,
+    "end": 32.5,
+    "contents": [
+      "trophy",
+      "team",
+      "briefcase",
+      "keyboard",
+      "prompt",
+      "tools-rovo",
+      "tools-mail",
+      "tools-calendar",
+      "pages-1",
+      "pages-2",
+      "pages-3",
+      "email-1",
+      "email-2",
+      "email-3",
+      "meetings-1",
+      "meetings-2",
+      "meetings-3",
+      "replies-1",
+      "replies-2",
+      "replies-3"
+    ]
+  },
+  {
+    "label": "Watch the room fill",
+    "start": 32.5,
+    "end": 39,
+    "contents": [
+      "trophy",
+      "team",
+      "briefcase",
+      "keyboard",
+      "prompt",
+      "tools-rovo",
+      "tools-mail",
+      "tools-calendar",
+      "pages-1",
+      "pages-2",
+      "pages-3",
+      "email-1",
+      "email-2",
+      "email-3",
+      "meetings-1",
+      "meetings-2",
+      "meetings-3",
+      "replies-1",
+      "replies-2",
+      "replies-3",
+      "notes-1",
+      "notes-2",
+      "notes-3",
+      "more-mail-1",
+      "more-mail-2",
+      "past-work-1",
+      "past-work-2",
+      "past-work-3",
+      "invites-1",
+      "invites-2",
+      "background-1",
+      "background-2",
+      "background-3"
+    ]
+  }
+]

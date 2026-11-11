@@ -1,0 +1,5 @@
+Built-in imagegen edit attempt; rejected by tool safety system, category other. No image produced.
+
+Use case: background-extraction. Edit the supplied image only: remove the plain white background to create a clean transparent cutout. Preserve the supplied fish character exactly, including pose, facial expression, eyes, body, fins, tail, colors and rendering. Preserve white areas inside the eyes. Do not redesign, restyle, add text, or add other objects. Output the complete fish with transparent background and a small transparent margin.
+
+Current animation uses supplied.png unchanged, including its white background.

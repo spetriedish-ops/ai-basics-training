@@ -1,0 +1,17 @@
+{
+  "mode": "built-in image generation",
+  "assets": [
+    {
+      "name": "laundry-gag-poses-v1",
+      "ref": "robot-poses-v1.png",
+      "prompt": "Use case: illustration-story. Create an animation sprite sheet with THREE full-body poses of the EXACT mustard-yellow pear-shaped robot in this reference, teal accordion arms and legs, cream cartoon gloves, large yellow shoes, windup key, antenna and goofy face. Three columns, one row, fully transparent background. Each complete character fits with 15% clear margin all around its own cell; no clipped fingers. SAME body scale and planted feet in every pose. All facing screen RIGHT. Pose 1: extending right arm horizontally to the right, pinching thumb and index finger together, empty hand; other hand resting on hip; friendly curious face, eyes looking at pinched fingertips. Pose 2: EXACT same body, arm and hand positions as pose 1, but cartoon disgust: eyes squint away, one eyebrow lifted, crooked downturned mouth, head leans back a tiny bit. Clear hilarious 'ick' face, not smiling. Pose 3: carefree jaunty smile with eyes closed, empty right hand raised slightly above shoulder in relaxed just-finished wrist-flick gesture toward the right; left hand on hip. No clothing in hands, no props, no text, no background or ground. Match the thick imperfect black lines and flat textured 1970s educational cartoon style of the reference. Avoid body wobble or silhouette changes except the face and wrist gesture.",
+      "source": "/Users/sarahpetrie/.codex/generated_images/01a0f853-8875-7303-83db-f1a5223b6e5c/exec-17ed288b-0195-4772-b30b-759395e5a2d4.png"
+    },
+    {
+      "name": "laundry-quiet-props-v1",
+      "ref": "laundry-props-v1.png",
+      "prompt": "Use case: illustration-story. Create a NEW spacious 2x2 transparent animation sprite sheet of four standalone props in this reference's thick black outlined flat vintage cartoon style. Top left: a simple loose short sleeve dusty teal shirt, solid color, NO pattern. Top right: a pair of plain slate-blue trousers, NO pattern. Bottom left: an unmistakable pair of classic baggy WHITE BOXER SHORTS with six large RED HEARTS printed on them, white elastic waistband, clearly two short legs; no person or body. Bottom right: an empty low wide oval cream wicker LAUNDRY BASKET with dark empty interior and a strong front rim, simple restrained weave detail. Each object fully within the middle 65% of its own cell, with clear transparent margins between all props. Absolutely no overlapping objects, no cell frames, no text, no people, no shading outside the props, no ground. Simple muted palette except the red hearts. Preserve bold dark outlines and subtle vintage print texture.",
+      "source": "/Users/sarahpetrie/.codex/generated_images/01a0f853-8875-7303-83db-f1a5223b6e5c/exec-d6ebc1a0-8a79-4793-8caf-599031450fb9.png"
+    }
+  ]
+}

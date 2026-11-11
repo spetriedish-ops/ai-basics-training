@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+source/paper_transition/frames/
+source/paper_transition/*.blend1

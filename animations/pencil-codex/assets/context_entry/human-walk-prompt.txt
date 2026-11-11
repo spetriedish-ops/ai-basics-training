@@ -1,0 +1,15 @@
+Use case: identity-preserve
+Asset type: transparent 2D animation sprite sheet, 1536 x 1536 pixels.
+Reference image: approved character concepts. Reproduce ONLY the tall HUMAN in the MIDDLE pair B. Preserve his exact funny identity: enormous brown broccoli curls with shaved sides, huge hooked nose, tiny chin and stubble, beige oversized hoodie with drawstrings, navy lanyard and blank cream badge, dark cropped joggers, white socks and giant cream chunky sneakers. No robot, no other characters.
+Create NINE full-body animation cels in a precise 3-column x 3-row equal-cell grid on genuine transparent alpha. No text, labels, grid lines, floor, shadows or background. Each cell 512 x 512 with generous transparent gutters. Same character scale, camera, proportions, clothes and model throughout. Whole figure fits in each cell, no cropped toes or hair. Character faces LEFT in a readable three-quarter side view; hooked nose points left, both eyes can be seen. Feet baseline around 480 within every cell, crown around 35. Center hip at x256.
+Cels 1–8, reading left-to-right then top-to-bottom, form one complete seamless exaggerated gangly WALK CYCLE, two steps, like the loose bent-kneed classic Shaggy locomotion in original Scooby-Doo. Shoulders lean forward, long loose arms counter-swing, big shoes lead heel first, knees fold comically high on passing poses, head and curls lag, friendly goofy face. These MUST be sequential DIFFERENT poses, not repeated drawings.
+1 left leg stretched far forward LEFT heel down / right leg back toe down; right arm forward, left arm back.
+2 down/recoil, front knee deeply bent supporting weight, back heel lifting.
+3 passing, back knee lifting past support knee, arms passing middle.
+4 up, raised knee reaches forward left, support heel rising.
+5 opposite contact: right leg far forward LEFT heel down, left leg back toe down, arms opposite cel1.
+6 opposite down/recoil.
+7 opposite passing.
+8 opposite up/reach, leads continuously into cel1.
+Cel9: REST pose, stopped upright but slouchy, both sneakers planted close together, arms hanging loosely, face still looking LEFT. Same scale and clothing.
+Style: faithfully match approved middle character, 1960s/70s Hanna-Barbera hand-inked limited animation, organic dark pencil outlines, muted watercolor beige, understated paper-like texture INSIDE shapes, irregular funny proportions. Fully opaque colors inside character, transparent outside. Keep facial features, hair volume, hoodie and shoe shapes consistent across all nine cels. No motion blur or speed marks.

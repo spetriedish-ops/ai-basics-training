@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crumple & toss · AI Basics</title>
+<style>
+@font-face{font-family:Hand;src:url('../../../assets/fonts/PatrickHand-Regular.ttf')}
+*{box-sizing:border-box}body{margin:0;background:#ede9e0;color:#474345;font:15px system-ui,sans-serif}
+header,main{max-width:1440px;margin:auto;padding:20px 26px}header{padding-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#82766a}h1{font:36px Hand;margin:3px 0 0}p{margin:4px 0;color:#776d65}
+button,a{font:inherit}button{border:1px solid #c4b8a5;border-radius:7px;padding:10px 17px;background:#faf7ef;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #468478;outline-offset:3px}.primary{background:#457b73;color:white;border-color:#457b73}
+.screen{position:relative;margin:auto;width:min(100%,calc((100dvh - 235px)*16/9));aspect-ratio:16/9;background:#faf7ef;box-shadow:0 16px 50px #4e453d20;overflow:hidden}
+video,.still{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.still{z-index:1}[hidden]{display:none!important}
+.screen:fullscreen{width:100%;height:100%;background:#faf7ef}.bar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:18px}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.status{font:26px Hand}.hint{font-size:12px;color:#84796d;margin-top:5px}a{color:#457b73;font-size:13px}
+.recording header,.recording .bar{display:none}.recording main{padding:0;max-width:none;height:100dvh;display:grid;place-items:center}.recording .screen{width:min(100vw,calc(100dvh*16/9));box-shadow:none}
+@media(max-width:700px){header,.bar{align-items:flex-start;flex-direction:column}.screen{width:100%}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">AI Basics · transition study</div><h1>Crumple it up. Turn the page.</h1><p>The old drawing folds away. A fresh sheet is ready for the next idea.</p></div><a href="../../out/paper_crumple.mp4" download>Download transition</a></header>
+<main>
+<div class="screen"><img class="still" src="poster.jpg" alt="The harness mind map on notebook paper"><video hidden muted playsinline preload="auto" aria-label="The mind map crumples into a ball and is tossed away"></video></div>
+<div class="bar"><div><div class="status" aria-live="polite">The mind map · ready</div><div class="hint">→ next beat · Space play / pause · R replay · H hide controls · F fullscreen</div></div><div class="actions"><button id="transition" class="primary">Crumple & toss</button><button id="next" disabled>Next page</button><button id="sequence">Watch full sequence</button><button id="pause">Play / pause</button><button id="fullscreen">Fullscreen</button></div></div>
+</main>
+<script>
+const video=document.querySelector('video'),still=document.querySelector('.still'),status=document.querySelector('.status');
+let mode='transition',state='ready',generation=0;
+const clips={transition:{src:'../../out/paper_crumple.mp4?v=3',hold:'fresh.jpg',label:'Fresh paper · holding',next:'outline',nextLabel:'Draw the classroom →'},outline:{src:'../context_room/beat-01.mp4?v=side-door-1',hold:'../context_room/hold-01.jpg?v=side-door-1',holdVideo:'../context_room/hold-01.mp4?v=side-door-1',label:'Pencil outlines · holding',next:'paint',nextLabel:'Paint it in →'},paint:{src:'../context_room/beat-02.mp4?v=side-door-1',hold:'../context_room/hold-02.jpg?v=side-door-1',holdVideo:'../context_room/hold-02.mp4?v=side-door-1',label:'The classroom · holding'},sequence:{src:'../../out/paper_crumple_to_room.mp4?v=side-door-1',hold:'../context_room/hold-02.jpg?v=side-door-1',holdVideo:'../context_room/hold-02.mp4?v=side-door-1',label:'The classroom · holding'}};
+for(const clip of Object.values(clips)){const image=new Image();image.src=clip.hold;}
+function play(){return video.play().catch(()=>{status.textContent='Press Play to start';});}
+function updateNext(){const button=document.querySelector('#next');button.disabled=state!=='holding'||!clips[mode].next;button.textContent=clips[mode].nextLabel||'Scene complete';}
+function loadVideo(src,nextState,loop=false){const token=++generation;state='loading';updateNext();video.pause();video.loop=loop;video.src=src;video.load();video.addEventListener('loadeddata',()=>{if(token!==generation)return;still.hidden=true;video.hidden=false;state=nextState;updateNext();play();},{once:true});}
+function start(name=mode){mode=name;status.textContent=mode==='sequence'?'Mind map → fresh sheet → classroom':mode==='outline'?'Drawing the classroom':mode==='paint'?'Painting it in':'Crumple & toss';loadVideo(clips[mode].src,'playing');}
+function advance(){if(state==='ready')start('transition');else if(state==='holding'&&clips[mode].next)start(clips[mode].next);}
+function toggle(){if(state==='ready')start();else if(state==='holding'&&!clips[mode].holdVideo)advance();else if(state!=='loading')video.paused?play():video.pause();}
+video.addEventListener('ended',()=>{if(video.loop)return;state='holding';still.src=clips[mode].hold;still.alt=mode==='transition'?'A fresh sheet of paper':'The classroom drawing';still.hidden=false;video.hidden=true;status.textContent=clips[mode].label;updateNext();if(clips[mode].holdVideo)loadVideo(clips[mode].holdVideo,'holding',true);});
+video.addEventListener('error',()=>{state='ready';status.textContent='The clip could not load. Open this page alongside its animation files.';still.hidden=false;});
+document.querySelector('#transition').onclick=()=>start('transition');document.querySelector('#sequence').onclick=()=>start('sequence');document.querySelector('#pause').onclick=toggle;
+document.querySelector('#next').onclick=advance;
+function fullscreen(){document.fullscreenElement?document.exitFullscreen():document.querySelector('.screen').requestFullscreen().catch(()=>{});}
+document.querySelector('#fullscreen').onclick=fullscreen;
+window.addEventListener('keydown',event=>{if(event.key===' '){if(event.target.closest('button,a'))return;event.preventDefault();toggle();}else if(event.key==='ArrowRight'){event.preventDefault();advance();}else if(event.key.toLowerCase()==='r')start();else if(event.key.toLowerCase()==='h')document.body.classList.toggle('recording');else if(event.key.toLowerCase()==='f')fullscreen();});
+loadVideo('../harness_mind_map/holds/06-context.mp4','ready',true);
+</script>
+</body>
+</html>
